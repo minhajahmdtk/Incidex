@@ -5,16 +5,34 @@ require('dotenv').config();
 const db=require('.//config/db');
 db();
 
+//-------------------
 // Routes
-const authRouter=require('./router/authRouter');
+//-------------------
 
-//models
+//User routes
+
+const authRouter=require('./router/authRouter');
+const userRouter=require('./router/userRouter');
+
+//-------------------
+//    Models
+//-------------------
+
+//user Model
 const userModel = require('./models/user');
 
 server.use(express.json());
 
+//-------------------
+// Mount Routes
+//-------------------
 
-server.use('/user',authRouter)
+//Mount user route
+
+server.use('/user',authRouter);
+server.use('/user',userRouter);
+
+
 server.listen(port,()=>{
   console.log(`Server listening on port ${port}`);
 })
