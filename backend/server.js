@@ -14,12 +14,21 @@ db();
 const authRouter=require('./router/authRouter');
 const userRouter=require('./router/userRouter');
 
+//Admin routes
+
+const adminRouter=require('./router/adminRouter');
+
 //-------------------
 //    Models
 //-------------------
 
 //user Model
 const userModel = require('./models/user');
+
+
+//admin Model
+
+const adminModel=require('./models/Admin')
 
 server.use(express.json());
 
@@ -32,6 +41,9 @@ server.use(express.json());
 server.use('/user',authRouter);
 server.use('/user',userRouter);
 
+//Mount admin route
+
+server.use('/admin',adminRouter);
 
 server.listen(port,()=>{
   console.log(`Server listening on port ${port}`);
