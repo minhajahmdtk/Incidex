@@ -32,7 +32,7 @@ const userModel = require('./models/user');
 
 //admin Model
 
-const adminModel=require('./models/Admin')
+const adminModel=require('./models/admin')
 
 //case Model
 
