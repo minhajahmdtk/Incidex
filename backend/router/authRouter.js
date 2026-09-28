@@ -73,7 +73,7 @@ router.post('/register', async (req, res) => {
     // Password validation
 
     const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,20}$/
 
     if (!passwordRegex.test(password)) {
       return res.status(400).json({

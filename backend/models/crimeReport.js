@@ -33,7 +33,6 @@ const crimeReportSchema = new mongoose.Schema(
     incidentDescription: {
       type: String,
       required: true,
-      trim: true,
     },
 
     incidentLocation: {
@@ -44,14 +43,12 @@ const crimeReportSchema = new mongoose.Schema(
 
     latitude: {
       type: Number,
-      required: true,
       min: -90,
       max: 90,
     },
 
     longitude: {
       type: Number,
-      required: true,
       min: -180,
       max: 180,
     },
@@ -94,4 +91,4 @@ const crimeReportSchema = new mongoose.Schema(
   }
 );
 
-module.exports=mongoose.model("crimeReport",crimeReportSchema);
+module.exports=mongoose.model("CrimeReport",crimeReportSchema);

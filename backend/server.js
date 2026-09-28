@@ -18,6 +18,10 @@ const userRouter=require('./router/userRouter');
 
 const adminRouter=require('./router/adminRouter');
 
+//case Routes
+
+const caseRouter=require('./router/caseRouter');
+
 //-------------------
 //    Models
 //-------------------
@@ -29,6 +33,10 @@ const userModel = require('./models/user');
 //admin Model
 
 const adminModel=require('./models/Admin')
+
+//case Model
+
+const crimeReport=require('./models/crimeReport');
 
 server.use(express.json());
 
@@ -44,6 +52,11 @@ server.use('/user',userRouter);
 //Mount admin route
 
 server.use('/admin',adminRouter);
+
+
+//Mount case route
+
+server.use('/cases',caseRouter)
 
 server.listen(port,()=>{
   console.log(`Server listening on port ${port}`);
