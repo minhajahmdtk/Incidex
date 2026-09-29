@@ -1,13 +1,14 @@
-const express=require('express');
-const crimeReport=require('../models/crimeReport');
-const jwt=require('jsonwebtoken');
+const express = require('express');
+const CrimeReport = require('../models/crimeReport');
+const jwt = require('jsonwebtoken');
+const StatusHistory = require('../models/statusHistory');
 
-const router=express.Router()
+const router = express.Router()
 
 //VERIFY TOKEN
 
-function verifyToken(req,res,next){
-  const token=req.headers.token;
+function verifyToken(req, res, next) {
+  const token = req.headers.token;
 
   try {
     if (!token) {
@@ -21,9 +22,9 @@ function verifyToken(req,res,next){
       process.env.JWT_SECRET
     );
 
-     if(payload.role!=="user"){
+    if (payload.role !== "user") {
       return res.status(403).json({
-        message:"User access required",
+        message: "User access required",
       });
     }
 
@@ -40,7 +41,7 @@ function verifyToken(req,res,next){
 //GENERATING CASEID
 
 async function generateCaseId() {
-  const lastCase = await crimeReport.findOne()
+  const lastCase = await CrimeReport.findOne()
     .sort({ createdAt: -1 });
 
   if (!lastCase) {
@@ -59,27 +60,27 @@ async function generateCaseId() {
 
 //CREATING CRIME REPORT
 
-router.post('/report',verifyToken,async (req,res)=>{
-  try{
+router.post('/report', verifyToken, async (req, res) => {
+  try {
     const {
       crimeCategory,
       incidentDescription,
       incidentLocation,
       latitude,
       longitude,
-    }=req.body;
+    } = req.body;
 
     //CRIME VALIDATIONS
 
-    if(!crimeCategory || crimeCategory.trim()===""){
+    if (!crimeCategory || crimeCategory.trim() === "") {
       return res.status(400).json({
-        message:"Crime category is required"
+        message: "Crime category is required"
       });
     }
 
-    if(!incidentDescription || incidentDescription.trim()==""){
+    if (!incidentDescription || incidentDescription.trim() === "") {
       return res.status(400).json({
-        message:"incident description is required"
+        message: "incident description is required"
       });
     }
 
@@ -100,18 +101,18 @@ router.post('/report',verifyToken,async (req,res)=>{
       "Other",
     ];
 
-    if(!validCategories.includes(crimeCategory)){
+    if (!validCategories.includes(crimeCategory)) {
       return res.status(400).json({
-        message:'Invalid crime category'
+        message: 'Invalid crime category'
       });
     }
 
-    if(incidentDescription.length<5){
+    if (incidentDescription.length < 5) {
       return res.status(400).json({
-        message:"The Description must be atleast 5 characters"
+        message: "The Description must be atleast 5 characters"
       })
     }
-     if (incidentDescription.length > 500) {
+    if (incidentDescription.length > 500) {
       return res.status(400).json({
         message:
           "Incident description cannot exceed 500 characters",
@@ -119,7 +120,8 @@ router.post('/report',verifyToken,async (req,res)=>{
     }
 
     const caseId = await generateCaseId();
-    const newCrimeReport = new crimeReport({
+
+    const newCrimeReport = new CrimeReport({
       caseId: caseId,
       userId: req.user.id,
       crimeCategory: crimeCategory,
@@ -130,11 +132,18 @@ router.post('/report',verifyToken,async (req,res)=>{
       reportDateTime: new Date(),
       currentStatus: "New",
     });
+
     await newCrimeReport.save();
 
+    await StatusHistory.create({
+      caseId: newCrimeReport._id,
+      status: "New",
+      updatedDateTime: new Date(),
+    });
+
     res.status(200).json({
-      message:'Crime reported successfully',
-      case:newCrimeReport
+      message: 'Crime reported successfully',
+      case: newCrimeReport
     });
 
   } catch (error) {
@@ -146,32 +155,75 @@ router.post('/report',verifyToken,async (req,res)=>{
 
 //GET MY CASES
 
-router.get('/my-cases',verifyToken,async (req,res)=>{
-  try{
-    const cases=await crimeReport.find({
-      userId:req.user.id,
+router.get('/my-cases', verifyToken, async (req, res) => {
+  try {
+    const cases = await CrimeReport.find({
+      userId: req.user.id,
     }).sort({ reportDateTime: -1 });
 
     return res.status(200).json({
       cases: cases,
     });
-  }catch (error) {
+  } catch (error) {
     res.status(500).json({
       message: error.message,
     });
   }
 });
 
+//VIEW CASE STATUS HISTORY
+
+router.get('/history/:id', verifyToken, async (req, res) => {
+  try {
+
+    const caseId = req.params.id;
+
+    //FIND CASE
+
+    const StatusReport = await CrimeReport.findOne({
+      caseId: caseId,
+      userId: req.user.id,
+    });
+
+    if (!StatusReport) {
+      return res.status(404).json({
+        message: "Case not found"
+      });
+    }
+
+
+    //GET STATUS HISTORY
+
+    const history = await StatusHistory.find({
+      caseId: StatusReport._id,
+    }).sort({
+      updatedDateTime: 1,
+    });
+
+    return res.status(200).json({
+      caseId: StatusReport.caseId,
+      history: history,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
+
 //GET SINGLE CASE
 
-router.get('/:id',verifyToken,async (req,res)=>{
-  try{
-    const Report= await crimeReport.findOne({
+router.get('/:id', verifyToken, async (req, res) => {
+  try {
+
+    const Report = await CrimeReport.findOne({
       caseId: req.params.id,
       userId: req.user.id,
     });
 
-     if (!Report) {
+    if (!Report) {
       return res.status(404).json({
         message: "Case not found",
       });
@@ -179,32 +231,42 @@ router.get('/:id',verifyToken,async (req,res)=>{
     res.status(200).json({
       case: Report,
     });
-  }catch (error) {
+  } catch (error) {
     res.status(500).json({
       message: error.message,
     });
   }
 });
 
-router.delete('/:id',verifyToken,async(req,res)=>{
-  try{
-    const deletedCase=await crimeReport.findOneAndDelete({
+
+//DELETE CASE
+
+router.delete('/:id', verifyToken, async (req, res) => {
+  try {
+    const deletedCase = await CrimeReport.findOneAndDelete({
       caseId: req.params.id,
       userId: req.user.id,
     })
+
     if (!deletedCase) {
       return res.status(404).json({
         message: "Case not found",
       });
     }
-    res.status(200).json({
-      message:'case deleted successfully'
-    });
-  }catch(error){
-    return res.status(500).json({
-      message:error.message
+
+
+    await StatusHistory.deleteMany({
+      caseId: deletedCase._id
     })
+
+    return res.status(200).json({
+      message: 'Case deleted successfully'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message
+    });
   }
-})
+});
 
 module.exports = router;

@@ -22,6 +22,11 @@ const adminRouter=require('./router/adminRouter');
 
 const caseRouter=require('./router/caseRouter');
 
+
+//Notification Routes
+
+const userNotificationRouter=require('./router/userNotificationRouter');
+
 //-------------------
 //    Models
 //-------------------
@@ -56,7 +61,12 @@ server.use('/admin',adminRouter);
 
 //Mount case route
 
-server.use('/cases',caseRouter)
+server.use('/cases',caseRouter);
+
+
+//Mount notification route
+
+server.use('/user-notifications',userNotificationRouter);
 
 server.listen(port,()=>{
   console.log(`Server listening on port ${port}`);
