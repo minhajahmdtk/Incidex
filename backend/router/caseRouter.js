@@ -2,6 +2,7 @@ const express = require('express');
 const CrimeReport = require('../models/crimeReport');
 const jwt = require('jsonwebtoken');
 const StatusHistory = require('../models/statusHistory');
+const PDFDocument = require("pdfkit");
 
 const router = express.Router()
 
@@ -272,8 +273,6 @@ router.delete('/:id', verifyToken, async (req, res) => {
 
 //VIEW CASE RESOLUTION
 
-//VIEW CASE RESOLUTION
-
 router.get('/resolution/:id/', verifyToken, async (req, res) => {
   try {
 
@@ -305,6 +304,133 @@ router.get('/resolution/:id/', verifyToken, async (req, res) => {
       resolutionDetails: Report.resolutionDetails,
       resolvedDateTime: Report.updatedAt,
     });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
+
+//DOWNLOAD FINAL REPORT AS PDF
+
+router.get('/pdf/:id', verifyToken, async (req, res) => {
+  try {
+
+    const Report = await CrimeReport.findOne({
+      caseId: req.params.id,
+      userId: req.user.id,
+    });
+
+    if (!Report) {
+      return res.status(404).json({
+        message: "Case not found",
+      });
+    }
+
+    if (Report.currentStatus !== "Resolved") {
+      return res.status(400).json({
+        message: "PDF is available only for resolved cases",
+      });
+    }
+
+    const doc = new PDFDocument();
+
+    res.setHeader(
+      "Content-Type",
+      "application/pdf"
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=${Report.caseId}-final-report.pdf`
+    );
+
+    doc.pipe(res);
+
+    doc
+      .fontSize(20)
+      .text("INCIDEX", {
+        align: "center",
+      });
+
+    doc.moveDown();
+
+    doc
+      .fontSize(16)
+      .text("Crime Incident Final Report", {
+        align: "center",
+      });
+
+    doc.moveDown(2);
+
+    doc.fontSize(12);
+
+    doc.text(`Case ID: ${Report.caseId}`);
+
+    doc.text(`Crime Category: ${Report.crimeCategory}`);
+
+    doc.text(`Incident Description: ${Report.incidentDescription}`);
+
+    doc.text(`Incident Location: ${Report.incidentLocation}`);
+
+    doc.text(
+      `Report Date & Time: ${Report.reportDateTime}`
+    );
+
+    doc.text(`Current Status: ${Report.currentStatus}`);
+
+    doc.moveDown();
+
+    doc
+      .fontSize(14)
+      .text("Final Details");
+
+    doc.moveDown();
+
+    doc
+      .fontSize(12)
+      .text(
+        Report.finalDetails || "No final details available"
+      );
+
+    doc.moveDown();
+
+    doc
+      .fontSize(14)
+      .text("Action Taken");
+
+    doc.moveDown();
+
+    doc
+      .fontSize(12)
+      .text(
+        Report.actionTaken || "No action details available"
+      );
+
+    doc.moveDown();
+
+    doc
+      .fontSize(14)
+      .text("Resolution Details");
+
+    doc.moveDown();
+
+    doc
+      .fontSize(12)
+      .text(
+        Report.resolutionDetails ||
+        "No resolution details available"
+      );
+
+    doc.moveDown(2);
+
+    doc.text(
+      `Resolved Date & Time: ${Report.updatedAt}`
+    );
+
+    doc.end();
 
   } catch (error) {
     return res.status(500).json({

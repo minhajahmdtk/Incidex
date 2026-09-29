@@ -27,6 +27,10 @@ const caseRouter=require('./router/caseRouter');
 
 const userNotificationRouter=require('./router/userNotificationRouter');
 
+//Feedback Routes
+
+const userFeedbackRouter=require('./router/userFeedbackRouter');
+
 //-------------------
 //    Models
 //-------------------
@@ -67,6 +71,12 @@ server.use('/cases',caseRouter);
 //Mount notification route
 
 server.use('/user-notifications',userNotificationRouter);
+
+
+//Mount feedback route
+
+server.use('/feedback',userFeedbackRouter);
+
 
 server.listen(port,()=>{
   console.log(`Server listening on port ${port}`);
