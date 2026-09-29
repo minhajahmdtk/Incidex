@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const Admin = require('../models/admin');
 const router = express.Router();
 
-//VERIFY ADMIN ADMIN
+//VERIFY ADMIN TOKEN
 
 function verifyAdmin(req,res,next){
   const token=req.headers.token;
@@ -25,6 +25,7 @@ function verifyAdmin(req,res,next){
         message: 'Admin access required',
       });
     }
+    next();
 
   }catch(error){
     return res.status(401).json({
@@ -112,6 +113,44 @@ router.post('/login', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: error.message,
+    })
+  }
+});
+
+
+//VIEW ALL CASES
+
+router.get('/',verifyAdmin,async(req,res)=>{
+  try{
+    const users=await Users.find()
+      .select('-password')
+      .sort({createdAt:-1});
+    return res.status(200).json({
+      users:users,
+    })
+  }catch(error){
+    return res.status(401).json({
+      message:error.message,
+    });
+  }
+})
+
+//VIEW SINGLE USER
+
+router.get('/users/:id',verifyAdmin,async(req,res)=>{
+  try{
+    const user=await User.findById(req.params.id).select('-password');
+    if(!user){
+      return res.status(401).json({
+        message:'User not found'
+      });
+    }
+    return res.status(200).json({
+      user:user,
+    });
+  }catch(error){
+    return res.status(400).json({
+      message:error.message
     })
   }
 });
