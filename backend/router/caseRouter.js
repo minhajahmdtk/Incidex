@@ -269,4 +269,50 @@ router.delete('/:id', verifyToken, async (req, res) => {
   }
 });
 
+
+//VIEW CASE RESOLUTION
+
+//VIEW CASE RESOLUTION
+
+router.get('/resolution/:id/', verifyToken, async (req, res) => {
+  try {
+
+    const Report = await CrimeReport.findOne({
+      caseId: req.params.id,
+      userId: req.user.id,
+    });
+
+    if (!Report) {
+      return res.status(404).json({
+        message: "Case not found",
+      });
+    }
+
+    if (Report.currentStatus !== "Resolved") {
+      return res.status(400).json({
+        message: "Case is not resolved yet",
+      });
+    }
+
+    return res.status(200).json({
+      caseId: Report.caseId,
+      crimeCategory: Report.crimeCategory,
+      currentStatus: Report.currentStatus,
+      incidentLocation: Report.incidentLocation,
+      reportDateTime: Report.reportDateTime,
+      finalDetails: Report.finalDetails,
+      actionTaken: Report.actionTaken,
+      resolutionDetails: Report.resolutionDetails,
+      resolvedDateTime: Report.updatedAt,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
+
+
 module.exports = router;
