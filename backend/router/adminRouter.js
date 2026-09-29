@@ -4,6 +4,37 @@ const jwt = require('jsonwebtoken');
 const Admin = require('../models/admin');
 const router = express.Router();
 
+//VERIFY ADMIN ADMIN
+
+function verifyAdmin(req,res,next){
+  const token=req.headers.token;
+  try{
+    if(!token){
+      return res.status(401).json({
+        message:'Unauthorized request'
+      });
+    }
+
+    const payload=jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
+
+    if (payload.role !== "admin") {
+      return res.status(403).json({
+        message: 'Admin access required',
+      });
+    }
+
+  }catch(error){
+    return res.status(401).json({
+      message:'Invalid or expired token'
+    })
+  }
+}
+
+
+
 
 //ADMIN LOGIN
 
