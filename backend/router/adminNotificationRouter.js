@@ -61,7 +61,7 @@ router.get('/', verifyAdmin, async (req, res) => {
 
   } catch (error) {
 
-    return res.status(400).json({
+    return res.status(500).json({
       message: error.message
     });
 
@@ -80,7 +80,7 @@ router.patch('/read/:id', verifyAdmin, async (req, res) => {
     );
 
     if (!notification) {
-      return res.status(404).json({
+      return res.status(400).json({
         message: "Notification not found"
       });
     }
@@ -96,7 +96,7 @@ router.patch('/read/:id', verifyAdmin, async (req, res) => {
 
   } catch (error) {
 
-    return res.status(400).json({
+    return res.status(500).json({
       message: error.message
     });
 
@@ -122,7 +122,7 @@ router.patch('/read-all', verifyAdmin, async (req, res) => {
 
   } catch (error) {
 
-    return res.status(400).json({
+    return res.status(500).json({
       message: error.message
     });
 

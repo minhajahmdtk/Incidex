@@ -26,7 +26,7 @@ function verifyAdmin(req, res, next) {
     );
 
     if (payload.role !== "admin") {
-      return res.status(401).json({
+      return res.status(400).json({
         message: "Admin access required"
       });
     }

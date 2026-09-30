@@ -55,7 +55,7 @@ router.get('/users', verifyAdmin, async (req, res) => {
     });
 
   } catch (error) {
-    return res.status(400).json({
+    return res.status(500).json({
       message: error.message,
     });
 
@@ -83,7 +83,7 @@ router.get('/users/:id', verifyAdmin, async (req, res) => {
 
   } catch (error) {
 
-    return res.status(400).json({
+    return res.status(500).json({
       message: error.message,
     });
 
@@ -129,7 +129,7 @@ router.get('/cases/:id', verifyAdmin, async (req, res) => {
     );
 
     if (!Report) {
-      return res.status(404).json({
+      return res.status(400).json({
         message: 'Case not found',
       });
     }
@@ -140,7 +140,7 @@ router.get('/cases/:id', verifyAdmin, async (req, res) => {
 
   } catch (error) {
 
-    return res.status(400).json({
+    return res.status(500).json({
       message: error.message,
     });
 

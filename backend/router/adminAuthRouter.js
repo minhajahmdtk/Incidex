@@ -42,7 +42,7 @@ router.post('/login', async (req, res) => {
     });
 
     if (!admin) {
-      return res.status(401).json({
+      return res.status(400).json({
         message: "Invalid Email or password"
       })
     }
@@ -53,7 +53,7 @@ router.post('/login', async (req, res) => {
       password, admin.password
     )
     if (!passwordMatch) {
-      return res.status(401).json({
+      return res.status(400).json({
         message: "Invalid email or password"
       })
     };
