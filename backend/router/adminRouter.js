@@ -239,8 +239,6 @@ router.patch('/cases/status/:id', verifyAdmin, async (req, res) => {
 
 });
 
-//RESOLVE CASE
-
 
 //RESOLVE CASE
 

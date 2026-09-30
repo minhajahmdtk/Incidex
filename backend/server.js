@@ -18,7 +18,8 @@ const userRouter=require('./router/userRouter');
 
 const adminRouter=require('./router/adminRouter');
 const adminAuthRouter=require('./router/adminAuthRouter');
-
+const adminDashboardRouter=require('./router/adminDashboardRouter');
+const adminNotificationRouter=require('./router/adminNotificationRouter');
 //case Routes
 
 const caseRouter=require('./router/caseRouter');
@@ -64,6 +65,12 @@ server.use('/user',userRouter);
 server.use('/admin',adminRouter);
 server.use('/admin',adminAuthRouter);
 
+
+//Mount admin dashboard route
+server.use('/admin/dashboard', adminDashboardRouter);
+
+//Mount admin notification route
+server.use('/admin/notifications', adminNotificationRouter);
 
 //Mount case route
 

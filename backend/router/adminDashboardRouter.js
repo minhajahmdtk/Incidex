@@ -26,7 +26,7 @@ function verifyAdmin(req, res, next) {
     );
 
     if (payload.role !== "admin") {
-      return res.status(403).json({
+      return res.status(401).json({
         message: "Admin access required"
       });
     }
@@ -43,3 +43,139 @@ function verifyAdmin(req, res, next) {
 
   }
 }
+//ADMIN DASHBOARD
+
+router.get('/', verifyAdmin, async (req, res) => {
+
+  try {
+
+    const totalUsers = await User.countDocuments();
+
+    const totalCases = await CrimeReport.countDocuments();
+
+    const newCases = await CrimeReport.countDocuments({
+      currentStatus: "New"
+    });
+
+    const acknowledgedCases = await CrimeReport.countDocuments({
+      currentStatus: "Acknowledged"
+    });
+
+    const inProgressCases = await CrimeReport.countDocuments({
+      currentStatus: "In Progress"
+    });
+
+    const resolvedCases = await CrimeReport.countDocuments({
+      currentStatus: "Resolved"
+    });
+
+    return res.status(200).json({
+
+      totalUsers: totalUsers,
+
+      totalCases: totalCases,
+
+      casesByStatus: {
+        new: newCases,
+        acknowledged: acknowledgedCases,
+        inProgress: inProgressCases,
+        resolved: resolvedCases
+      }
+
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      message: error.message
+    });
+
+  }
+
+});
+
+//CASES BY CATEGORY
+
+router.get('/category', verifyAdmin, async (req, res) => {
+
+  try {
+
+    const categoryData = await CrimeReport.aggregate([
+      {
+        $group: {
+          _id: "$crimeCategory",
+          count: {
+            $sum: 1
+          }
+        }
+      },
+
+      {
+        $sort: {
+          count: -1
+        }
+      }
+    ]);
+
+    return res.status(200).json({
+      categoryData: categoryData
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      message: error.message
+    });
+
+  }
+
+});
+
+//MONTHLY CASE STATISTICS
+
+router.get('/monthly', verifyAdmin, async (req, res) => {
+
+  try {
+
+    const monthlyData = await CrimeReport.aggregate([
+      {
+        $group: {
+          _id: {
+            year: {
+              $year: "$reportDateTime"
+            },
+
+            month: {
+              $month: "$reportDateTime"
+            }
+          },
+
+          count: {
+            $sum: 1
+          }
+        }
+      },
+
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1
+        }
+      }
+    ]);
+
+    return res.status(200).json({
+      monthlyData: monthlyData
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      message: error.message
+    });
+
+  }
+
+});
+
+module.exports = router;

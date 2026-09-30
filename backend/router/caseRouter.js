@@ -2,6 +2,7 @@ const express = require('express');
 const CrimeReport = require('../models/crimeReport');
 const jwt = require('jsonwebtoken');
 const StatusHistory = require('../models/statusHistory');
+const AdminNotification = require('../models/adminNotification');
 const PDFDocument = require("pdfkit");
 
 const router = express.Router()
@@ -135,6 +136,14 @@ router.post('/report', verifyToken, async (req, res) => {
     });
 
     await newCrimeReport.save();
+
+    await AdminNotification.create({
+  userId: newCrimeReport.userId,
+  caseId: newCrimeReport._id,
+  message: `New crime report received. Case ID: ${newCrimeReport.caseId}.`,
+  isRead: false,
+  createdDateTime: new Date()
+});
 
     await StatusHistory.create({
       caseId: newCrimeReport._id,
