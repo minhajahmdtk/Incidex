@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const crimeReportSchema = new mongoose.Schema(
-  {
+  {   
     caseId: {
       type: String,
       required: true,

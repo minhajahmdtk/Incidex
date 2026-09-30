@@ -2,6 +2,8 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/admin');
+const User=require('../models/user');
+const CrimeReport=require('../models/crimeReport');
 const router = express.Router();
 
 //VERIFY ADMIN TOKEN
@@ -33,8 +35,6 @@ function verifyAdmin(req,res,next){
     })
   }
 }
-
-
 
 
 //ADMIN LOGIN
@@ -118,41 +118,113 @@ router.post('/login', async (req, res) => {
 });
 
 
-//VIEW ALL CASES
+//VIEW ALL USERS
 
-router.get('/',verifyAdmin,async(req,res)=>{
-  try{
-    const users=await Users.find()
+router.get('/users', verifyAdmin, async (req, res) => {
+
+  try {
+
+    const users = await User.find()
       .select('-password')
-      .sort({createdAt:-1});
+      .sort({ createdAt: -1 });
+
     return res.status(200).json({
-      users:users,
-    })
-  }catch(error){
-    return res.status(401).json({
-      message:error.message,
+      users: users,
     });
+
+  } catch (error) {
+    return res.status(400).json({
+      message: error.message,
+    });
+
   }
-})
+});
 
 //VIEW SINGLE USER
 
-router.get('/users/:id',verifyAdmin,async(req,res)=>{
-  try{
-    const user=await User.findById(req.params.id).select('-password');
-    if(!user){
-      return res.status(401).json({
-        message:'User not found'
+router.get('/users/:id', verifyAdmin, async (req, res) => {
+
+  try {
+
+    const user = await User.findById(req.params.id)
+      .select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
       });
     }
+
     return res.status(200).json({
-      user:user,
+      user: user,
     });
-  }catch(error){
+
+  } catch (error) {
+
     return res.status(400).json({
-      message:error.message
-    })
+      message: error.message,
+    });
+
   }
+
 });
+
+//VIEW ALL CRIME CASES
+
+router.get('/cases', verifyAdmin, async (req, res) => {
+
+  try {
+
+    const cases = await CrimeReport.find()
+      .populate('userId', 'name phone')
+      .sort({ reportDateTime: -1 });
+
+    return res.status(200).json({
+      cases: cases,
+    });
+
+  } catch (error) {
+
+    return res.status(400).json({
+      message: error.message,
+    });
+
+  }
+
+});
+
+//VIEW SINGLE CASE
+
+router.get('/cases/:id', verifyAdmin, async (req, res) => {
+
+  try {
+
+    const Report = await CrimeReport.findOne({
+      caseId: req.params.id,
+    }).populate(
+      'userId',
+      'name email phone'
+    );
+
+    if (!Report) {
+      return res.status(404).json({
+        message: 'Case not found',
+      });
+    }
+
+    return res.status(200).json({
+      case: Report,
+    });
+
+  } catch (error) {
+
+    return res.status(400).json({
+      message: error.message,
+    });
+
+  }
+
+});
+
 
 module.exports=router

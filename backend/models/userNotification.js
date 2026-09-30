@@ -36,7 +36,4 @@ const userNotificationSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model(
-  "UserNotification",
-  userNotificationSchema
-);
+module.exports = mongoose.model("UserNotification",userNotificationSchema);

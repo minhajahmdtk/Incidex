@@ -321,7 +321,7 @@ router.get('/pdf/:id', verifyToken, async (req, res) => {
     const Report = await CrimeReport.findOne({
       caseId: req.params.id,
       userId: req.user.id,
-    });
+    }).populate('userId','name email phone');
 
     if (!Report) {
       return res.status(404).json({
@@ -366,6 +366,11 @@ router.get('/pdf/:id', verifyToken, async (req, res) => {
     doc.moveDown(2);
 
     doc.fontSize(12);
+    doc.text(`Name: ${Report.userId.name}`);
+
+    doc.text(`Email: ${Report.userId.email}`);
+
+    doc.text(`Phone Number: ${Report.userId.phone}`);
 
     doc.text(`Case ID: ${Report.caseId}`);
 
@@ -380,6 +385,8 @@ router.get('/pdf/:id', verifyToken, async (req, res) => {
     );
 
     doc.text(`Current Status: ${Report.currentStatus}`);
+
+
 
     doc.moveDown();
 
