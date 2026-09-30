@@ -17,6 +17,7 @@ const userRouter=require('./router/userRouter');
 //Admin routes
 
 const adminRouter=require('./router/adminRouter');
+const adminAuthRouter=require('./router/adminAuthRouter');
 
 //case Routes
 
@@ -61,6 +62,7 @@ server.use('/user',userRouter);
 //Mount admin route
 
 server.use('/admin',adminRouter);
+server.use('/admin',adminAuthRouter);
 
 
 //Mount case route
