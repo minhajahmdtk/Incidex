@@ -100,6 +100,17 @@ router.post('/register', async (req, res) => {
       });
     }
 
+    // Check phone
+const phoneExist = await User.findOne({
+  phone: phone.trim(),
+});
+
+if (phoneExist) {
+  return res.status(400).json({
+    message: "Phone number already exists",
+  });
+}
+
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({

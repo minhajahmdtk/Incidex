@@ -2,12 +2,15 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
+    name: "",
     email: "",
+    phone: "",
     password: "",
+    confirmPassword: "",
   });
 
   const [error, setError] = useState("");
@@ -20,6 +23,7 @@ const Login = () => {
       [name]: value,
     }));
 
+    // Remove error when user starts correcting the form
     setError("");
   };
 
@@ -28,63 +32,25 @@ const Login = () => {
 
     setError("");
 
-    // Email validation
-    if (!form.email.trim()) {
-      setError("Email is required");
-      return;
-    }
-
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailPattern.test(form.email.trim())) {
-      setError("Please enter a valid email address");
-      return;
-    }
-
-    // Password validation
-    if (!form.password) {
-      setError("Password is required");
-      return;
-    }
-
     axios
-      .post("http://localhost:3000/user/login", {
-        email: form.email,
-        password: form.password,
-      })
+      .post("http://localhost:3000/user/register", form)
       .then((response) => {
-        if (response.data.token) {
-          localStorage.setItem(
-            "loginToken",
-            response.data.token
-          );
-        }
+        alert("Registration Successful");
 
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("role", "user");
+        console.log(
+          "Registration Successful",
+          response.data
+        );
 
-        if (response.data.user) {
-          localStorage.setItem(
-            "userInfo",
-            JSON.stringify(response.data.user)
-          );
-        }
-
-        alert("Login Successful");
-
-        navigate("/user/dashboard");
+        navigate("/login");
       })
       .catch((error) => {
-        if (error.response && error.response.data) {
-          setError(
-            error.response.data.message ||
-              "Login failed"
-          );
-        } else {
-          setError(
-            "Cannot connect to the backend server."
-          );
-        }
+        setError(
+          error.response?.data?.message ||
+            "Registration failed"
+        );
+
+        console.error("Registration Error:", error);
       });
   };
 
@@ -94,14 +60,30 @@ const Login = () => {
         className="w-full max-w-md bg-white p-8 rounded-xl shadow-sm border border-slate-200"
         onSubmit={handleSubmit}
       >
-        {/* Heading */}
         <h2 className="text-2xl font-bold text-slate-900 mb-2">
-          Welcome Back
+          Create Account
         </h2>
 
         <p className="text-sm text-slate-500 mb-6">
-          Login to your INCIDEX account.
+          Register to report and track crime incidents.
         </p>
+
+        {/* Name */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Name
+          </label>
+
+          <input
+            className="w-full border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-blue-600"
+            type="text"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="Enter your name"
+            required
+          />
+        </div>
 
         {/* Email */}
         <div className="mb-4">
@@ -116,6 +98,24 @@ const Login = () => {
             value={form.email}
             onChange={handleChange}
             placeholder="Enter your email"
+            required
+          />
+        </div>
+
+        {/* Phone */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Phone Number
+          </label>
+
+          <input
+            className="w-full border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-blue-600"
+            type="tel"
+            name="phone"
+            value={form.phone}
+            onChange={handleChange}
+            placeholder="Enter your phone number"
+            required
           />
         </div>
 
@@ -132,6 +132,24 @@ const Login = () => {
             value={form.password}
             onChange={handleChange}
             placeholder="Enter your password"
+            required
+          />
+        </div>
+
+        {/* Confirm Password */}
+        <div className="mb-5">
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Confirm Password
+          </label>
+
+          <input
+            className="w-full border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-blue-600"
+            type="password"
+            name="confirmPassword"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            placeholder="Confirm your password"
+            required
           />
         </div>
 
@@ -142,22 +160,22 @@ const Login = () => {
           </div>
         )}
 
-        {/* Login Button */}
+        {/* Register Button */}
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition"
         >
-          Login
+          Register
         </button>
 
-        {/* Register Link */}
+        {/* Login Link */}
         <p className="text-sm text-center text-slate-600 mt-5">
-          New user?{" "}
+          Already have an account?{" "}
           <Link
-            to="/register"
+            to="/login"
             className="text-blue-600 font-medium hover:underline"
           >
-            Register here
+            Login
           </Link>
         </p>
       </form>
@@ -165,4 +183,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
