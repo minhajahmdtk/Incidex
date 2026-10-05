@@ -62,7 +62,9 @@ function Home() {
   ];
 
   return (
-    <Navbar>
+    <>
+      <Navbar />
+
       <main>
         {/* Hero */}
         <section
@@ -153,6 +155,7 @@ function Home() {
                           <p className="text-xs text-slate-400">
                             Category
                           </p>
+
                           <p className="mt-1 font-medium">
                             Theft
                           </p>
@@ -168,6 +171,7 @@ function Home() {
                           <p className="text-xs text-slate-400">
                             Incident Location
                           </p>
+
                           <p className="mt-1 font-medium">
                             Reported Location
                           </p>
@@ -406,7 +410,7 @@ function Home() {
           </div>
         </footer>
       </main>
-    </Navbar>
+    </>
   );
 }
 

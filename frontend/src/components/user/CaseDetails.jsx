@@ -8,6 +8,8 @@ import {
   CheckCircle,
   AlertCircle,
   Calendar,
+  MessageSquare,
+  Download,
 } from "lucide-react";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { toast } from "sonner";
@@ -56,6 +58,43 @@ const CaseDetails = () => {
 
     getCaseDetails();
   }, [id]);
+
+  // Download final PDF report
+  const downloadPdf = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `/cases/pdf/${caseData.caseId}`,
+        {
+          responseType: "blob",
+        }
+      );
+
+      const pdfBlob = new Blob([response.data], {
+        type: "application/pdf",
+      });
+
+      const pdfUrl = window.URL.createObjectURL(pdfBlob);
+
+      const link = document.createElement("a");
+
+      link.href = pdfUrl;
+      link.download = `${caseData.caseId}-final-report.pdf`;
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      window.URL.revokeObjectURL(pdfUrl);
+
+      toast.success("Final report downloaded successfully");
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        "Failed to download final report";
+
+      toast.error(message);
+    }
+  };
 
   // Status badge style
   const getStatusStyle = (status) => {
@@ -173,7 +212,8 @@ const CaseDetails = () => {
               Back to My Cases
             </button>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">
                   Case Details
@@ -184,20 +224,55 @@ const CaseDetails = () => {
                 </p>
               </div>
 
-              <div
-                className={`inline-flex w-fit items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium ${getStatusStyle(
-                  caseData.currentStatus
-                )}`}
-              >
-                {getStatusIcon(caseData.currentStatus)}
-                {caseData.currentStatus}
+              <div className="flex flex-wrap items-center gap-3">
+
+                {/* Download Final Report */}
+                {caseData.currentStatus === "Resolved" && (
+                  <button
+                    type="button"
+                    onClick={downloadPdf}
+                    className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-green-700"
+                  >
+                    <Download size={17} />
+                    Download Final Report
+                  </button>
+                )}
+
+                {/* Give Feedback Button */}
+                {caseData.currentStatus === "Resolved" && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      navigate(
+                        `/user/feedback/${caseData.caseId}`
+                      )
+                    }
+                    className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
+                  >
+                    <MessageSquare size={17} />
+                    Give Feedback
+                  </button>
+                )}
+
+                {/* Status */}
+                <div
+                  className={`inline-flex w-fit items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium ${getStatusStyle(
+                    caseData.currentStatus
+                  )}`}
+                >
+                  {getStatusIcon(caseData.currentStatus)}
+                  {caseData.currentStatus}
+                </div>
+
               </div>
             </div>
           </div>
 
           {/* Case Information */}
           <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
             <div className="mb-5 flex items-center gap-3">
+
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50">
                 <FileText
                   size={20}
@@ -214,6 +289,7 @@ const CaseDetails = () => {
                   Incident report details
                 </p>
               </div>
+
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
@@ -247,7 +323,10 @@ const CaseDetails = () => {
                 </p>
 
                 <div className="mt-1 flex items-center gap-2 text-sm text-slate-700">
-                  <Calendar size={16} className="text-slate-400" />
+                  <Calendar
+                    size={16}
+                    className="text-slate-400"
+                  />
                   {formatDate(caseData.reportDateTime)}
                 </div>
               </div>
@@ -280,6 +359,7 @@ const CaseDetails = () => {
                   {caseData.incidentDescription}
                 </p>
               </div>
+
             </div>
           </div>
 
@@ -289,6 +369,7 @@ const CaseDetails = () => {
             caseData.longitude !== null &&
             caseData.longitude !== undefined && (
               <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
                 <div className="mb-4">
                   <h2 className="text-lg font-semibold text-slate-900">
                     Incident Location
@@ -300,6 +381,7 @@ const CaseDetails = () => {
                 </div>
 
                 <div className="overflow-hidden rounded-xl border border-slate-200">
+
                   <MapContainer
                     center={[
                       caseData.latitude,
@@ -321,12 +403,14 @@ const CaseDetails = () => {
                       ]}
                     />
                   </MapContainer>
+
                 </div>
               </div>
             )}
 
           {/* Status History */}
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
             <div className="mb-6">
               <h2 className="text-lg font-semibold text-slate-900">
                 Status History
@@ -345,13 +429,16 @@ const CaseDetails = () => {
               </div>
             ) : (
               <div className="space-y-5">
+
                 {history.map((item, index) => (
                   <div
                     key={item._id || `${item.status}-${index}`}
                     className="flex gap-4"
                   >
+
                     {/* Timeline Icon */}
                     <div className="flex flex-col items-center">
+
                       <div
                         className={`flex h-10 w-10 items-center justify-center rounded-full border ${getStatusStyle(
                           item.status
@@ -363,10 +450,12 @@ const CaseDetails = () => {
                       {index !== history.length - 1 && (
                         <div className="mt-2 h-full min-h-8 w-px bg-slate-200" />
                       )}
+
                     </div>
 
                     {/* Timeline Content */}
                     <div className="pb-2">
+
                       <p className="text-sm font-semibold text-slate-900">
                         {item.status}
                       </p>
@@ -374,11 +463,15 @@ const CaseDetails = () => {
                       <p className="mt-1 text-xs text-slate-500">
                         {formatDate(item.updatedDateTime)}
                       </p>
+
                     </div>
+
                   </div>
                 ))}
+
               </div>
             )}
+
           </div>
 
         </div>

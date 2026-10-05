@@ -14,7 +14,7 @@ import ReportCrime from "./components/user/ReportCrime";
 import MyCases from "./components/user/MyCases";
 import CaseDetails from "./components/user/CaseDetails";
 import Notifications from "./components/user/Notifications";
-import CrimeHistory from "./components/user/CrimeHistory";
+import StatusHistory from "./components/user/StatusHistory";
 import Feedback from "./components/user/Feedback";
 
 import AdminLogin from "./components/admin/AdminLogin";
@@ -108,7 +108,7 @@ function App() {
           path="/user/history"
           element={
             <ProtectedRoutes>
-              <CrimeHistory />
+              <StatusHistory />
             </ProtectedRoutes>
           }
         />

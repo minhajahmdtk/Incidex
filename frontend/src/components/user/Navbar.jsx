@@ -150,7 +150,7 @@ const Navbar = () => {
       icon: FolderOpen,
     },
     {
-      name: "Crime History",
+      name: "Status History",
       path: "/user/history",
       icon: History,
     },
