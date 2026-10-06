@@ -25,7 +25,6 @@ import AdminUsers from "./components/admin/AdminUsers";
 import AdminCases from "./components/admin/AdminCases";
 import AdminCaseDetails from "./components/admin/AdminCaseDetails";
 import AdminNotifications from "./components/admin/AdminNotifications";
-import AdminHistory from "./components/admin/AdminHistory";
 import AdminFeedback from "./components/admin/AdminFeedback";
 
 
@@ -231,14 +230,7 @@ function App() {
           }
         />
 
-        <Route
-          path="/admin/history"
-          element={
-            <AdminProtectedRoutes>
-              <AdminHistory />
-            </AdminProtectedRoutes>
-          }
-        />
+       
 
         <Route
           path="/admin/feedback"

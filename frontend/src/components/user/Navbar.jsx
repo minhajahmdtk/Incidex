@@ -13,7 +13,6 @@ import {
   FilePlus,
   FolderOpen,
   Bell,
-  History,
   User,
   LogOut,
   ShieldCheck,
@@ -47,8 +46,8 @@ const Navbar = () => {
   const user = getStoredUser();
 
   /*
-    Show the sidebar only on user pages.
-    This prevents the sidebar from appearing on public pages.
+    Check whether the current page
+    belongs to the logged-in user.
   */
   const isUserPage = location.pathname.startsWith("/user");
 
@@ -103,6 +102,9 @@ const Navbar = () => {
     getNotifications();
   }, [isLoggedIn, navigate]);
 
+  /*
+    Logout
+  */
   const handleLogout = () => {
     localStorage.removeItem("loginToken");
     localStorage.removeItem("role");
@@ -116,10 +118,16 @@ const Navbar = () => {
     navigate("/login");
   };
 
+  /*
+    Theme toggle
+  */
   const toggleDarkMode = () => {
     setDarkMode((prev) => !prev);
   };
 
+  /*
+    Public navigation
+  */
   const publicNavLinks = [
     {
       name: "Home",
@@ -139,7 +147,10 @@ const Navbar = () => {
     },
   ];
 
-  const sidebarLinks = [
+  /*
+    Logged-in user navigation
+  */
+  const userNavLinks = [
     {
       name: "Dashboard",
       path: "/user/dashboard",
@@ -156,11 +167,6 @@ const Navbar = () => {
       icon: FolderOpen,
     },
     {
-      name: "Status History",
-      path: "/user/history",
-      icon: History,
-    },
-    {
       name: "Notifications",
       path: "/user/notifications",
       icon: Bell,
@@ -168,22 +174,27 @@ const Navbar = () => {
   ];
 
   /*
-    PUBLIC NAVBAR
+    ============================================================
+    LOGGED-IN USER TOP NAVBAR
+    ============================================================
   */
 
-  if (!isLoggedIn) {
+  if (isLoggedIn) {
     return (
       <div className="w-full bg-slate-50">
+
         <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-xl">
 
-          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          {/* Centered Navbar Container */}
+          <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
             {/* Logo */}
             <Link
-              to="/"
+              to="/user/dashboard"
               onClick={closeMobileMenu}
-              className="flex items-center gap-3"
+              className="flex shrink-0 items-center gap-3"
             >
+
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
                 <ShieldCheck size={22} />
               </div>
@@ -197,24 +208,69 @@ const Navbar = () => {
                   Report. Track. Resolve.
                 </p>
               </div>
+
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden items-center gap-7 md:flex">
-              {publicNavLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  onClick={closeMobileMenu}
-                  className="text-sm font-medium text-slate-600 transition hover:text-blue-600"
-                >
-                  {link.name}
-                </Link>
-              ))}
+            <div className="hidden items-center gap-1 lg:flex">
+
+              {userNavLinks.map((link) => {
+                const Icon = link.icon;
+
+                const isActive =
+                  location.pathname === link.path ||
+                  (
+                    link.path === "/user/cases" &&
+                    location.pathname.startsWith("/user/cases/")
+                  );
+
+                return (
+                  <NavLink
+                    key={link.name}
+                    to={link.path}
+                    className={`
+                      flex items-center gap-2 rounded-xl
+                      px-3 py-2.5 text-sm font-medium
+                      transition
+                      ${
+                        isActive
+                          ? "bg-blue-50 text-blue-700"
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      }
+                    `}
+                  >
+
+                    <Icon
+                      size={18}
+                      className={
+                        isActive
+                          ? "text-blue-600"
+                          : "text-slate-500"
+                      }
+                    />
+
+                    <span>
+                      {link.name}
+                    </span>
+
+                    {/* Notification Count */}
+                    {link.name === "Notifications" &&
+                      notificationCount > 0 && (
+                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white">
+                          {notificationCount > 99
+                            ? "99+"
+                            : notificationCount}
+                        </span>
+                      )}
+
+                  </NavLink>
+                );
+              })}
+
             </div>
 
-            {/* Desktop Actions */}
-            <div className="hidden items-center gap-3 md:flex">
+            {/* Desktop Right Section */}
+            <div className="hidden items-center gap-2 lg:flex">
 
               {/* Theme */}
               <button
@@ -231,31 +287,50 @@ const Navbar = () => {
                 )}
               </button>
 
-              {/* Login */}
+              {/* Profile */}
               <Link
-                to="/login"
-                onClick={closeMobileMenu}
-                className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                to="/user/profile"
+                className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition hover:bg-slate-50"
               >
-                Login
+
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-700">
+                  {user?.name
+                    ? user.name.charAt(0).toUpperCase()
+                    : "U"}
+                </div>
+
+                <div className="hidden xl:block">
+                  <p className="max-w-28 truncate text-xs font-semibold text-slate-900">
+                    {user?.name || "User"}
+                  </p>
+
+                  <p className="text-[11px] text-slate-500">
+                    Profile
+                  </p>
+                </div>
+
               </Link>
 
-              {/* Register */}
-              <Link
-                to="/register"
-                onClick={closeMobileMenu}
-                className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+              {/* Logout */}
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-lg p-2 text-slate-600 transition hover:bg-red-50 hover:text-red-600"
+                title="Logout"
+                aria-label="Logout"
               >
-                Register
-              </Link>
+                <LogOut size={19} />
+              </button>
 
             </div>
 
             {/* Mobile Menu Button */}
             <button
               type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="rounded-lg p-2 text-slate-700 md:hidden"
+              onClick={() =>
+                setMobileMenuOpen(!mobileMenuOpen)
+              }
+              className="rounded-lg p-2 text-slate-700 transition hover:bg-slate-100 lg:hidden"
               aria-label="Open menu"
             >
               {mobileMenuOpen ? (
@@ -267,174 +342,96 @@ const Navbar = () => {
 
           </div>
 
-          {/* Mobile Public Menu */}
+          {/* Mobile Logged-in Menu */}
           {mobileMenuOpen && (
-            <div className="border-t border-slate-200 bg-white px-4 py-5 md:hidden">
+            <div className="border-t border-slate-200 bg-white px-4 py-4 lg:hidden">
 
-              <div className="flex flex-col gap-2">
+              {/* User Information */}
+              <div className="mb-3 flex items-center gap-3 rounded-xl bg-slate-50 p-3">
 
-                {publicNavLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    to={link.path}
-                    onClick={closeMobileMenu}
-                    className="rounded-lg px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100"
-                  >
-                    {link.name}
-                  </Link>
-                ))}
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-700">
+                  {user?.name
+                    ? user.name.charAt(0).toUpperCase()
+                    : "U"}
+                </div>
 
-                <div className="mt-3 border-t border-slate-200 pt-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-slate-900">
+                    {user?.name || "User"}
+                  </p>
 
-                  <Link
-                    to="/login"
-                    onClick={closeMobileMenu}
-                    className="block rounded-lg px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100"
-                  >
-                    Login
-                  </Link>
-
-                  <Link
-                    to="/register"
-                    onClick={closeMobileMenu}
-                    className="mt-2 block rounded-lg bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-blue-700"
-                  >
-                    Register
-                  </Link>
-
+                  <p className="truncate text-xs text-slate-500">
+                    {user?.email || "User account"}
+                  </p>
                 </div>
 
               </div>
 
-            </div>
-          )}
+              {/* Mobile Navigation */}
+              <div className="space-y-1">
 
-        </nav>
-      </div>
-    );
-  }
+                {userNavLinks.map((link) => {
+                  const Icon = link.icon;
 
-  /*
-    LOGGED-IN USER SIDEBAR
-  */
+                  const isActive =
+                    location.pathname === link.path ||
+                    (
+                      link.path === "/user/cases" &&
+                      location.pathname.startsWith("/user/cases/")
+                    );
 
-  return (
-    <div className="w-full bg-slate-50">
+                  return (
+                    <NavLink
+                      key={link.name}
+                      to={link.path}
+                      onClick={closeMobileMenu}
+                      className={`
+                        flex items-center gap-3 rounded-xl
+                        px-3 py-3 text-sm font-medium
+                        transition
+                        ${
+                          isActive
+                            ? "bg-blue-50 text-blue-700"
+                            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                        }
+                      `}
+                    >
 
-      {/* Mobile Overlay */}
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-slate-900/40 lg:hidden"
-          onClick={closeMobileMenu}
-        />
-      )}
+                      <Icon
+                        size={19}
+                        className={
+                          isActive
+                            ? "text-blue-600"
+                            : "text-slate-500"
+                        }
+                      />
 
-      {/* Sidebar */}
-      <aside
-        className={`
-          fixed left-0 top-0 z-50 flex h-screen w-72 flex-col
-          border-r border-slate-200 bg-white
-          transition-transform duration-300
-          lg:translate-x-0
-          ${
-            mobileMenuOpen
-              ? "translate-x-0"
-              : "-translate-x-full"
-          }
-        `}
-      >
+                      <span className="flex-1">
+                        {link.name}
+                      </span>
 
-        {/* Sidebar Header */}
-        <div className="flex h-20 items-center justify-between border-b border-slate-200 px-5">
+                      {/* Notification Count */}
+                      {link.name === "Notifications" &&
+                        notificationCount > 0 && (
+                          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white">
+                            {notificationCount > 99
+                              ? "99+"
+                              : notificationCount}
+                          </span>
+                        )}
 
-          <Link
-            to="/user/dashboard"
-            onClick={closeMobileMenu}
-            className="flex items-center gap-3"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white">
-              <ShieldCheck size={22} />
-            </div>
+                    </NavLink>
+                  );
+                })}
 
-            <div>
-              <h1 className="text-lg font-bold tracking-tight text-slate-900">
-                INCIDEX
-              </h1>
-
-              <p className="text-xs text-slate-500">
-                Report. Track. Resolve.
-              </p>
-            </div>
-          </Link>
-
-          {/* Mobile Close */}
-          <button
-            type="button"
-            onClick={closeMobileMenu}
-            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden"
-            aria-label="Close menu"
-          >
-            <X size={20} />
-          </button>
-
-        </div>
-
-        {/* User Information */}
-        <div className="border-b border-slate-200 p-4">
-
-          <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-3">
-
-            {/* User Avatar */}
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-700">
-              {user?.name
-                ? user.name.charAt(0).toUpperCase()
-                : "U"}
-            </div>
-
-            {/* User Details */}
-            <div className="min-w-0">
-
-              <p className="truncate text-sm font-semibold text-slate-900">
-                {user?.name || "User"}
-              </p>
-
-              <p className="truncate text-xs text-slate-500">
-                {user?.email || "User account"}
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 py-5">
-
-          <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
-            Main Menu
-          </p>
-
-          <div className="space-y-1">
-
-            {sidebarLinks.map((link) => {
-              const Icon = link.icon;
-
-              const isActive =
-                location.pathname === link.path ||
-                (
-                  link.path === "/user/cases" &&
-                  location.pathname.startsWith("/user/cases/")
-                );
-
-              return (
+                {/* Profile */}
                 <NavLink
-                  key={link.name}
-                  to={link.path}
+                  to="/user/profile"
                   onClick={closeMobileMenu}
-                  className={`
-                    flex items-center gap-3 rounded-xl px-3 py-3
-                    text-sm font-medium transition
+                  className={({ isActive }) => `
+                    flex items-center gap-3 rounded-xl
+                    px-3 py-3 text-sm font-medium
+                    transition
                     ${
                       isActive
                         ? "bg-blue-50 text-blue-700"
@@ -443,136 +440,225 @@ const Navbar = () => {
                   `}
                 >
 
-                  <Icon
+                  <User
                     size={19}
-                    className={
-                      isActive
-                        ? "text-blue-600"
-                        : "text-slate-500"
-                    }
+                    className="text-slate-500"
                   />
 
-                  <span className="flex-1">
-                    {link.name}
+                  <span>
+                    Profile
                   </span>
 
-                  {/* Notification Count */}
-                  {link.name === "Notifications" &&
-                    notificationCount > 0 && (
-                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white">
-                        {notificationCount > 99
-                          ? "99+"
-                          : notificationCount}
-                      </span>
-                    )}
-
                 </NavLink>
-              );
-            })}
 
-          </div>
+              </div>
 
-          {/* Account */}
-          <p className="mb-3 mt-8 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
-            Account
-          </p>
+              {/* Mobile Actions */}
+              <div className="mt-3 border-t border-slate-200 pt-3">
 
-          <NavLink
-            to="/user/profile"
-            onClick={closeMobileMenu}
-            className={({ isActive }) => `
-              flex items-center gap-3 rounded-xl px-3 py-3
-              text-sm font-medium transition
-              ${
-                isActive
-                  ? "bg-blue-50 text-blue-700"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-              }
-            `}
-          >
-            <User size={19} />
+                {/* Theme */}
+                <button
+                  type="button"
+                  onClick={toggleDarkMode}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                >
 
-            <span>
-              Profile
-            </span>
+                  {darkMode ? (
+                    <Sun size={19} />
+                  ) : (
+                    <Moon size={19} />
+                  )}
 
-          </NavLink>
+                  <span>
+                    {darkMode
+                      ? "Light Mode"
+                      : "Dark Mode"}
+                  </span>
+
+                </button>
+
+                {/* Logout */}
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-red-600 transition hover:bg-red-50"
+                >
+
+                  <LogOut size={19} />
+
+                  <span>
+                    Logout
+                  </span>
+
+                </button>
+
+              </div>
+
+            </div>
+          )}
 
         </nav>
 
-        {/* Sidebar Bottom */}
-        <div className="border-t border-slate-200 p-4">
+      </div>
+    );
+  }
 
-          {/* Theme */}
-          <button
-            type="button"
-            onClick={toggleDarkMode}
-            className="mb-2 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+  /*
+    ============================================================
+    PUBLIC TOP NAVBAR
+    ============================================================
+  */
+
+  return (
+    <div className="w-full bg-slate-50">
+
+      <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-xl">
+
+        {/* Centered Navbar Container */}
+        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+
+          {/* Logo */}
+          <Link
+            to="/"
+            onClick={closeMobileMenu}
+            className="flex items-center gap-3"
           >
 
-            {darkMode ? (
-              <Sun size={19} />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
+              <ShieldCheck size={22} />
+            </div>
+
+            <div>
+              <h1 className="text-lg font-bold tracking-tight text-slate-900">
+                INCIDEX
+              </h1>
+
+              <p className="hidden text-xs text-slate-500 sm:block">
+                Report. Track. Resolve.
+              </p>
+            </div>
+
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden items-center gap-7 md:flex">
+
+            {publicNavLinks.map((link) => (
+              <Link
+                key={link.name}
+                to={link.path}
+                onClick={closeMobileMenu}
+                className="text-sm font-medium text-slate-600 transition hover:text-blue-600"
+              >
+                {link.name}
+              </Link>
+            ))}
+
+          </div>
+
+          {/* Desktop Actions */}
+          <div className="hidden items-center gap-3 md:flex">
+
+            {/* Theme */}
+            <button
+              type="button"
+              onClick={toggleDarkMode}
+              className="rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+              title="Toggle theme"
+              aria-label="Toggle theme"
+            >
+              {darkMode ? (
+                <Sun size={19} />
+              ) : (
+                <Moon size={19} />
+              )}
+            </button>
+
+            {/* Login */}
+            <Link
+              to="/login"
+              onClick={closeMobileMenu}
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+            >
+              Login
+            </Link>
+
+            {/* Register */}
+            <Link
+              to="/register"
+              onClick={closeMobileMenu}
+              className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+            >
+              Register
+            </Link>
+
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            type="button"
+            onClick={() =>
+              setMobileMenuOpen(!mobileMenuOpen)
+            }
+            className="rounded-lg p-2 text-slate-700 md:hidden"
+            aria-label="Open menu"
+          >
+            {mobileMenuOpen ? (
+              <X size={24} />
             ) : (
-              <Moon size={19} />
+              <Menu size={24} />
             )}
-
-            <span>
-              {darkMode ? "Light Mode" : "Dark Mode"}
-            </span>
-
-          </button>
-
-          {/* Logout */}
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-red-600 transition hover:bg-red-50"
-          >
-
-            <LogOut size={19} />
-
-            <span>
-              Logout
-            </span>
-
           </button>
 
         </div>
 
-      </aside>
+        {/* Mobile Public Menu */}
+        {mobileMenuOpen && (
+          <div className="border-t border-slate-200 bg-white px-4 py-5 md:hidden">
 
-      {/* Mobile Top Bar */}
-      <div className="sticky top-0 z-30 flex h-16 items-center border-b border-slate-200 bg-white px-4 lg:hidden">
+            <div className="flex flex-col gap-2">
 
-        <button
-          type="button"
-          onClick={() => setMobileMenuOpen(true)}
-          className="rounded-lg p-2 text-slate-700 hover:bg-slate-100"
-          aria-label="Open sidebar"
-        >
-          <Menu size={24} />
-        </button>
+              {publicNavLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  onClick={closeMobileMenu}
+                  className="rounded-lg px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100"
+                >
+                  {link.name}
+                </Link>
+              ))}
 
-        <Link
-          to="/user/dashboard"
-          onClick={closeMobileMenu}
-          className="ml-3 flex items-center gap-2"
-        >
+              <div className="mt-3 border-t border-slate-200 pt-3">
 
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
-            <ShieldCheck size={18} />
+                <Link
+                  to="/login"
+                  onClick={closeMobileMenu}
+                  className="block rounded-lg px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                >
+                  Login
+                </Link>
+
+                <Link
+                  to="/register"
+                  onClick={closeMobileMenu}
+                  className="mt-2 block rounded-lg bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-blue-700"
+                >
+                  Register
+                </Link>
+
+              </div>
+
+            </div>
+
           </div>
+        )}
 
-          <span className="font-bold text-slate-900">
-            INCIDEX
-          </span>
-
-        </Link>
-
-      </div>
+      </nav>
 
     </div>
   );
 };
 
 export default Navbar;
+
