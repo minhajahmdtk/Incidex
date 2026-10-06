@@ -39,7 +39,6 @@ const Navbar = () => {
   const location = useLocation();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
   const [darkMode, setDarkMode] = useState(false);
 
@@ -47,18 +46,25 @@ const Navbar = () => {
   const role = localStorage.getItem("role");
   const user = getStoredUser();
 
-  const isLoggedIn = Boolean(token && role === "user");
+  /*
+    Show the sidebar only on user pages.
+    This prevents the sidebar from appearing on public pages.
+  */
+  const isUserPage = location.pathname.startsWith("/user");
 
-  const handleUnauthorized = () => {
-    localStorage.removeItem("loginToken");
-    localStorage.removeItem("role");
-    localStorage.removeItem("userInfo");
+  const isLoggedIn = Boolean(
+    token &&
+    role === "user" &&
+    isUserPage
+  );
 
-    toast.error("Session expired. Please login again.");
-
-    navigate("/login");
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
   };
 
+  /*
+    Get unread notifications
+  */
   useEffect(() => {
     const getNotifications = async () => {
       if (!isLoggedIn) {
@@ -83,25 +89,25 @@ const Navbar = () => {
         setNotificationCount(unreadCount);
       } catch (error) {
         if (error.response?.status === 401) {
-          handleUnauthorized();
+          localStorage.removeItem("loginToken");
+          localStorage.removeItem("role");
+          localStorage.removeItem("userInfo");
+
+          toast.error("Session expired. Please login again.");
+
+          navigate("/login");
         }
       }
     };
 
     getNotifications();
-  }, [isLoggedIn, location.pathname]);
-
-  useEffect(() => {
-    setMobileMenuOpen(false);
-    setProfileMenuOpen(false);
-  }, [location.pathname]);
+  }, [isLoggedIn, navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("loginToken");
     localStorage.removeItem("role");
     localStorage.removeItem("userInfo");
 
-    setProfileMenuOpen(false);
     setMobileMenuOpen(false);
     setNotificationCount(0);
 
@@ -163,18 +169,19 @@ const Navbar = () => {
 
   /*
     PUBLIC NAVBAR
-    Shown only when the user is NOT logged in.
   */
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="w-full bg-slate-50">
         <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-xl">
+
           <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
             {/* Logo */}
             <Link
               to="/"
+              onClick={closeMobileMenu}
               className="flex items-center gap-3"
             >
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
@@ -198,6 +205,7 @@ const Navbar = () => {
                 <Link
                   key={link.name}
                   to={link.path}
+                  onClick={closeMobileMenu}
                   className="text-sm font-medium text-slate-600 transition hover:text-blue-600"
                 >
                   {link.name}
@@ -207,10 +215,14 @@ const Navbar = () => {
 
             {/* Desktop Actions */}
             <div className="hidden items-center gap-3 md:flex">
+
+              {/* Theme */}
               <button
+                type="button"
                 onClick={toggleDarkMode}
                 className="rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
                 title="Toggle theme"
+                aria-label="Toggle theme"
               >
                 {darkMode ? (
                   <Sun size={19} />
@@ -219,25 +231,32 @@ const Navbar = () => {
                 )}
               </button>
 
+              {/* Login */}
               <Link
                 to="/login"
+                onClick={closeMobileMenu}
                 className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
               >
                 Login
               </Link>
 
+              {/* Register */}
               <Link
                 to="/register"
+                onClick={closeMobileMenu}
                 className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
               >
                 Register
               </Link>
+
             </div>
 
             {/* Mobile Menu Button */}
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="rounded-lg p-2 text-slate-700 md:hidden"
+              aria-label="Open menu"
             >
               {mobileMenuOpen ? (
                 <X size={24} />
@@ -245,16 +264,20 @@ const Navbar = () => {
                 <Menu size={24} />
               )}
             </button>
+
           </div>
 
           {/* Mobile Public Menu */}
           {mobileMenuOpen && (
             <div className="border-t border-slate-200 bg-white px-4 py-5 md:hidden">
+
               <div className="flex flex-col gap-2">
+
                 {publicNavLinks.map((link) => (
                   <Link
                     key={link.name}
                     to={link.path}
+                    onClick={closeMobileMenu}
                     className="rounded-lg px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100"
                   >
                     {link.name}
@@ -262,8 +285,10 @@ const Navbar = () => {
                 ))}
 
                 <div className="mt-3 border-t border-slate-200 pt-3">
+
                   <Link
                     to="/login"
+                    onClick={closeMobileMenu}
                     className="block rounded-lg px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100"
                   >
                     Login
@@ -271,14 +296,19 @@ const Navbar = () => {
 
                   <Link
                     to="/register"
+                    onClick={closeMobileMenu}
                     className="mt-2 block rounded-lg bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-blue-700"
                   >
                     Register
                   </Link>
+
                 </div>
+
               </div>
+
             </div>
           )}
+
         </nav>
       </div>
     );
@@ -286,17 +316,16 @@ const Navbar = () => {
 
   /*
     LOGGED-IN USER SIDEBAR
-    No public top navbar is shown here.
   */
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="w-full bg-slate-50">
 
       {/* Mobile Overlay */}
       {mobileMenuOpen && (
         <div
           className="fixed inset-0 z-40 bg-slate-900/40 lg:hidden"
-          onClick={() => setMobileMenuOpen(false)}
+          onClick={closeMobileMenu}
         />
       )}
 
@@ -317,8 +346,10 @@ const Navbar = () => {
 
         {/* Sidebar Header */}
         <div className="flex h-20 items-center justify-between border-b border-slate-200 px-5">
+
           <Link
             to="/user/dashboard"
+            onClick={closeMobileMenu}
             className="flex items-center gap-3"
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white">
@@ -338,24 +369,31 @@ const Navbar = () => {
 
           {/* Mobile Close */}
           <button
-            onClick={() => setMobileMenuOpen(false)}
+            type="button"
+            onClick={closeMobileMenu}
             className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden"
+            aria-label="Close menu"
           >
             <X size={20} />
           </button>
+
         </div>
 
         {/* User Information */}
         <div className="border-b border-slate-200 p-4">
+
           <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-3">
 
+            {/* User Avatar */}
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-700">
               {user?.name
                 ? user.name.charAt(0).toUpperCase()
                 : "U"}
             </div>
 
+            {/* User Details */}
             <div className="min-w-0">
+
               <p className="truncate text-sm font-semibold text-slate-900">
                 {user?.name || "User"}
               </p>
@@ -363,9 +401,11 @@ const Navbar = () => {
               <p className="truncate text-xs text-slate-500">
                 {user?.email || "User account"}
               </p>
+
             </div>
 
           </div>
+
         </div>
 
         {/* Navigation */}
@@ -376,6 +416,7 @@ const Navbar = () => {
           </p>
 
           <div className="space-y-1">
+
             {sidebarLinks.map((link) => {
               const Icon = link.icon;
 
@@ -390,6 +431,7 @@ const Navbar = () => {
                 <NavLink
                   key={link.name}
                   to={link.path}
+                  onClick={closeMobileMenu}
                   className={`
                     flex items-center gap-3 rounded-xl px-3 py-3
                     text-sm font-medium transition
@@ -400,6 +442,7 @@ const Navbar = () => {
                     }
                   `}
                 >
+
                   <Icon
                     size={19}
                     className={
@@ -413,6 +456,7 @@ const Navbar = () => {
                     {link.name}
                   </span>
 
+                  {/* Notification Count */}
                   {link.name === "Notifications" &&
                     notificationCount > 0 && (
                       <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white">
@@ -421,17 +465,21 @@ const Navbar = () => {
                           : notificationCount}
                       </span>
                     )}
+
                 </NavLink>
               );
             })}
+
           </div>
 
+          {/* Account */}
           <p className="mb-3 mt-8 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
             Account
           </p>
 
           <NavLink
             to="/user/profile"
+            onClick={closeMobileMenu}
             className={({ isActive }) => `
               flex items-center gap-3 rounded-xl px-3 py-3
               text-sm font-medium transition
@@ -443,7 +491,11 @@ const Navbar = () => {
             `}
           >
             <User size={19} />
-            <span>Profile</span>
+
+            <span>
+              Profile
+            </span>
+
           </NavLink>
 
         </nav>
@@ -453,9 +505,11 @@ const Navbar = () => {
 
           {/* Theme */}
           <button
+            type="button"
             onClick={toggleDarkMode}
             className="mb-2 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
           >
+
             {darkMode ? (
               <Sun size={19} />
             ) : (
@@ -465,35 +519,46 @@ const Navbar = () => {
             <span>
               {darkMode ? "Light Mode" : "Dark Mode"}
             </span>
+
           </button>
 
           {/* Logout */}
           <button
+            type="button"
             onClick={handleLogout}
             className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-red-600 transition hover:bg-red-50"
           >
+
             <LogOut size={19} />
 
-            <span>Logout</span>
+            <span>
+              Logout
+            </span>
+
           </button>
 
         </div>
+
       </aside>
 
       {/* Mobile Top Bar */}
       <div className="sticky top-0 z-30 flex h-16 items-center border-b border-slate-200 bg-white px-4 lg:hidden">
 
         <button
+          type="button"
           onClick={() => setMobileMenuOpen(true)}
           className="rounded-lg p-2 text-slate-700 hover:bg-slate-100"
+          aria-label="Open sidebar"
         >
           <Menu size={24} />
         </button>
 
         <Link
           to="/user/dashboard"
+          onClick={closeMobileMenu}
           className="ml-3 flex items-center gap-2"
         >
+
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
             <ShieldCheck size={18} />
           </div>
@@ -501,6 +566,7 @@ const Navbar = () => {
           <span className="font-bold text-slate-900">
             INCIDEX
           </span>
+
         </Link>
 
       </div>
