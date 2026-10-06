@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const crimeReportSchema = new mongoose.Schema(
-  {   
+  {
     caseId: {
       type: String,
       required: true,
@@ -85,10 +85,15 @@ const crimeReportSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+
+    feedbackSubmitted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-module.exports=mongoose.model("CrimeReport",crimeReportSchema);
+module.exports = mongoose.model("CrimeReport", crimeReportSchema);

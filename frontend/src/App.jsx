@@ -5,6 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 
+// User components
 import Home from "./components/user/Home";
 import Login from "./components/user/Login";
 import Register from "./components/user/Register";
@@ -17,6 +18,7 @@ import Notifications from "./components/user/Notifications";
 import StatusHistory from "./components/user/StatusHistory";
 import Feedback from "./components/user/Feedback";
 
+// Admin components
 import AdminLogin from "./components/admin/AdminLogin";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import AdminUsers from "./components/admin/AdminUsers";
@@ -27,147 +29,238 @@ import AdminHistory from "./components/admin/AdminHistory";
 import AdminFeedback from "./components/admin/AdminFeedback";
 
 
-const ProtectedRoutes = ({ children }) => {
-  const token = localStorage.getItem("loginToken");
+/*
+  USER PROTECTED ROUTES
 
-  return token ? children : <Navigate to="/login" />;
+  Only logged-in users can access
+  the user pages.
+*/
+const UserProtectedRoutes = ({ children }) => {
+  const token = localStorage.getItem("loginToken");
+  const role = localStorage.getItem("role");
+
+  if (!token || role !== "user") {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
+
+
+/*
+  ADMIN PROTECTED ROUTES
+
+  Only logged-in administrators can access
+  the admin pages.
+*/
+const AdminProtectedRoutes = ({ children }) => {
+  const token = localStorage.getItem("loginToken");
+  const role = localStorage.getItem("role");
+
+  if (!token || role !== "admin") {
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  return children;
 };
 
 
 function App() {
   return (
     <BrowserRouter>
+
       <Routes>
 
-        {/* Public routes */}
+        {/* =========================
+            PUBLIC ROUTES
+        ========================== */}
 
-        <Route path="/" element={<Home />} />
+        <Route
+          path="/"
+          element={<Home />}
+        />
 
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
+        <Route
+          path="/admin/login"
+          element={<AdminLogin />}
+        />
 
 
-        {/* User routes */}
+        {/* =========================
+            USER ROUTES
+        ========================== */}
 
         <Route
           path="/user/dashboard"
           element={
-            <ProtectedRoutes>
+            <UserProtectedRoutes>
               <Dashboard />
-            </ProtectedRoutes>
+            </UserProtectedRoutes>
           }
         />
 
         <Route
           path="/user/profile"
           element={
-            <ProtectedRoutes>
+            <UserProtectedRoutes>
               <Profile />
-            </ProtectedRoutes>
+            </UserProtectedRoutes>
           }
         />
 
         <Route
           path="/user/report"
           element={
-            <ProtectedRoutes>
+            <UserProtectedRoutes>
               <ReportCrime />
-            </ProtectedRoutes>
+            </UserProtectedRoutes>
           }
         />
 
         <Route
           path="/user/cases"
           element={
-            <ProtectedRoutes>
+            <UserProtectedRoutes>
               <MyCases />
-            </ProtectedRoutes>
+            </UserProtectedRoutes>
           }
         />
 
         <Route
           path="/user/cases/:id"
           element={
-            <ProtectedRoutes>
+            <UserProtectedRoutes>
               <CaseDetails />
-            </ProtectedRoutes>
+            </UserProtectedRoutes>
           }
         />
 
         <Route
           path="/user/notifications"
           element={
-            <ProtectedRoutes>
+            <UserProtectedRoutes>
               <Notifications />
-            </ProtectedRoutes>
+            </UserProtectedRoutes>
           }
         />
 
         <Route
           path="/user/history"
           element={
-            <ProtectedRoutes>
+            <UserProtectedRoutes>
               <StatusHistory />
-            </ProtectedRoutes>
+            </UserProtectedRoutes>
           }
         />
 
         <Route
           path="/user/feedback/:id"
           element={
-            <ProtectedRoutes>
+            <UserProtectedRoutes>
               <Feedback />
-            </ProtectedRoutes>
+            </UserProtectedRoutes>
           }
         />
 
 
-        {/* Admin routes */}
-
-        <Route path="/admin/login" element={<AdminLogin />} />
+        {/* =========================
+            ADMIN ROUTES
+        ========================== */}
 
         <Route
           path="/admin/dashboard"
-          element={<AdminDashboard />}
+          element={
+            <AdminProtectedRoutes>
+              <AdminDashboard />
+            </AdminProtectedRoutes>
+          }
         />
 
         <Route
           path="/admin/analytics"
-          element={<AdminDashboard />}
+          element={
+            <AdminProtectedRoutes>
+              <AdminDashboard />
+            </AdminProtectedRoutes>
+          }
         />
 
         <Route
           path="/admin/users"
-          element={<AdminUsers />}
+          element={
+            <AdminProtectedRoutes>
+              <AdminUsers />
+            </AdminProtectedRoutes>
+          }
         />
 
         <Route
           path="/admin/cases"
-          element={<AdminCases />}
+          element={
+            <AdminProtectedRoutes>
+              <AdminCases />
+            </AdminProtectedRoutes>
+          }
         />
 
         <Route
           path="/admin/cases/:id"
-          element={<AdminCaseDetails />}
+          element={
+            <AdminProtectedRoutes>
+              <AdminCaseDetails />
+            </AdminProtectedRoutes>
+          }
         />
 
         <Route
           path="/admin/notifications"
-          element={<AdminNotifications />}
+          element={
+            <AdminProtectedRoutes>
+              <AdminNotifications />
+            </AdminProtectedRoutes>
+          }
         />
 
         <Route
           path="/admin/history"
-          element={<AdminHistory />}
+          element={
+            <AdminProtectedRoutes>
+              <AdminHistory />
+            </AdminProtectedRoutes>
+          }
         />
 
         <Route
           path="/admin/feedback"
-          element={<AdminFeedback />}
+          element={
+            <AdminProtectedRoutes>
+              <AdminFeedback />
+            </AdminProtectedRoutes>
+          }
+        />
+
+
+        {/* =========================
+            UNKNOWN ROUTES
+        ========================== */}
+
+        <Route
+          path="*"
+          element={<Navigate to="/" replace />}
         />
 
       </Routes>
+
     </BrowserRouter>
   );
 }

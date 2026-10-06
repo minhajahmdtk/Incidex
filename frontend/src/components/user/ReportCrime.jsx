@@ -29,11 +29,13 @@ const MapController = ({ latitude, longitude }) => {
 };
 
 // Handles clicking directly on the map
-const MapClick = ({ setLatitude, setLongitude }) => {
+const MapClick = ({ onLocationSelect }) => {
   useMapEvents({
     click(event) {
-      setLatitude(event.latlng.lat);
-      setLongitude(event.latlng.lng);
+      onLocationSelect(
+        event.latlng.lat,
+        event.latlng.lng
+      );
     },
   });
 
@@ -105,6 +107,61 @@ const ReportCrime = () => {
     };
   }, [incidentLocation]);
 
+  // Get location name from coordinates
+  const getLocationName = async (
+    selectedLatitude,
+    selectedLongitude
+  ) => {
+    try {
+      const url =
+        `https://api.geoapify.com/v1/geocode/reverse` +
+        `?lat=${selectedLatitude}` +
+        `&lon=${selectedLongitude}` +
+        `&format=json` +
+        `&apiKey=${GEOAPIFY_API_KEY}`;
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error("Location lookup failed");
+      }
+
+      const data = await response.json();
+
+      if (data.results && data.results.length > 0) {
+        const location = data.results[0];
+
+        const locationName =
+          location.formatted ||
+          location.address_line1 ||
+          location.name ||
+          "";
+
+        setIncidentLocation(locationName);
+      }
+    } catch (error) {
+      console.error("Reverse geocoding error:", error);
+    }
+  };
+
+  // Handle map click
+  const handleMapLocationSelect = async (
+    selectedLatitude,
+    selectedLongitude
+  ) => {
+    setLatitude(selectedLatitude);
+    setLongitude(selectedLongitude);
+
+    setSuggestions([]);
+    setSearching(false);
+    setErrorMessage("");
+
+    await getLocationName(
+      selectedLatitude,
+      selectedLongitude
+    );
+  };
+
   // Select a search result
   const handleLocationSelect = (location) => {
     const selectedLatitude = location.lat;
@@ -119,6 +176,7 @@ const ReportCrime = () => {
     setIncidentLocation(locationName);
     setLatitude(selectedLatitude);
     setLongitude(selectedLongitude);
+
     setSuggestions([]);
     setSearching(false);
     setErrorMessage("");
@@ -163,13 +221,16 @@ const ReportCrime = () => {
     setLoading(true);
 
     try {
-      const response = await axiosInstance.post("/cases/report", {
-        crimeCategory,
-        incidentDescription,
-        incidentLocation,
-        latitude,
-        longitude,
-      });
+      const response = await axiosInstance.post(
+        "/cases/report",
+        {
+          crimeCategory,
+          incidentDescription,
+          incidentLocation,
+          latitude,
+          longitude,
+        }
+      );
 
       toast.success(response.data.message);
 
@@ -432,8 +493,7 @@ const ReportCrime = () => {
                     />
 
                     <MapClick
-                      setLatitude={setLatitude}
-                      setLongitude={setLongitude}
+                      onLocationSelect={handleMapLocationSelect}
                     />
 
                     {latitude !== null &&
@@ -443,6 +503,21 @@ const ReportCrime = () => {
                             latitude,
                             longitude,
                           ]}
+                          draggable={true}
+                          eventHandlers={{
+                            dragend: async (event) => {
+                              const marker =
+                                event.target;
+
+                              const position =
+                                marker.getLatLng();
+
+                              await handleMapLocationSelect(
+                                position.lat,
+                                position.lng
+                              );
+                            },
+                          }}
                         />
                       )}
                   </MapContainer>

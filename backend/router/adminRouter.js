@@ -4,6 +4,7 @@ const User = require('../models/user');
 const CrimeReport = require('../models/crimeReport');
 const StatusHistory = require('../models/statusHistory');
 const UserNotification = require('../models/userNotification');
+const Feedback=require('../models/userFeedback');
 
 const router = express.Router();
 
@@ -321,5 +322,230 @@ router.patch('/cases/resolve/:id', verifyAdmin, async (req, res) => {
   }
 
 });
+
+
+//DOWNLOAD FINAL CASE REPORT
+router.get('/cases/pdf/:id', verifyAdmin, async (req, res) => {
+  try {
+    const Report = await CrimeReport.findOne({
+      caseId: req.params.id,
+    }).populate(
+      'userId',
+      'name email phone'
+    );
+
+    if (!Report) {
+      return res.status(404).json({
+        message: 'Case not found',
+      });
+    }
+
+    if (Report.currentStatus !== 'Resolved') {
+      return res.status(400).json({
+        message: 'Final report is available only for resolved cases',
+      });
+    }
+
+    const PDFDocument = require('pdfkit');
+
+    const doc = new PDFDocument();
+
+    res.setHeader(
+      'Content-Type',
+      'application/pdf'
+    );
+
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=${Report.caseId}-final-report.pdf`
+    );
+
+    doc.pipe(res);
+
+    // TITLE
+    doc
+      .fontSize(20)
+      .text('INCIDEX', {
+        align: 'center',
+      });
+
+    doc.moveDown();
+
+    doc
+      .fontSize(16)
+      .text('Crime Incident Final Report', {
+        align: 'center',
+      });
+
+    doc.moveDown(2);
+
+    // CASE INFORMATION
+    doc.fontSize(12);
+
+    doc.text(`Case ID: ${Report.caseId}`);
+
+    doc.text(
+      `Crime Category: ${Report.crimeCategory}`
+    );
+
+    doc.text(
+      `Status: ${Report.currentStatus}`
+    );
+
+    doc.text(
+      `Report Date & Time: ${
+        Report.reportDateTime
+          ? new Date(
+              Report.reportDateTime
+            ).toLocaleString()
+          : 'N/A'
+      }`
+    );
+
+    doc.moveDown();
+
+    // INCIDENT LOCATION
+    doc.text('Incident Location:');
+
+    doc.text(
+      Report.incidentLocation || 'N/A'
+    );
+
+    doc.moveDown();
+
+    // INCIDENT DESCRIPTION
+    doc.text('Incident Description:');
+
+    doc.moveDown(0.5);
+
+    doc.text(
+      Report.incidentDescription || 'N/A'
+    );
+
+    doc.moveDown();
+
+    // USER INFORMATION
+    doc.text('Reporting User:');
+
+    doc.moveDown(0.5);
+
+    doc.text(
+      `Name: ${
+        Report.userId?.name || 'N/A'
+      }`
+    );
+
+    doc.text(
+      `Email: ${
+        Report.userId?.email || 'N/A'
+      }`
+    );
+
+    doc.text(
+      `Phone: ${
+        Report.userId?.phone || 'N/A'
+      }`
+    );
+
+    doc.moveDown();
+
+    // RESOLUTION INFORMATION
+    doc.text('Resolution Information:');
+
+    doc.moveDown(0.5);
+
+    doc.text(
+      `Final Details: ${
+        Report.finalDetails || 'N/A'
+      }`
+    );
+
+    doc.moveDown();
+
+    doc.text(
+      `Action Taken: ${
+        Report.actionTaken || 'N/A'
+      }`
+    );
+
+    doc.moveDown();
+
+    doc.text(
+      `Resolution Details: ${
+        Report.resolutionDetails || 'N/A'
+      }`
+    );
+
+    doc.moveDown(2);
+
+    doc.text(
+      `Generated On: ${new Date().toLocaleString()}`
+    );
+
+    doc.end();
+
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
+
+//VIEW ALL USER FEEDBACK
+
+router.get('/feedback', verifyAdmin, async (req, res) => {
+  try {
+
+    const feedback = await Feedback.find()
+      .populate('userId', 'name email phone')
+      .populate('caseId', 'caseId crimeCategory currentStatus')
+      .sort({ submittedDateTime: -1 });
+
+    return res.status(200).json({
+      feedback: feedback,
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      message: error.message,
+    });
+
+  }
+});
+
+//DELETE USER FEEDBACK
+
+router.delete('/feedback/:id', verifyAdmin, async (req, res) => {
+  try {
+
+    const feedback = await Feedback.findById(
+      req.params.id
+    );
+
+    if (!feedback) {
+      return res.status(404).json({
+        message: "Feedback not found",
+      });
+    }
+
+    await Feedback.findByIdAndDelete(
+      req.params.id
+    );
+
+    return res.status(200).json({
+      message: "Feedback deleted successfully",
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      message: error.message,
+    });
+
+  }
+});
+
 
 module.exports = router

@@ -68,13 +68,8 @@ router.post("/:id", verifyToken, async (req, res) => {
       });
     }
 
-    // CHECK WHETHER FEEDBACK ALREADY EXISTS
-    const existingFeedback = await Feedback.findOne({
-      caseId: Report._id,
-      userId: req.user.id,
-    });
-
-    if (existingFeedback) {
+    // CHECK WHETHER FEEDBACK ALREADY SUBMITTED
+    if (Report.feedbackSubmitted) {
       return res.status(400).json({
         message: "Feedback has already been submitted for this case",
       });
@@ -89,6 +84,11 @@ router.post("/:id", verifyToken, async (req, res) => {
     });
 
     await feedback.save();
+
+    // MARK FEEDBACK AS SUBMITTED
+    Report.feedbackSubmitted = true;
+
+    await Report.save();
 
     return res.status(201).json({
       message: "Feedback submitted successfully",
