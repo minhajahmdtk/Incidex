@@ -165,19 +165,56 @@ const Profile = () => {
   const errorField = getErrorField();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <Navbar />
 
       {/* BACKGROUND CONTENT */}
       <main className="min-h-[calc(100vh-72px)]">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
-            <User
-              size={32}
-              className="mx-auto mb-3 text-muted-foreground"
-            />
+        <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <div
+            className="
+              rounded-2xl
+              border
+              border-border
+              bg-card
+              p-8
+              text-center
+              shadow-sm
+              transition-colors
+              duration-300
+            "
+          >
+            <div
+              className="
+                mx-auto
+                mb-4
+                flex
+                h-14
+                w-14
+                items-center
+                justify-center
+                rounded-full
+                bg-[#B94A48]/10
+                text-[#B94A48]
+                dark:bg-[#D76562]/10
+                dark:text-[#D76562]
+              "
+            >
+              <User size={28} />
+            </div>
 
-            <h1 className="text-xl font-semibold text-foreground">
+            <h1
+              className="
+                bg-gradient-to-r
+                from-[#B94A48]
+                via-[#7FAF8A]
+                to-[#555C64]
+                bg-clip-text
+                text-xl
+                font-bold
+                text-transparent
+              "
+            >
               Profile
             </h1>
 
@@ -207,45 +244,66 @@ const Profile = () => {
         <div
           className="
             relative
+            max-h-[90vh]
             w-full
             max-w-2xl
-            max-h-[90vh]
             overflow-y-auto
             rounded-2xl
             border
             border-border
             bg-card
             shadow-2xl
+            transition-colors
+            duration-300
           "
           role="dialog"
           aria-modal="true"
           aria-labelledby="profile-title"
         >
           {/* HEADER */}
-          <div className="flex items-center justify-between border-b border-border px-6 py-5">
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+              border-b
+              border-border
+              px-6
+              py-5
+            "
+          >
             <div className="flex items-center gap-4">
-
               <div
                 className="
                   flex
                   h-12
                   w-12
+                  shrink-0
                   items-center
                   justify-center
-                  rounded-full
-                  bg-muted
+                  rounded-xl
+                  bg-[#B94A48]/10
+                  text-[#B94A48]
+                  dark:bg-[#D76562]/10
+                  dark:text-[#D76562]
                 "
               >
-                <User
-                  size={24}
-                  className="text-foreground"
-                />
+                <User size={24} />
               </div>
 
               <div>
                 <h1
                   id="profile-title"
-                  className="text-xl font-semibold text-foreground"
+                  className="
+                    bg-gradient-to-r
+                    from-[#B94A48]
+                    via-[#7FAF8A]
+                    to-[#555C64]
+                    bg-clip-text
+                    text-xl
+                    font-bold
+                    text-transparent
+                  "
                 >
                   Profile
                 </h1>
@@ -254,7 +312,6 @@ const Profile = () => {
                   View and manage your personal information.
                 </p>
               </div>
-
             </div>
 
             {/* CLOSE BUTTON */}
@@ -279,11 +336,9 @@ const Profile = () => {
 
           {/* CONTENT */}
           <div className="px-6 py-6">
-
             {/* LOADING */}
             {loading ? (
               <div className="py-12 text-center">
-
                 <div
                   className="
                     mx-auto
@@ -292,7 +347,7 @@ const Profile = () => {
                     w-8
                     animate-spin
                     rounded-full
-                    border-4
+                    border-2
                     border-border
                     border-t-[#B94A48]
                     dark:border-t-[#D76562]
@@ -302,13 +357,10 @@ const Profile = () => {
                 <p className="text-sm text-muted-foreground">
                   Loading profile...
                 </p>
-
               </div>
             ) : (
               <form onSubmit={handleSubmit}>
-
                 <div className="space-y-6">
-
                   {/* NAME */}
                   <div>
                     <label
@@ -319,7 +371,6 @@ const Profile = () => {
                     </label>
 
                     <div className="relative">
-
                       <User
                         size={18}
                         className="
@@ -349,21 +400,22 @@ const Profile = () => {
                           text-sm
                           text-foreground
                           outline-none
-                          transition
+                          transition-all
+                          duration-200
+                          placeholder:text-muted-foreground
                           disabled:cursor-default
                           disabled:opacity-70
                           ${
                             errorField === "name"
-                              ? "border-red-400 focus:border-red-500"
-                              : "border-border focus:border-[#B94A48] dark:focus:border-[#D76562]"
+                              ? "border-[#B94A48] focus:border-[#B94A48] focus:ring-2 focus:ring-[#B94A48]/10 dark:border-[#D76562] dark:focus:border-[#D76562] dark:focus:ring-[#D76562]/10"
+                              : "border-border focus:border-[#B94A48] focus:ring-2 focus:ring-[#B94A48]/10 dark:focus:border-[#D76562] dark:focus:ring-[#D76562]/10"
                           }
                         `}
                       />
-
                     </div>
 
                     {errorField === "name" && (
-                      <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                      <p className="mt-2 text-sm text-[#B94A48] dark:text-[#D76562]">
                         {errorMessage}
                       </p>
                     )}
@@ -379,7 +431,6 @@ const Profile = () => {
                     </label>
 
                     <div className="relative">
-
                       <Mail
                         size={18}
                         className="
@@ -409,21 +460,22 @@ const Profile = () => {
                           text-sm
                           text-foreground
                           outline-none
-                          transition
+                          transition-all
+                          duration-200
+                          placeholder:text-muted-foreground
                           disabled:cursor-default
                           disabled:opacity-70
                           ${
                             errorField === "email"
-                              ? "border-red-400 focus:border-red-500"
-                              : "border-border focus:border-[#B94A48] dark:focus:border-[#D76562]"
+                              ? "border-[#B94A48] focus:border-[#B94A48] focus:ring-2 focus:ring-[#B94A48]/10 dark:border-[#D76562] dark:focus:border-[#D76562] dark:focus:ring-[#D76562]/10"
+                              : "border-border focus:border-[#B94A48] focus:ring-2 focus:ring-[#B94A48]/10 dark:focus:border-[#D76562] dark:focus:ring-[#D76562]/10"
                           }
                         `}
                       />
-
                     </div>
 
                     {errorField === "email" && (
-                      <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                      <p className="mt-2 text-sm text-[#B94A48] dark:text-[#D76562]">
                         {errorMessage}
                       </p>
                     )}
@@ -439,7 +491,6 @@ const Profile = () => {
                     </label>
 
                     <div className="relative">
-
                       <Phone
                         size={18}
                         className="
@@ -469,21 +520,22 @@ const Profile = () => {
                           text-sm
                           text-foreground
                           outline-none
-                          transition
+                          transition-all
+                          duration-200
+                          placeholder:text-muted-foreground
                           disabled:cursor-default
                           disabled:opacity-70
                           ${
                             errorField === "phone"
-                              ? "border-red-400 focus:border-red-500"
-                              : "border-border focus:border-[#B94A48] dark:focus:border-[#D76562]"
+                              ? "border-[#B94A48] focus:border-[#B94A48] focus:ring-2 focus:ring-[#B94A48]/10 dark:border-[#D76562] dark:focus:border-[#D76562] dark:focus:ring-[#D76562]/10"
+                              : "border-border focus:border-[#B94A48] focus:ring-2 focus:ring-[#B94A48]/10 dark:focus:border-[#D76562] dark:focus:ring-[#D76562]/10"
                           }
                         `}
                       />
-
                     </div>
 
                     {errorField === "phone" && (
-                      <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                      <p className="mt-2 text-sm text-[#B94A48] dark:text-[#D76562]">
                         {errorMessage}
                       </p>
                     )}
@@ -491,18 +543,39 @@ const Profile = () => {
 
                   {/* OTHER BACKEND ERROR */}
                   {errorMessage && !errorField && (
-                    <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 dark:border-red-900 dark:bg-red-950/30">
-                      <p className="text-sm text-red-600 dark:text-red-400">
+                    <div
+                      className="
+                        rounded-lg
+                        border
+                        border-[#B94A48]/30
+                        bg-[#B94A48]/5
+                        px-4
+                        py-3
+                        dark:border-[#D76562]/30
+                        dark:bg-[#D76562]/10
+                      "
+                    >
+                      <p className="text-sm text-[#B94A48] dark:text-[#D76562]">
                         {errorMessage}
                       </p>
                     </div>
                   )}
-
                 </div>
 
                 {/* BUTTONS */}
-                <div className="mt-7 flex justify-end gap-3 border-t border-border pt-5">
-
+                <div
+                  className="
+                    mt-7
+                    flex
+                    flex-col-reverse
+                    gap-3
+                    border-t
+                    border-border
+                    pt-5
+                    sm:flex-row
+                    sm:justify-end
+                  "
+                >
                   {!isEditing ? (
                     <button
                       type="button"
@@ -510,20 +583,22 @@ const Profile = () => {
                       className="
                         inline-flex
                         items-center
+                        justify-center
                         gap-2
                         rounded-lg
-                        bg-[#151A21]
+                        bg-primary
                         px-5
                         py-2.5
                         text-sm
                         font-medium
-                        text-white
+                        text-primary-foreground
+                        shadow-sm
                         transition-all
                         duration-200
-                        hover:bg-[#343A40]
-                        dark:bg-[#E5E7EB]
-                        dark:text-[#151A21]
-                        dark:hover:bg-white
+                        hover:-translate-y-0.5
+                        hover:bg-primary
+                        hover:text-primary-foreground
+                        hover:shadow-md
                       "
                     >
                       <Edit size={17} />
@@ -537,6 +612,7 @@ const Profile = () => {
                         className="
                           inline-flex
                           items-center
+                          justify-center
                           gap-2
                           rounded-lg
                           border
@@ -561,20 +637,22 @@ const Profile = () => {
                         className="
                           inline-flex
                           items-center
+                          justify-center
                           gap-2
                           rounded-lg
-                          bg-[#151A21]
+                          bg-primary
                           px-5
                           py-2.5
                           text-sm
                           font-medium
-                          text-white
+                          text-primary-foreground
+                          shadow-sm
                           transition-all
                           duration-200
-                          hover:bg-[#343A40]
-                          dark:bg-[#E5E7EB]
-                          dark:text-[#151A21]
-                          dark:hover:bg-white
+                          hover:-translate-y-0.5
+                          hover:bg-primary
+                          hover:text-primary-foreground
+                          hover:shadow-md
                         "
                       >
                         <Save size={17} />
@@ -582,12 +660,9 @@ const Profile = () => {
                       </button>
                     </>
                   )}
-
                 </div>
-
               </form>
             )}
-
           </div>
         </div>
       </div>

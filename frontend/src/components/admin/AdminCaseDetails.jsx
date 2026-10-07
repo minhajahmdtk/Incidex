@@ -69,7 +69,6 @@ const AdminCaseDetails = () => {
       });
   }, [id, navigate]);
 
-  // UPDATE CASE STATUS
   const updateStatus = () => {
     if (!newStatus) {
       toast.error("Please select a status");
@@ -110,7 +109,6 @@ const AdminCaseDetails = () => {
       });
   };
 
-  // RESOLVE CASE
   const resolveCase = () => {
     if (!finalDetails.trim()) {
       toast.error("Final details are required");
@@ -165,7 +163,6 @@ const AdminCaseDetails = () => {
       });
   };
 
-  // DOWNLOAD FINAL REPORT
   const downloadFinalReport = () => {
     setDownloading(true);
 
@@ -174,22 +171,16 @@ const AdminCaseDetails = () => {
         responseType: "blob",
       })
       .then((response) => {
-        const pdfBlob = new Blob(
-          [response.data],
-          {
-            type: "application/pdf",
-          }
-        );
+        const pdfBlob = new Blob([response.data], {
+          type: "application/pdf",
+        });
 
-        const pdfUrl =
-          window.URL.createObjectURL(pdfBlob);
+        const pdfUrl = window.URL.createObjectURL(pdfBlob);
 
         const link = document.createElement("a");
 
         link.href = pdfUrl;
-
-        link.download =
-          `${caseData.caseId}-final-report.pdf`;
+        link.download = `${caseData.caseId}-final-report.pdf`;
 
         document.body.appendChild(link);
 
@@ -216,50 +207,71 @@ const AdminCaseDetails = () => {
 
   const getStatusClass = (status) => {
     if (status === "New") {
-      return "bg-blue-100 text-blue-700";
+      return "bg-[#B94A48]/10 text-[#B94A48] dark:bg-[#D76562]/10 dark:text-[#D76562]";
     }
 
     if (status === "Acknowledged") {
-      return "bg-amber-100 text-amber-700";
+      return "bg-[#7FAF8A]/15 text-[#5F8D6A] dark:bg-[#7FAF8A]/15 dark:text-[#9BC7A4]";
     }
 
     if (status === "In Progress") {
-      return "bg-purple-100 text-purple-700";
+      return "bg-muted text-muted-foreground";
     }
 
     if (status === "Resolved") {
-      return "bg-green-100 text-green-700";
+      return "bg-[#7FAF8A]/15 text-[#5F8D6A] dark:bg-[#7FAF8A]/15 dark:text-[#9BC7A4]";
     }
 
-    return "bg-slate-100 text-slate-700";
+    return "bg-muted text-muted-foreground";
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <p className="text-slate-500">
-          Loading case details...
-        </p>
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="text-center">
+          <div
+            className="
+              mx-auto
+              mb-4
+              h-8
+              w-8
+              animate-spin
+              rounded-full
+              border-2
+              border-border
+              border-t-[#B94A48]
+              dark:border-t-[#D76562]
+            "
+          />
+
+          <p className="text-sm text-muted-foreground">
+            Loading case details...
+          </p>
+        </div>
       </div>
     );
   }
 
   if (!caseData) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
-
-          <p className="text-slate-600 mb-4">
+          <p className="mb-4 text-muted-foreground">
             Case not found.
           </p>
 
           <Link
             to="/admin/cases"
-            className="text-blue-600 hover:underline"
+            className="
+              text-sm
+              font-medium
+              text-[#B94A48]
+              hover:underline
+              dark:text-[#D76562]
+            "
           >
             Back to Cases
           </Link>
-
         </div>
       </div>
     );
@@ -275,292 +287,242 @@ const AdminCaseDetails = () => {
     caseData.currentStatus === "In Progress";
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
 
-        {/* Header */}
-        <div className="mb-6">
-
+        {/* HEADER */}
+        <div className="mb-8">
           <Link
             to="/admin/cases"
-            className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 mb-4"
+            className="
+              mb-5
+              inline-flex
+              items-center
+              gap-2
+              text-sm
+              font-medium
+              text-muted-foreground
+              transition-colors
+              hover:text-[#B94A48]
+            "
           >
             <ArrowLeft size={17} />
             Back to Cases
           </Link>
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <FileText
-                  size={24}
-                  className="text-blue-600"
-                />
+              <div
+                className="
+                  flex
+                  h-12
+                  w-12
+                  items-center
+                  justify-center
+                  rounded-xl
+                  bg-[#B94A48]/10
+                  text-[#B94A48]
+                  dark:bg-[#D76562]/10
+                  dark:text-[#D76562]
+                "
+              >
+                <FileText size={23} />
               </div>
 
               <div>
-
-                <h1 className="text-2xl font-bold text-slate-900">
+                <h1
+                  className="
+                    bg-gradient-to-r
+                    from-[#B94A48]
+                    via-[#7FAF8A]
+                    to-[#555C64]
+                    bg-clip-text
+                    text-2xl
+                    font-bold
+                    tracking-tight
+                    text-transparent
+                  "
+                >
                   Case Details
                 </h1>
 
-                <p className="text-sm text-slate-500">
+                <p className="mt-1 text-sm text-muted-foreground">
                   {caseData.caseId}
                 </p>
-
               </div>
-
             </div>
 
-            {/* Current Status */}
             <span
-              className={`inline-flex w-fit px-4 py-2 rounded-full text-sm font-medium ${getStatusClass(
+              className={`inline-flex w-fit rounded-full px-4 py-2 text-sm font-medium ${getStatusClass(
                 caseData.currentStatus
               )}`}
             >
               {caseData.currentStatus}
             </span>
-
           </div>
         </div>
 
-        {/* Main Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-          {/* Case Information */}
-          <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl shadow-sm">
-
-            <div className="px-6 py-4 border-b border-slate-200">
-
-              <h2 className="text-lg font-semibold text-slate-900">
-                Case Information
-              </h2>
-
-            </div>
-
-            <div className="p-6 space-y-6">
-
-              {/* Crime Category */}
-              <div>
-
-                <p className="text-sm font-medium text-slate-500 mb-1">
-                  Crime Category
-                </p>
-
-                <p className="text-slate-900 font-medium">
-                  {caseData.crimeCategory}
-                </p>
-
-              </div>
-
-              {/* Incident Description */}
-              <div>
-
-                <p className="text-sm font-medium text-slate-500 mb-1">
-                  Incident Description
-                </p>
-
-                <p className="text-slate-700 leading-6">
-                  {caseData.incidentDescription}
-                </p>
-
-              </div>
-
-              {/* Incident Location */}
-              <div>
-
-                <div className="flex items-center gap-2 mb-1">
-
-                  <MapPin
-                    size={17}
-                    className="text-slate-500"
-                  />
-
-                  <p className="text-sm font-medium text-slate-500">
-                    Incident Location
-                  </p>
-
-                </div>
-
-                <p className="text-slate-700">
-                  {caseData.incidentLocation}
-                </p>
-
-              </div>
-
-              {/* Report Date */}
-              <div>
-
-                <p className="text-sm font-medium text-slate-500 mb-1">
-                  Report Date & Time
-                </p>
-
-                <p className="text-slate-700">
-                  {caseData.reportDateTime
-                    ? new Date(
-                        caseData.reportDateTime
-                      ).toLocaleString("en-IN", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                    : "N/A"}
-                </p>
-
-              </div>
-
-              {/* Google Maps */}
-              {caseData.latitude &&
-                caseData.longitude && (
-                  <div>
-
-                    <p className="text-sm font-medium text-slate-500 mb-2">
-                      Location
-                    </p>
-
-                    <a
-                      href={`https://www.google.com/maps/dir/?api=1&destination=${caseData.latitude},${caseData.longitude}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition"
-                    >
-
-                      <MapPin size={16} />
-
-                      Open in Google Maps
-
-                      <ExternalLink size={15} />
-
-                    </a>
-
-                  </div>
-                )}
-
-            </div>
+        {/* CASE INFORMATION - TOP */}
+        <div
+          className="
+            rounded-2xl
+            border
+            border-border
+            bg-card
+            transition-colors
+            duration-300
+          "
+        >
+          <div className="border-b border-border px-6 py-5">
+            <h2 className="text-lg font-semibold text-foreground">
+              Case Information
+            </h2>
           </div>
 
-          {/* Reporting User */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm h-fit">
+          <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
+            <div>
+              <p className="mb-1 text-sm font-medium text-muted-foreground">
+                Crime Category
+              </p>
 
-            <div className="px-6 py-4 border-b border-slate-200">
-
-              <h2 className="text-lg font-semibold text-slate-900">
-                Reporting User
-              </h2>
-
+              <p className="font-medium text-foreground">
+                {caseData.crimeCategory}
+              </p>
             </div>
 
-            <div className="p-6 space-y-5">
+            <div>
+              <p className="mb-1 text-sm font-medium text-muted-foreground">
+                Report Date & Time
+              </p>
 
-              {/* Name */}
-              <div className="flex items-center gap-3">
-
-                <div className="p-2 bg-slate-100 rounded-lg">
-                  <User
-                    size={18}
-                    className="text-slate-600"
-                  />
-                </div>
-
-                <div>
-
-                  <p className="text-xs text-slate-500">
-                    Name
-                  </p>
-
-                  <p className="font-medium text-slate-900">
-                    {user.name || "N/A"}
-                  </p>
-
-                </div>
-
-              </div>
-
-              {/* Email */}
-              <div className="flex items-center gap-3">
-
-                <div className="p-2 bg-slate-100 rounded-lg">
-                  <Mail
-                    size={18}
-                    className="text-slate-600"
-                  />
-                </div>
-
-                <div>
-
-                  <p className="text-xs text-slate-500">
-                    Email
-                  </p>
-
-                  <p className="text-sm text-slate-700 break-all">
-                    {user.email || "N/A"}
-                  </p>
-
-                </div>
-
-              </div>
-
-              {/* Phone */}
-              <div className="flex items-center gap-3">
-
-                <div className="p-2 bg-slate-100 rounded-lg">
-                  <Phone
-                    size={18}
-                    className="text-slate-600"
-                  />
-                </div>
-
-                <div>
-
-                  <p className="text-xs text-slate-500">
-                    Phone
-                  </p>
-
-                  <p className="text-sm text-slate-700">
-                    {user.phone || "N/A"}
-                  </p>
-
-                </div>
-
-              </div>
-
+              <p className="text-foreground">
+                {caseData.reportDateTime
+                  ? new Date(
+                      caseData.reportDateTime
+                    ).toLocaleString("en-IN", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : "N/A"}
+              </p>
             </div>
+
+            <div className="md:col-span-2">
+              <p className="mb-1 text-sm font-medium text-muted-foreground">
+                Incident Description
+              </p>
+
+              <p className="leading-6 text-foreground">
+                {caseData.incidentDescription}
+              </p>
+            </div>
+
+            <div className="md:col-span-2">
+              <div className="mb-1 flex items-center gap-2">
+                <MapPin
+                  size={17}
+                  className="text-[#B94A48] dark:text-[#D76562]"
+                />
+
+                <p className="text-sm font-medium text-muted-foreground">
+                  Incident Location
+                </p>
+              </div>
+
+              <p className="text-foreground">
+                {caseData.incidentLocation}
+              </p>
+            </div>
+
+            {caseData.latitude &&
+              caseData.longitude && (
+                <div className="md:col-span-2">
+                  <p className="mb-2 text-sm font-medium text-muted-foreground">
+                    Location
+                  </p>
+
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${caseData.latitude},${caseData.longitude}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="
+                      inline-flex
+                      items-center
+                      gap-2
+                      rounded-lg
+                      bg-[#B94A48]
+                      px-4
+                      py-2.5
+                      text-sm
+                      font-medium
+                      text-white
+                      transition-colors
+                      hover:bg-[#A33F3D]
+                      dark:bg-[#D76562]
+                      dark:hover:bg-[#C55451]
+                    "
+                  >
+                    <MapPin size={16} />
+                    Open in Google Maps
+                    <ExternalLink size={15} />
+                  </a>
+                </div>
+              )}
           </div>
-
         </div>
 
-        {/* Status Update */}
+        {/* UPDATE CASE STATUS */}
         {canUpdateStatus && (
-          <div className="mt-6 bg-white border border-slate-200 rounded-xl shadow-sm">
-
-            <div className="px-6 py-4 border-b border-slate-200">
-
-              <h2 className="text-lg font-semibold text-slate-900">
+          <div
+            className="
+              mt-6
+              rounded-2xl
+              border
+              border-border
+              bg-card
+              transition-colors
+              duration-300
+            "
+          >
+            <div className="border-b border-border px-6 py-5">
+              <h2 className="text-lg font-semibold text-foreground">
                 Update Case Status
               </h2>
 
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Move the case to the next stage.
               </p>
-
             </div>
 
             <div className="p-6">
-
-              <div className="flex flex-col sm:flex-row gap-3">
-
+              <div className="flex flex-col gap-3 sm:flex-row">
                 <select
                   value={newStatus}
                   onChange={(e) =>
                     setNewStatus(e.target.value)
                   }
-                  className="border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-blue-600"
+                  className="
+                    w-full
+                    rounded-lg
+                    border
+                    border-input
+                    bg-background
+                    px-3
+                    py-2.5
+                    text-sm
+                    text-foreground
+                    outline-none
+                    transition-colors
+                    focus:border-[#B94A48]
+                    focus:ring-1
+                    focus:ring-[#B94A48]
+                    dark:focus:border-[#D76562]
+                    dark:focus:ring-[#D76562]
+                  "
                 >
-
                   <option value="">
                     Select next status
                   </option>
@@ -577,49 +539,216 @@ const AdminCaseDetails = () => {
                       In Progress
                     </option>
                   )}
-
                 </select>
 
                 <button
                   type="button"
                   onClick={updateStatus}
                   disabled={updating}
-                  className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    rounded-lg
+                    bg-[#B94A48]
+                    px-5
+                    py-2.5
+                    text-sm
+                    font-medium
+                    text-white
+                    transition-colors
+                    hover:bg-[#A33F3D]
+                    disabled:cursor-not-allowed
+                    disabled:opacity-50
+                    dark:bg-[#D76562]
+                    dark:hover:bg-[#C55451]
+                  "
                 >
                   {updating
                     ? "Updating..."
                     : "Update Status"}
                 </button>
-
               </div>
-
             </div>
           </div>
         )}
 
-        {/* Resolve Case */}
+        {/* REPORTING USER + DOWNLOAD */}
+        <div
+          className="
+            mt-6
+            rounded-2xl
+            border
+            border-border
+            bg-card
+            transition-colors
+            duration-300
+          "
+        >
+          <div className="border-b border-border px-6 py-5">
+            <h2 className="text-lg font-semibold text-foreground">
+              Reporting User
+            </h2>
+          </div>
+
+          <div className="space-y-5 p-6">
+            <div className="flex items-center gap-3">
+              <div
+                className="
+                  flex
+                  h-10
+                  w-10
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-lg
+                  bg-[#B94A48]/10
+                  text-[#B94A48]
+                  dark:bg-[#D76562]/10
+                  dark:text-[#D76562]
+                "
+              >
+                <User size={18} />
+              </div>
+
+              <div>
+                <p className="text-xs text-muted-foreground">
+                  Name
+                </p>
+
+                <p className="font-medium text-foreground">
+                  {user.name || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div
+                className="
+                  flex
+                  h-10
+                  w-10
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-lg
+                  bg-[#B94A48]/10
+                  text-[#B94A48]
+                  dark:bg-[#D76562]/10
+                  dark:text-[#D76562]
+                "
+              >
+                <Mail size={18} />
+              </div>
+
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">
+                  Email
+                </p>
+
+                <p className="break-all text-sm text-foreground">
+                  {user.email || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div
+                className="
+                  flex
+                  h-10
+                  w-10
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-lg
+                  bg-[#B94A48]/10
+                  text-[#B94A48]
+                  dark:bg-[#D76562]/10
+                  dark:text-[#D76562]
+                "
+              >
+                <Phone size={18} />
+              </div>
+
+              <div>
+                <p className="text-xs text-muted-foreground">
+                  Phone
+                </p>
+
+                <p className="text-sm text-foreground">
+                  {user.phone || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            {/* DOWNLOAD FINAL REPORT */}
+            {caseData.currentStatus === "Resolved" && (
+              <div className="border-t border-border pt-5">
+                <p className="mb-3 text-sm font-medium text-muted-foreground">
+                  Final Case Report
+                </p>
+
+                <button
+                  type="button"
+                  onClick={downloadFinalReport}
+                  disabled={downloading}
+                  className="
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-lg
+                    bg-[#B94A48]
+                    px-5
+                    py-2.5
+                    text-sm
+                    font-medium
+                    text-white
+                    transition-colors
+                    hover:bg-[#A33F3D]
+                    disabled:cursor-not-allowed
+                    disabled:opacity-50
+                    dark:bg-[#D76562]
+                    dark:hover:bg-[#C55451]
+                  "
+                >
+                  <Download size={18} />
+
+                  {downloading
+                    ? "Downloading..."
+                    : "Download Final Report"}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* RESOLVE CASE */}
         {canResolve && (
-          <div className="mt-6 bg-white border border-slate-200 rounded-xl shadow-sm">
-
-            <div className="px-6 py-4 border-b border-slate-200">
-
-              <h2 className="text-lg font-semibold text-slate-900">
+          <div
+            className="
+              mt-6
+              rounded-2xl
+              border
+              border-border
+              bg-card
+              transition-colors
+              duration-300
+            "
+          >
+            <div className="border-b border-border px-6 py-5">
+              <h2 className="text-lg font-semibold text-foreground">
                 Resolve Case
               </h2>
 
-              <p className="text-sm text-slate-500 mt-1">
-                Enter the final information before resolving
-                the case.
+              <p className="mt-1 text-sm text-muted-foreground">
+                Enter the final information before resolving the case.
               </p>
-
             </div>
 
-            <div className="p-6 space-y-5">
-
-              {/* Final Details */}
+            <div className="space-y-5 p-6">
               <div>
-
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-foreground">
                   Final Details
                 </label>
 
@@ -630,15 +759,30 @@ const AdminCaseDetails = () => {
                   }
                   rows="4"
                   placeholder="Enter final details"
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-blue-600"
+                  className="
+                    w-full
+                    rounded-lg
+                    border
+                    border-input
+                    bg-background
+                    px-3
+                    py-2.5
+                    text-sm
+                    text-foreground
+                    outline-none
+                    transition-colors
+                    placeholder:text-muted-foreground
+                    focus:border-[#B94A48]
+                    focus:ring-1
+                    focus:ring-[#B94A48]
+                    dark:focus:border-[#D76562]
+                    dark:focus:ring-[#D76562]
+                  "
                 />
-
               </div>
 
-              {/* Action Taken */}
               <div>
-
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-foreground">
                   Action Taken
                 </label>
 
@@ -649,15 +793,30 @@ const AdminCaseDetails = () => {
                   }
                   rows="4"
                   placeholder="Enter action taken"
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-blue-600"
+                  className="
+                    w-full
+                    rounded-lg
+                    border
+                    border-input
+                    bg-background
+                    px-3
+                    py-2.5
+                    text-sm
+                    text-foreground
+                    outline-none
+                    transition-colors
+                    placeholder:text-muted-foreground
+                    focus:border-[#B94A48]
+                    focus:ring-1
+                    focus:ring-[#B94A48]
+                    dark:focus:border-[#D76562]
+                    dark:focus:ring-[#D76562]
+                  "
                 />
-
               </div>
 
-              {/* Resolution Details */}
               <div>
-
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-foreground">
                   Resolution Details
                 </label>
 
@@ -668,127 +827,112 @@ const AdminCaseDetails = () => {
                   }
                   rows="4"
                   placeholder="Enter resolution details"
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-blue-600"
+                  className="
+                    w-full
+                    rounded-lg
+                    border
+                    border-input
+                    bg-background
+                    px-3
+                    py-2.5
+                    text-sm
+                    text-foreground
+                    outline-none
+                    transition-colors
+                    placeholder:text-muted-foreground
+                    focus:border-[#B94A48]
+                    focus:ring-1
+                    focus:ring-[#B94A48]
+                    dark:focus:border-[#D76562]
+                    dark:focus:ring-[#D76562]
+                  "
                 />
-
               </div>
 
-              {/* Resolve Button */}
               <button
                 type="button"
                 onClick={resolveCase}
                 disabled={updating}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                className="
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-lg
+                  bg-[#7FAF8A]
+                  px-5
+                  py-2.5
+                  text-sm
+                  font-medium
+                  text-white
+                  transition-colors
+                  hover:bg-[#6F9D79]
+                  disabled:cursor-not-allowed
+                  disabled:opacity-50
+                "
               >
-
                 <CheckCircle size={18} />
 
                 {updating
                   ? "Resolving..."
                   : "Resolve Case"}
-
               </button>
-
             </div>
           </div>
         )}
 
-        {/* Resolution Information */}
+        {/* RESOLUTION INFORMATION */}
         {caseData.currentStatus === "Resolved" && (
-          <div className="mt-6 bg-white border border-slate-200 rounded-xl shadow-sm">
-
-            <div className="px-6 py-4 border-b border-slate-200">
-
-              <h2 className="text-lg font-semibold text-slate-900">
+          <div
+            className="
+              mt-6
+              rounded-2xl
+              border
+              border-border
+              bg-card
+              transition-colors
+              duration-300
+            "
+          >
+            <div className="border-b border-border px-6 py-5">
+              <h2 className="text-lg font-semibold text-foreground">
                 Resolution Information
               </h2>
-
             </div>
 
-            <div className="p-6 space-y-5">
-
-              {/* Final Details */}
+            <div className="space-y-5 p-6">
               <div>
-
-                <p className="text-sm font-medium text-slate-500 mb-1">
+                <p className="mb-1 text-sm font-medium text-muted-foreground">
                   Final Details
                 </p>
 
-                <p className="text-slate-700">
+                <p className="leading-6 text-foreground">
                   {caseData.finalDetails || "N/A"}
                 </p>
-
               </div>
 
-              {/* Action Taken */}
               <div>
-
-                <p className="text-sm font-medium text-slate-500 mb-1">
+                <p className="mb-1 text-sm font-medium text-muted-foreground">
                   Action Taken
                 </p>
 
-                <p className="text-slate-700">
+                <p className="leading-6 text-foreground">
                   {caseData.actionTaken || "N/A"}
                 </p>
-
               </div>
 
-              {/* Resolution Details */}
               <div>
-
-                <p className="text-sm font-medium text-slate-500 mb-1">
+                <p className="mb-1 text-sm font-medium text-muted-foreground">
                   Resolution Details
                 </p>
 
-                <p className="text-slate-700">
+                <p className="leading-6 text-foreground">
                   {caseData.resolutionDetails || "N/A"}
                 </p>
-
               </div>
-
             </div>
           </div>
         )}
-
-        {/* Final Case Report */}
-        {caseData.currentStatus === "Resolved" && (
-          <div className="mt-6 bg-white border border-slate-200 rounded-xl shadow-sm">
-
-            <div className="px-6 py-4 border-b border-slate-200">
-
-              <h2 className="text-lg font-semibold text-slate-900">
-                Final Case Report
-              </h2>
-
-              <p className="text-sm text-slate-500 mt-1">
-                Download the final report for this resolved
-                case.
-              </p>
-
-            </div>
-
-            <div className="p-6">
-
-              <button
-                type="button"
-                onClick={downloadFinalReport}
-                disabled={downloading}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              >
-
-                <Download size={18} />
-
-                {downloading
-                  ? "Downloading..."
-                  : "Download Final Report"}
-
-              </button>
-
-            </div>
-          </div>
-        )}
-
-      </div>
+      </main>
     </div>
   );
 };

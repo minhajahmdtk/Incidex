@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { X } from "lucide-react";
+import { toast } from "sonner";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -74,7 +75,7 @@ const Login = () => {
           );
         }
 
-        alert("Login Successful");
+        toast.success("Login successful");
 
         navigate("/user/dashboard");
       })
@@ -124,6 +125,8 @@ const Login = () => {
           p-7
           shadow-2xl
           shadow-black/20
+          transition-colors
+          duration-300
           sm:p-8
         "
         onMouseDown={(e) => e.stopPropagation()}
@@ -140,12 +143,10 @@ const Login = () => {
             rounded-lg
             p-2
             text-muted-foreground
-            transition-all
+            transition-colors
             duration-200
-            hover:bg-[#B94A48]/10
-            hover:text-[#B94A48]
-            dark:hover:bg-[#D76562]/10
-            dark:hover:text-[#D76562]
+            hover:bg-accent
+            hover:text-accent-foreground
           "
           aria-label="Close login"
         >
@@ -195,10 +196,18 @@ const Login = () => {
         <div className="mb-6 text-center">
           <h2
             className="
+              bg-gradient-to-r
+              from-[#B94A48]
+              via-[#7FAF8A]
+              to-[#5F9F6B]
+              bg-clip-text
               text-2xl
               font-bold
               tracking-tight
-              text-card-foreground
+              text-transparent
+              dark:from-[#D76562]
+              dark:via-[#91BD9C]
+              dark:to-[#7FBF8B]
             "
           >
             Welcome Back
@@ -253,8 +262,6 @@ const Login = () => {
                 focus:border-[#B94A48]
                 focus:ring-2
                 focus:ring-[#B94A48]/10
-                dark:focus:border-[#D76562]
-                dark:focus:ring-[#D76562]/10
               "
               type="email"
               name="email"
@@ -298,8 +305,6 @@ const Login = () => {
                 focus:border-[#B94A48]
                 focus:ring-2
                 focus:ring-[#B94A48]/10
-                dark:focus:border-[#D76562]
-                dark:focus:ring-[#D76562]/10
               "
               type="password"
               name="password"
@@ -318,8 +323,8 @@ const Login = () => {
                 text-sm
                 font-medium
                 text-[#B94A48]
+                transition-colors
                 hover:underline
-                dark:text-[#D76562]
               "
             >
               Forgot Password?
@@ -339,9 +344,7 @@ const Login = () => {
                 p-3
                 text-sm
                 text-[#B94A48]
-                dark:border-[#D76562]/30
-                dark:bg-[#D76562]/10
-                dark:text-[#D76562]
+                dark:bg-[#B94A48]/10
               "
             >
               {error}
@@ -355,20 +358,18 @@ const Login = () => {
             className="
               w-full
               rounded-lg
-              bg-[#151A21]
+              bg-primary
               py-2.5
               text-sm
               font-semibold
-              text-white
+              text-primary-foreground
               shadow-sm
               transition-all
               duration-200
               hover:-translate-y-0.5
-              hover:bg-[#343A40]
+              hover:bg-primary
+              hover:text-primary-foreground
               hover:shadow-md
-              dark:bg-[#E5E7EB]
-              dark:text-[#151A21]
-              dark:hover:bg-white
             "
           >
             Login
@@ -391,8 +392,8 @@ const Login = () => {
               className="
                 font-medium
                 text-[#B94A48]
+                transition-colors
                 hover:underline
-                dark:text-[#D76562]
               "
             >
               Register here

@@ -38,8 +38,7 @@ const AdminUsers = () => {
         }
 
         toast.error(
-          error.response?.data?.message ||
-            "Failed to load users"
+          error.response?.data?.message || "Failed to load users"
         );
 
         setLoading(false);
@@ -47,246 +46,360 @@ const AdminUsers = () => {
   }, [navigate]);
 
   const filteredUsers = users.filter((user) =>
-    user.name
-      ?.toLowerCase()
-      .includes(searchName.toLowerCase())
+    user.name?.toLowerCase().includes(searchName.toLowerCase())
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      <div className="max-w-7xl mx-auto">
-
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* PAGE HEADER */}
+        <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <Link
               to="/admin/dashboard"
-              className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 mb-3"
+              className="
+                mb-4
+                inline-flex
+                items-center
+                gap-2
+                text-sm
+                font-medium
+                text-muted-foreground
+                transition-colors
+                duration-200
+                hover:text-[#B94A48]
+              "
             >
               <ArrowLeft size={17} />
               Back to Dashboard
             </Link>
 
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <Users
-                  size={24}
-                  className="text-blue-600"
-                />
+              {/* HEADER ICON */}
+              <div
+                className="
+                  flex
+                  h-12
+                  w-12
+                  items-center
+                  justify-center
+                  rounded-xl
+                  bg-[#B94A48]/10
+                  text-[#B94A48]
+                  dark:bg-[#D76562]/10
+                  dark:text-[#D76562]
+                "
+              >
+                <Users size={23} />
               </div>
 
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">
+                <h1
+                  className="
+                    bg-gradient-to-r
+                    from-[#B94A48]
+                    via-[#7FAF8A]
+                    to-[#555C64]
+                    bg-clip-text
+                    text-2xl
+                    font-bold
+                    tracking-tight
+                    text-transparent
+                  "
+                >
                   Users
                 </h1>
 
-                <p className="text-sm text-slate-500">
+                <p className="mt-1 text-sm text-muted-foreground">
                   View registered INCIDEX users
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Total Users */}
-          <div className="bg-white border border-slate-200 rounded-lg px-4 py-3">
-            <p className="text-xs text-slate-500">
+          {/* TOTAL USERS */}
+          <div
+            className="
+              rounded-xl
+              border
+              border-border
+              bg-card
+              px-5
+              py-4
+              transition-colors
+              duration-300
+            "
+          >
+            <p className="text-xs font-medium text-muted-foreground">
               Total Users
             </p>
 
-            <p className="text-xl font-bold text-slate-900">
+            <p className="mt-1 text-2xl font-bold text-foreground">
               {users.length}
             </p>
           </div>
-
         </div>
 
-        {/* Users Card */}
-        <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-
-          {/* Card Header */}
-          <div className="px-6 py-4 border-b border-slate-200">
-
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-
+        {/* USERS CARD */}
+        <div
+          className="
+            overflow-hidden
+            rounded-2xl
+            border
+            border-border
+            bg-card
+            transition-colors
+            duration-300
+          "
+        >
+          {/* CARD HEADER */}
+          <div className="border-b border-border px-6 py-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">
+                <h2 className="text-lg font-semibold text-foreground">
                   Registered Users
                 </h2>
 
-                <p className="text-sm text-slate-500 mt-1">
+                <p className="mt-1 text-sm text-muted-foreground">
                   All users registered in the system
                 </p>
               </div>
 
-              {/* Search */}
+              {/* SEARCH */}
               <div className="relative w-full sm:w-72">
-
                 <Search
                   size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  className="
+                    absolute
+                    left-3
+                    top-1/2
+                    -translate-y-1/2
+                    text-muted-foreground
+                  "
                 />
 
                 <input
                   type="text"
                   value={searchName}
-                  onChange={(e) =>
-                    setSearchName(e.target.value)
-                  }
+                  onChange={(e) => setSearchName(e.target.value)}
                   placeholder="Search by name"
-                  className="w-full border border-slate-300 rounded-lg pl-10 pr-3 py-2 text-sm outline-none focus:border-blue-600"
+                  className="
+                    w-full
+                    rounded-lg
+                    border
+                    border-input
+                    bg-background
+                    py-2
+                    pl-10
+                    pr-3
+                    text-sm
+                    text-foreground
+                    outline-none
+                    transition-colors
+                    placeholder:text-muted-foreground
+                    focus:border-[#B94A48]
+                    focus:ring-1
+                    focus:ring-[#B94A48]
+                    dark:focus:border-[#D76562]
+                    dark:focus:ring-[#D76562]
+                  "
                 />
-
               </div>
-
             </div>
-
           </div>
 
-          {/* Loading */}
+          {/* LOADING */}
           {loading ? (
-            <div className="p-10 text-center">
-              <p className="text-slate-500">
-                Loading users...
-              </p>
+            <div className="flex min-h-[300px] items-center justify-center p-10">
+              <div className="text-center">
+                <div
+                  className="
+                    mx-auto
+                    mb-4
+                    h-8
+                    w-8
+                    animate-spin
+                    rounded-full
+                    border-2
+                    border-border
+                    border-t-[#B94A48]
+                    dark:border-t-[#D76562]
+                  "
+                />
+
+                <p className="text-sm text-muted-foreground">
+                  Loading users...
+                </p>
+              </div>
             </div>
           ) : filteredUsers.length === 0 ? (
+            /* EMPTY STATE */
+            <div className="flex min-h-[300px] items-center justify-center p-10">
+              <div className="text-center">
+                <div
+                  className="
+                    mx-auto
+                    mb-4
+                    flex
+                    h-14
+                    w-14
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-muted
+                    text-muted-foreground
+                  "
+                >
+                  <Users size={25} />
+                </div>
 
-            /* No Users */
-            <div className="p-10 text-center">
+                <p className="text-sm font-medium text-foreground">
+                  {searchName
+                    ? "No users found with that name."
+                    : "No users found."}
+                </p>
 
-              <Users
-                size={40}
-                className="mx-auto text-slate-300 mb-3"
-              />
-
-              <p className="text-slate-500">
-                {searchName
-                  ? "No users found with that name."
-                  : "No users found."}
-              </p>
-
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Registered users will appear here.
+                </p>
+              </div>
             </div>
-
           ) : (
-
-            /* Users Table */
+            /* USERS TABLE */
             <div className="overflow-x-auto">
-
-              <table className="w-full">
-
+              <table className="w-full min-w-[720px]">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200">
-
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">
+                  <tr className="border-b border-border bg-muted/40">
+                    <th
+                      className="
+                        px-6
+                        py-4
+                        text-left
+                        text-sm
+                        font-semibold
+                        text-foreground
+                      "
+                    >
                       User
                     </th>
 
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">
+                    <th
+                      className="
+                        px-6
+                        py-4
+                        text-left
+                        text-sm
+                        font-semibold
+                        text-foreground
+                      "
+                    >
                       Email
                     </th>
 
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">
+                    <th
+                      className="
+                        px-6
+                        py-4
+                        text-left
+                        text-sm
+                        font-semibold
+                        text-foreground
+                      "
+                    >
                       Phone
                     </th>
 
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">
+                    <th
+                      className="
+                        px-6
+                        py-4
+                        text-left
+                        text-sm
+                        font-semibold
+                        text-foreground
+                      "
+                    >
                       Registered
                     </th>
-
                   </tr>
                 </thead>
 
                 <tbody>
-
                   {filteredUsers.map((user) => (
-
                     <tr
                       key={user._id}
-                      className="border-b border-slate-100 hover:bg-slate-50 transition"
+                      className="
+                        border-b
+                        border-border
+                        transition-colors
+                        duration-200
+                        hover:bg-muted/40
+                      "
                     >
-
-                      {/* User */}
+                      {/* USER */}
                       <td className="px-6 py-4">
-
                         <div className="flex items-center gap-3">
-
-                          <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
-
-                            <User
-                              size={18}
-                              className="text-blue-600"
-                            />
-
+                          {/* USER AVATAR */}
+                          <div
+                            className="
+                              flex
+                              h-9
+                              w-9
+                              shrink-0
+                              items-center
+                              justify-center
+                              rounded-full
+                              bg-[#B94A48]/10
+                              text-[#B94A48]
+                              dark:bg-[#D76562]/10
+                              dark:text-[#D76562]
+                            "
+                          >
+                            <User size={17} />
                           </div>
 
                           <div>
-
-                            <p className="font-medium text-slate-900">
+                            <p className="font-medium text-foreground">
                               {user.name}
                             </p>
 
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-muted-foreground">
                               User
                             </p>
-
                           </div>
-
                         </div>
-
                       </td>
 
-                      {/* Email */}
+                      {/* EMAIL */}
                       <td className="px-6 py-4">
-
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Mail size={16} />
-
                           {user.email}
-
                         </div>
-
                       </td>
 
-                      {/* Phone */}
+                      {/* PHONE */}
                       <td className="px-6 py-4">
-
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Phone size={16} />
-
                           {user.phone}
-
                         </div>
-
                       </td>
 
-                      {/* Registered Date */}
-                      <td className="px-6 py-4 text-sm text-slate-600">
-
+                      {/* REGISTERED DATE */}
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
                         {user.createdAt
-                          ? new Date(
-                              user.createdAt
-                            ).toLocaleDateString()
+                          ? new Date(user.createdAt).toLocaleDateString()
                           : "N/A"}
-
                       </td>
-
                     </tr>
-
                   ))}
-
                 </tbody>
-
               </table>
-
             </div>
           )}
-
         </div>
-
-      </div>
+      </main>
     </div>
   );
 };

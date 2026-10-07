@@ -255,56 +255,105 @@ const ReportCrime = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <Navbar />
 
       <main className="min-h-screen">
         <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
 
-          {/* Header */}
-
-          <div className="mb-6">
+          {/* HEADER */}
+          <div className="mb-8">
             <button
               type="button"
               onClick={() => navigate("/user/dashboard")}
               className="
-                mb-4
-                flex
+                mb-5
+                inline-flex
                 items-center
                 gap-2
                 text-sm
                 font-medium
                 text-muted-foreground
                 transition-colors
-                hover:text-foreground
+                hover:text-[#B94A48]
+                dark:hover:text-[#D76562]
               "
             >
               <ArrowLeft size={18} />
               Back to Dashboard
             </button>
 
-            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Report Crime
-            </h1>
+            <div className="flex items-center gap-3">
+              <div
+                className="
+                  flex
+                  h-11
+                  w-11
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-xl
+                  bg-[#B94A48]/10
+                  text-[#B94A48]
+                  dark:bg-[#D76562]/10
+                  dark:text-[#D76562]
+                "
+              >
+                <MapPin size={22} />
+              </div>
 
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Submit a crime incident report with the required details.
-            </p>
+              <div>
+                <h1
+                  className="
+                    bg-gradient-to-r
+                    from-[#B94A48]
+                    via-[#7FAF8A]
+                    to-[#555C64]
+                    bg-clip-text
+                    text-2xl
+                    font-bold
+                    tracking-tight
+                    text-transparent
+                    sm:text-3xl
+                  "
+                >
+                  Report Crime
+                </h1>
+
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                  Submit a crime incident report with the required details.
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Form Card */}
-
-          <div className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
+          {/* FORM CARD */}
+          <div
+            className="
+              rounded-2xl
+              border
+              border-border
+              bg-card
+              p-5
+              shadow-sm
+              transition-colors
+              duration-300
+              sm:p-6
+            "
+          >
             <form onSubmit={handleSubmit}>
 
-              {/* Crime Category */}
-
+              {/* CRIME CATEGORY */}
               <div className="mb-6">
-                <label className="mb-2 block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="crimeCategory"
+                  className="mb-2 block text-sm font-medium text-foreground"
+                >
                   Crime Category
                 </label>
 
                 <select
+                  id="crimeCategory"
                   value={crimeCategory}
                   onChange={(event) => {
                     setCrimeCategory(event.target.value);
@@ -320,11 +369,12 @@ const ReportCrime = () => {
                     text-sm
                     text-foreground
                     outline-none
-                    transition
+                    transition-all
+                    duration-200
                     ${
                       errorField === "category"
-                        ? "border-red-500 focus:ring-2 focus:ring-red-500/20"
-                        : "border-border focus:border-foreground focus:ring-2 focus:ring-foreground/10"
+                        ? "border-[#B94A48] focus:border-[#B94A48] focus:ring-2 focus:ring-[#B94A48]/10 dark:border-[#D76562] dark:focus:border-[#D76562] dark:focus:ring-[#D76562]/10"
+                        : "border-border focus:border-[#B94A48] focus:ring-2 focus:ring-[#B94A48]/10 dark:focus:border-[#D76562] dark:focus:ring-[#D76562]/10"
                     }
                   `}
                 >
@@ -345,20 +395,23 @@ const ReportCrime = () => {
                 </select>
 
                 {errorField === "category" && (
-                  <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                  <p className="mt-2 text-sm text-[#B94A48] dark:text-[#D76562]">
                     {errorMessage}
                   </p>
                 )}
               </div>
 
-              {/* Description */}
-
+              {/* DESCRIPTION */}
               <div className="mb-6">
-                <label className="mb-2 block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="incidentDescription"
+                  className="mb-2 block text-sm font-medium text-foreground"
+                >
                   Incident Description
                 </label>
 
                 <textarea
+                  id="incidentDescription"
                   value={incidentDescription}
                   onChange={(event) => {
                     setIncidentDescription(event.target.value);
@@ -378,18 +431,19 @@ const ReportCrime = () => {
                     text-foreground
                     placeholder:text-muted-foreground
                     outline-none
-                    transition
+                    transition-all
+                    duration-200
                     ${
                       errorField === "description"
-                        ? "border-red-500 focus:ring-2 focus:ring-red-500/20"
-                        : "border-border focus:border-foreground focus:ring-2 focus:ring-foreground/10"
+                        ? "border-[#B94A48] focus:border-[#B94A48] focus:ring-2 focus:ring-[#B94A48]/10 dark:border-[#D76562] dark:focus:border-[#D76562] dark:focus:ring-[#D76562]/10"
+                        : "border-border focus:border-[#B94A48] focus:ring-2 focus:ring-[#B94A48]/10 dark:focus:border-[#D76562] dark:focus:ring-[#D76562]/10"
                     }
                   `}
                 />
 
-                <div className="mt-2 flex justify-between">
+                <div className="mt-2 flex justify-between gap-4">
                   {errorField === "description" ? (
-                    <p className="text-sm text-red-600 dark:text-red-400">
+                    <p className="text-sm text-[#B94A48] dark:text-[#D76562]">
                       {errorMessage}
                     </p>
                   ) : (
@@ -398,31 +452,38 @@ const ReportCrime = () => {
                     </p>
                   )}
 
-                  <span className="text-xs text-muted-foreground">
+                  <span className="shrink-0 text-xs text-muted-foreground">
                     {incidentDescription.length}/500
                   </span>
                 </div>
               </div>
 
-              {/* Incident Location */}
-
+              {/* INCIDENT LOCATION */}
               <div className="mb-6">
-                <label className="mb-2 block text-sm font-medium text-foreground">
+                <label
+                  htmlFor="incidentLocation"
+                  className="mb-2 block text-sm font-medium text-foreground"
+                >
                   Incident Location
                 </label>
 
                 <div className="relative">
 
-                  {/* Search Icon */}
-
+                  {/* SEARCH ICON */}
                   <Search
                     size={18}
-                    className="absolute left-3 top-3.5 z-10 text-muted-foreground"
+                    className="
+                      absolute
+                      left-3
+                      top-3.5
+                      z-10
+                      text-muted-foreground
+                    "
                   />
 
-                  {/* Location Input */}
-
+                  {/* LOCATION INPUT */}
                   <input
+                    id="incidentLocation"
                     type="text"
                     value={incidentLocation}
                     onChange={(event) => {
@@ -446,17 +507,17 @@ const ReportCrime = () => {
                       text-foreground
                       placeholder:text-muted-foreground
                       outline-none
-                      transition
+                      transition-all
+                      duration-200
                       ${
                         errorField === "location"
-                          ? "border-red-500 focus:ring-2 focus:ring-red-500/20"
-                          : "border-border focus:border-foreground focus:ring-2 focus:ring-foreground/10"
+                          ? "border-[#B94A48] focus:border-[#B94A48] focus:ring-2 focus:ring-[#B94A48]/10 dark:border-[#D76562] dark:focus:border-[#D76562] dark:focus:ring-[#D76562]/10"
+                          : "border-border focus:border-[#B94A48] focus:ring-2 focus:ring-[#B94A48]/10 dark:focus:border-[#D76562] dark:focus:ring-[#D76562]/10"
                       }
                     `}
                   />
 
-                  {/* Clear Button */}
-
+                  {/* CLEAR BUTTON */}
                   {incidentLocation && (
                     <button
                       type="button"
@@ -467,15 +528,15 @@ const ReportCrime = () => {
                         top-3
                         text-muted-foreground
                         transition-colors
-                        hover:text-foreground
+                        hover:text-[#B94A48]
+                        dark:hover:text-[#D76562]
                       "
                     >
                       <X size={18} />
                     </button>
                   )}
 
-                  {/* Search Suggestions */}
-
+                  {/* SEARCH SUGGESTIONS */}
                   {suggestions.length > 0 && (
                     <div
                       className="
@@ -520,10 +581,10 @@ const ReportCrime = () => {
                         >
                           <MapPin
                             size={18}
-                            className="mt-0.5 flex-shrink-0 text-muted-foreground"
+                            className="mt-0.5 shrink-0 text-[#B94A48] dark:text-[#D76562]"
                           />
 
-                          <div>
+                          <div className="min-w-0">
                             <p className="text-sm font-medium text-foreground">
                               {location.address_line1 ||
                                 location.name ||
@@ -540,8 +601,7 @@ const ReportCrime = () => {
                     </div>
                   )}
 
-                  {/* Searching */}
-
+                  {/* SEARCHING */}
                   {searching &&
                     incidentLocation.trim().length >= 3 && (
                       <div
@@ -569,7 +629,7 @@ const ReportCrime = () => {
                 </div>
 
                 {errorField === "location" && (
-                  <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                  <p className="mt-2 text-sm text-[#B94A48] dark:text-[#D76562]">
                     {errorMessage}
                   </p>
                 )}
@@ -580,8 +640,7 @@ const ReportCrime = () => {
                 </p>
               </div>
 
-              {/* Map */}
-
+              {/* MAP */}
               <div className="mb-6">
                 <label className="mb-2 block text-sm font-medium text-foreground">
                   Select Location on Map
@@ -637,48 +696,72 @@ const ReportCrime = () => {
 
                 {latitude !== null &&
                   longitude !== null && (
-                    <div className="mt-3 flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-400">
+                    <div
+                      className="
+                        mt-3
+                        flex
+                        items-center
+                        gap-2
+                        text-sm
+                        text-[#5F8D6A]
+                        dark:text-[#9BC7A4]
+                      "
+                    >
                       <MapPin size={16} />
                       Location selected successfully.
                     </div>
                   )}
               </div>
 
-              {/* General Error */}
-
+              {/* GENERAL ERROR */}
               {errorMessage && errorField === "" && (
-                <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 dark:border-red-900/50 dark:bg-red-950/20">
-                  <p className="text-sm text-red-600 dark:text-red-400">
+                <div
+                  className="
+                    mb-6
+                    rounded-lg
+                    border
+                    border-[#B94A48]/30
+                    bg-[#B94A48]/5
+                    px-4
+                    py-3
+                    dark:border-[#D76562]/30
+                    dark:bg-[#D76562]/10
+                  "
+                >
+                  <p className="text-sm text-[#B94A48] dark:text-[#D76562]">
                     {errorMessage}
                   </p>
                 </div>
               )}
 
-              {/* Submit Button */}
-
-              <div className="flex justify-end">
+              {/* SUBMIT BUTTON */}
+              <div className="flex justify-end border-t border-border pt-5">
                 <button
                   type="submit"
                   disabled={loading}
                   className="
-                    flex
+                    inline-flex
                     items-center
+                    justify-center
                     gap-2
                     rounded-lg
-                    bg-[#151A21]
+                    bg-primary
                     px-6
                     py-3
                     text-sm
                     font-semibold
-                    text-white
+                    text-primary-foreground
+                    shadow-sm
                     transition-all
                     duration-200
-                    hover:bg-[#343A40]
+                    hover:-translate-y-0.5
+                    hover:bg-primary
+                    hover:text-primary-foreground
+                    hover:shadow-md
                     disabled:cursor-not-allowed
                     disabled:opacity-60
-                    dark:bg-[#E5E7EB]
-                    dark:text-[#151A21]
-                    dark:hover:bg-white
+                    disabled:hover:translate-y-0
+                    disabled:hover:shadow-sm
                   "
                 >
                   <Send size={17} />
@@ -688,7 +771,6 @@ const ReportCrime = () => {
                     : "Submit Report"}
                 </button>
               </div>
-
             </form>
           </div>
         </div>

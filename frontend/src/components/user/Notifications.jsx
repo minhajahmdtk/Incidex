@@ -136,26 +136,47 @@ const Notifications = () => {
   ).length;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <Navbar />
 
       <main className="min-h-[calc(100vh-72px)]">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 
           {/* HEADER */}
-          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-
+          <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted">
-                <Bell
-                  size={22}
-                  className="text-foreground"
-                />
+              <div
+                className="
+                  flex
+                  h-11
+                  w-11
+                  items-center
+                  justify-center
+                  rounded-xl
+                  bg-[#B94A48]/10
+                  text-[#B94A48]
+                  dark:bg-[#D76562]/10
+                  dark:text-[#D76562]
+                "
+              >
+                <Bell size={22} />
               </div>
 
               <div>
-                <h1 className="text-2xl font-bold text-foreground">
+                <h1
+                  className="
+                    bg-gradient-to-r
+                    from-[#B94A48]
+                    via-[#7FAF8A]
+                    to-[#555C64]
+                    bg-clip-text
+                    text-2xl
+                    font-bold
+                    tracking-tight
+                    text-transparent
+                    sm:text-3xl
+                  "
+                >
                   Notifications
                 </h1>
 
@@ -163,7 +184,6 @@ const Notifications = () => {
                   Stay updated about your reported cases.
                 </p>
               </div>
-
             </div>
 
             {/* MARK ALL AS READ */}
@@ -172,14 +192,14 @@ const Notifications = () => {
                 type="button"
                 onClick={markAllAsRead}
                 className="
-                  flex
+                  inline-flex
                   items-center
                   justify-center
                   gap-2
                   rounded-lg
                   border
                   border-border
-                  bg-card
+                  bg-background
                   px-4
                   py-2.5
                   text-sm
@@ -199,15 +219,23 @@ const Notifications = () => {
                 Mark all as read
               </button>
             )}
-
           </div>
 
           {/* MAIN CARD */}
-          <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-
+          <div
+            className="
+              overflow-hidden
+              rounded-2xl
+              border
+              border-border
+              bg-card
+              shadow-sm
+              transition-colors
+              duration-300
+            "
+          >
             {/* CARD HEADER */}
-            <div className="flex items-center justify-between border-b border-border px-5 py-4">
-
+            <div className="flex items-center justify-between border-b border-border px-5 py-5">
               <div>
                 <h2 className="text-base font-semibold text-foreground">
                   Recent Notifications
@@ -222,16 +250,25 @@ const Notifications = () => {
                 </p>
               </div>
 
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+              <div
+                className="
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
+                  rounded-lg
+                  bg-muted
+                  text-muted-foreground
+                "
+              >
                 <Bell size={18} />
               </div>
-
             </div>
 
             {/* LOADING */}
             {loading && (
               <div className="px-6 py-16 text-center">
-
                 <div
                   className="
                     mx-auto
@@ -240,7 +277,7 @@ const Notifications = () => {
                     w-8
                     animate-spin
                     rounded-full
-                    border-4
+                    border-2
                     border-border
                     border-t-[#B94A48]
                     dark:border-t-[#D76562]
@@ -250,19 +287,26 @@ const Notifications = () => {
                 <p className="text-sm text-muted-foreground">
                   Loading notifications...
                 </p>
-
               </div>
             )}
 
             {/* EMPTY STATE */}
             {!loading && notifications.length === 0 && (
               <div className="px-6 py-16 text-center">
-
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-                  <BellOff
-                    size={30}
-                    className="text-muted-foreground"
-                  />
+                <div
+                  className="
+                    mx-auto
+                    flex
+                    h-16
+                    w-16
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-muted
+                    text-muted-foreground
+                  "
+                >
+                  <BellOff size={30} />
                 </div>
 
                 <h2 className="mt-5 text-lg font-semibold text-foreground">
@@ -274,14 +318,12 @@ const Notifications = () => {
                   You will receive updates when there is a
                   change in the status of your reported cases.
                 </p>
-
               </div>
             )}
 
             {/* NOTIFICATIONS LIST */}
             {!loading && notifications.length > 0 && (
               <div className="divide-y divide-border">
-
                 {notifications.map((notification) => (
                   <div
                     key={notification._id}
@@ -296,7 +338,6 @@ const Notifications = () => {
                       }
                     `}
                   >
-
                     <div className="flex gap-4">
 
                       {/* NOTIFICATION ICON */}
@@ -321,9 +362,7 @@ const Notifications = () => {
 
                       {/* NOTIFICATION CONTENT */}
                       <div className="min-w-0 flex-1">
-
                         <div className="flex flex-wrap items-center gap-2">
-
                           <h3 className="text-sm font-semibold text-foreground">
                             Case Notification
                           </h3>
@@ -348,7 +387,6 @@ const Notifications = () => {
                               New
                             </span>
                           )}
-
                         </div>
 
                         {/* MESSAGE */}
@@ -384,9 +422,7 @@ const Notifications = () => {
                               )}
                             </span>
                           </div>
-
                         </div>
-
                       </div>
 
                       {/* ACTION BUTTONS */}
@@ -410,7 +446,7 @@ const Notifications = () => {
                               rounded-lg
                               border
                               border-border
-                              bg-card
+                              bg-background
                               text-muted-foreground
                               transition-all
                               duration-200
@@ -445,33 +481,27 @@ const Notifications = () => {
                             rounded-lg
                             border
                             border-border
-                            bg-card
+                            bg-background
                             text-muted-foreground
                             transition-all
                             duration-200
-                            hover:border-red-200
-                            hover:bg-red-50
-                            hover:text-red-600
-                            dark:hover:border-red-900
-                            dark:hover:bg-red-950/30
-                            dark:hover:text-red-400
+                            hover:border-[#B94A48]
+                            hover:bg-[#B94A48]/5
+                            hover:text-[#B94A48]
+                            dark:hover:border-[#D76562]
+                            dark:hover:bg-[#D76562]/10
+                            dark:hover:text-[#D76562]
                           "
                         >
                           <Trash2 size={17} />
                         </button>
-
                       </div>
-
                     </div>
-
                   </div>
                 ))}
-
               </div>
             )}
-
           </div>
-
         </div>
       </main>
     </div>

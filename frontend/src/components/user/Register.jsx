@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { X } from "lucide-react";
+import { toast } from "sonner";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ const Register = () => {
     axios
       .post("http://localhost:3000/user/register", form)
       .then((response) => {
-        alert("Registration Successful");
+        toast.success("Registration successful");
 
         console.log("Registration Successful", response.data);
 
@@ -74,16 +75,14 @@ const Register = () => {
         }
       }}
     >
-      {/* ============================================================
-          REGISTER DIALOG
-      ============================================================ */}
+      {/* REGISTER DIALOG */}
 
       <div
         className="
           relative
+          max-h-[92vh]
           w-full
           max-w-xl
-          max-h-[92vh]
           overflow-y-auto
           rounded-2xl
           border
@@ -91,13 +90,16 @@ const Register = () => {
           bg-card
           p-6
           shadow-2xl
+          shadow-black/20
+          transition-colors
+          duration-300
           sm:p-7
         "
         role="dialog"
         aria-modal="true"
         aria-labelledby="register-title"
       >
-        {/* Close Button */}
+        {/* CLOSE BUTTON */}
 
         <button
           type="button"
@@ -113,18 +115,17 @@ const Register = () => {
             justify-center
             rounded-full
             text-muted-foreground
-            transition
-            hover:bg-muted
-            hover:text-foreground
+            transition-colors
+            duration-200
+            hover:bg-accent
+            hover:text-accent-foreground
           "
           aria-label="Close registration"
         >
           <X className="h-5 w-5" />
         </button>
 
-        {/* ============================================================
-            LOGO
-        ============================================================ */}
+        {/* LOGO */}
 
         <div className="flex justify-center">
           <Link
@@ -163,18 +164,24 @@ const Register = () => {
           </Link>
         </div>
 
-        {/* ============================================================
-            HEADING
-        ============================================================ */}
+        {/* HEADING */}
 
         <div className="mt-3 text-center">
           <h2
             id="register-title"
             className="
+              bg-gradient-to-r
+              from-[#B94A48]
+              via-[#7FAF8A]
+              to-[#5F9F6B]
+              bg-clip-text
               text-2xl
               font-bold
               tracking-tight
-              text-card-foreground
+              text-transparent
+              dark:from-[#D76562]
+              dark:via-[#91BD9C]
+              dark:to-[#7FBF8B]
             "
           >
             Create Account
@@ -191,18 +198,16 @@ const Register = () => {
           </p>
         </div>
 
-        {/* ============================================================
-            REGISTER FORM
-        ============================================================ */}
+        {/* REGISTER FORM */}
 
         <form
           className="mt-5"
           onSubmit={handleSubmit}
         >
-          {/* Name + Phone */}
+          {/* NAME + PHONE */}
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {/* Name */}
+            {/* NAME */}
 
             <div>
               <label
@@ -246,7 +251,7 @@ const Register = () => {
               />
             </div>
 
-            {/* Phone */}
+            {/* PHONE */}
 
             <div>
               <label
@@ -291,7 +296,7 @@ const Register = () => {
             </div>
           </div>
 
-          {/* Email */}
+          {/* EMAIL */}
 
           <div className="mt-4">
             <label
@@ -335,10 +340,10 @@ const Register = () => {
             />
           </div>
 
-          {/* Password + Confirm Password */}
+          {/* PASSWORD + CONFIRM PASSWORD */}
 
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {/* Password */}
+            {/* PASSWORD */}
 
             <div>
               <label
@@ -382,7 +387,7 @@ const Register = () => {
               />
             </div>
 
-            {/* Confirm Password */}
+            {/* CONFIRM PASSWORD */}
 
             <div>
               <label
@@ -427,7 +432,7 @@ const Register = () => {
             </div>
           </div>
 
-          {/* Error Message */}
+          {/* ERROR MESSAGE */}
 
           {error && (
             <div
@@ -435,21 +440,20 @@ const Register = () => {
                 mt-4
                 rounded-lg
                 border
-                border-red-200
-                bg-red-50
+                border-[#B94A48]/30
+                bg-[#B94A48]/5
                 p-3
                 text-sm
-                text-red-600
-                dark:border-red-900/50
-                dark:bg-red-950/30
-                dark:text-red-400
+                text-[#B94A48]
+                dark:bg-[#D76562]/10
+                dark:text-[#D76562]
               "
             >
               {error}
             </div>
           )}
 
-          {/* Register Button */}
+          {/* REGISTER BUTTON */}
 
           <button
             type="submit"
@@ -457,26 +461,24 @@ const Register = () => {
               mt-5
               w-full
               rounded-lg
-              bg-[#151A21]
+              bg-primary
               py-2.5
               text-sm
               font-semibold
-              text-white
+              text-primary-foreground
               shadow-sm
               transition-all
               duration-200
               hover:-translate-y-0.5
-              hover:bg-[#343A40]
+              hover:bg-primary
+              hover:text-primary-foreground
               hover:shadow-md
-              dark:bg-[#E5E7EB]
-              dark:text-[#151A21]
-              dark:hover:bg-white
             "
           >
             Register
           </button>
 
-          {/* Login Link */}
+          {/* LOGIN LINK */}
 
           <p
             className="
@@ -493,6 +495,7 @@ const Register = () => {
               className="
                 font-medium
                 text-[#B94A48]
+                transition-colors
                 hover:underline
                 dark:text-[#D76562]
               "
