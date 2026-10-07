@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { Link } from "react-router-dom";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -70,8 +69,6 @@ const AdminLogin = () => {
           );
         }
 
-        alert("Admin Login Successful");
-
         navigate("/admin/dashboard");
       })
       .catch((error) => {
@@ -91,14 +88,14 @@ const AdminLogin = () => {
   return (
     <div
       className="
-        min-h-screen
-        bg-background
-        text-foreground
         flex
+        min-h-screen
         items-center
         justify-center
+        bg-background
         px-4
         py-10
+        text-foreground
         transition-colors
         duration-300
       "
@@ -114,6 +111,8 @@ const AdminLogin = () => {
           p-7
           shadow-2xl
           shadow-black/10
+          transition-colors
+          duration-300
           sm:p-8
         "
       >
@@ -155,10 +154,15 @@ const AdminLogin = () => {
         <div className="mb-6 text-center">
           <h2
             className="
+              bg-gradient-to-r
+              from-[#B94A48]
+              via-[#7FAF8A]
+              to-[#555C64]
+              bg-clip-text
               text-2xl
               font-bold
               tracking-tight
-              text-card-foreground
+              text-transparent
             "
           >
             Admin Login
@@ -178,7 +182,6 @@ const AdminLogin = () => {
         {/* FORM */}
 
         <form onSubmit={handleSubmit}>
-
           {/* EMAIL */}
 
           <div>
@@ -299,20 +302,18 @@ const AdminLogin = () => {
               mt-5
               w-full
               rounded-lg
-              bg-[#151A21]
+              bg-primary
               py-2.5
               text-sm
               font-semibold
-              text-white
+              text-primary-foreground
               shadow-sm
               transition-all
               duration-200
               hover:-translate-y-0.5
-              hover:bg-[#343A40]
+              hover:bg-primary
+              hover:text-primary-foreground
               hover:shadow-md
-              dark:bg-[#E5E7EB]
-              dark:text-[#151A21]
-              dark:hover:bg-white
             "
           >
             Admin Login
@@ -333,6 +334,7 @@ const AdminLogin = () => {
               className="
                 font-medium
                 text-[#B94A48]
+                transition-colors
                 hover:underline
                 dark:text-[#D76562]
               "
@@ -340,7 +342,6 @@ const AdminLogin = () => {
               Back to Home
             </Link>
           </p>
-
         </form>
       </div>
     </div>
