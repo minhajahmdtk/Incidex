@@ -9,6 +9,7 @@ import {
   FileText,
 } from "lucide-react";
 import { toast } from "sonner";
+
 import Navbar from "./Navbar";
 import axiosInstance from "../../axiosInterceptor";
 
@@ -135,29 +136,34 @@ const Notifications = () => {
   ).length;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="min-h-screen lg:ml-72">
-        <div className="px-4 py-6 sm:px-6 lg:px-8">
+      <main className="min-h-[calc(100vh-72px)]">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 
           {/* HEADER */}
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                <Bell size={22} />
+
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted">
+                <Bell
+                  size={22}
+                  className="text-foreground"
+                />
               </div>
 
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">
+                <h1 className="text-2xl font-bold text-foreground">
                   Notifications
                 </h1>
 
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-muted-foreground">
                   Stay updated about your reported cases.
                 </p>
               </div>
+
             </div>
 
             {/* MARK ALL AS READ */}
@@ -165,26 +171,49 @@ const Notifications = () => {
               <button
                 type="button"
                 onClick={markAllAsRead}
-                className="flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600"
+                className="
+                  flex
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-lg
+                  border
+                  border-border
+                  bg-card
+                  px-4
+                  py-2.5
+                  text-sm
+                  font-medium
+                  text-foreground
+                  transition-all
+                  duration-200
+                  hover:border-[#B94A48]
+                  hover:bg-[#B94A48]/5
+                  hover:text-[#B94A48]
+                  dark:hover:border-[#D76562]
+                  dark:hover:bg-[#D76562]/10
+                  dark:hover:text-[#D76562]
+                "
               >
                 <CheckCheck size={17} />
                 Mark all as read
               </button>
             )}
+
           </div>
 
           {/* MAIN CARD */}
-          <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
 
             {/* CARD HEADER */}
-            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+            <div className="flex items-center justify-between border-b border-border px-5 py-4">
 
               <div>
-                <h2 className="text-base font-semibold text-slate-900">
+                <h2 className="text-base font-semibold text-foreground">
                   Recent Notifications
                 </h2>
 
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   {unreadCount > 0
                     ? `${unreadCount} unread notification${
                         unreadCount > 1 ? "s" : ""
@@ -193,18 +222,32 @@ const Notifications = () => {
                 </p>
               </div>
 
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                 <Bell size={18} />
               </div>
+
             </div>
 
             {/* LOADING */}
             {loading && (
               <div className="px-6 py-16 text-center">
 
-                <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600"></div>
+                <div
+                  className="
+                    mx-auto
+                    mb-4
+                    h-8
+                    w-8
+                    animate-spin
+                    rounded-full
+                    border-4
+                    border-border
+                    border-t-[#B94A48]
+                    dark:border-t-[#D76562]
+                  "
+                />
 
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   Loading notifications...
                 </p>
 
@@ -215,18 +258,18 @@ const Notifications = () => {
             {!loading && notifications.length === 0 && (
               <div className="px-6 py-16 text-center">
 
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted">
                   <BellOff
                     size={30}
-                    className="text-slate-400"
+                    className="text-muted-foreground"
                   />
                 </div>
 
-                <h2 className="mt-5 text-lg font-semibold text-slate-900">
+                <h2 className="mt-5 text-lg font-semibold text-foreground">
                   No Notifications
                 </h2>
 
-                <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+                <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                   You don't have any notifications yet.
                   You will receive updates when there is a
                   change in the status of your reported cases.
@@ -237,27 +280,41 @@ const Notifications = () => {
 
             {/* NOTIFICATIONS LIST */}
             {!loading && notifications.length > 0 && (
-              <div className="divide-y divide-slate-200">
+              <div className="divide-y divide-border">
 
                 {notifications.map((notification) => (
                   <div
                     key={notification._id}
-                    className={`p-5 transition ${
-                      notification.isRead
-                        ? "bg-white"
-                        : "bg-blue-50/40"
-                    }`}
+                    className={`
+                      p-5
+                      transition-colors
+                      duration-200
+                      ${
+                        notification.isRead
+                          ? "bg-card hover:bg-muted/30"
+                          : "bg-muted/40 hover:bg-muted/60"
+                      }
+                    `}
                   >
 
                     <div className="flex gap-4">
 
                       {/* NOTIFICATION ICON */}
                       <div
-                        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
-                          notification.isRead
-                            ? "bg-slate-100 text-slate-500"
-                            : "bg-blue-100 text-blue-600"
-                        }`}
+                        className={`
+                          flex
+                          h-11
+                          w-11
+                          shrink-0
+                          items-center
+                          justify-center
+                          rounded-xl
+                          ${
+                            notification.isRead
+                              ? "bg-muted text-muted-foreground"
+                              : "bg-[#B94A48]/10 text-[#B94A48] dark:bg-[#D76562]/10 dark:text-[#D76562]"
+                          }
+                        `}
                       >
                         <Bell size={19} />
                       </div>
@@ -267,12 +324,27 @@ const Notifications = () => {
 
                         <div className="flex flex-wrap items-center gap-2">
 
-                          <h3 className="text-sm font-semibold text-slate-900">
+                          <h3 className="text-sm font-semibold text-foreground">
                             Case Notification
                           </h3>
 
                           {!notification.isRead && (
-                            <span className="rounded-full bg-blue-600 px-2 py-1 text-xs font-medium text-white">
+                            <span
+                              className="
+                                rounded-full
+                                border
+                                border-[#B94A48]/20
+                                bg-[#B94A48]/10
+                                px-2
+                                py-0.5
+                                text-[11px]
+                                font-medium
+                                text-[#B94A48]
+                                dark:border-[#D76562]/20
+                                dark:bg-[#D76562]/10
+                                dark:text-[#D76562]
+                              "
+                            >
                               New
                             </span>
                           )}
@@ -280,12 +352,12 @@ const Notifications = () => {
                         </div>
 
                         {/* MESSAGE */}
-                        <p className="mt-2 text-sm leading-6 text-slate-600">
+                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
                           {notification.message}
                         </p>
 
                         {/* CASE AND DATE */}
-                        <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-500">
+                        <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
 
                           {/* CASE ID */}
                           {notification.caseId && (
@@ -294,7 +366,7 @@ const Notifications = () => {
 
                               <span>
                                 Case ID:{" "}
-                                <span className="font-medium text-slate-700">
+                                <span className="font-medium text-foreground">
                                   {notification.caseId.caseId ||
                                     notification.caseId}
                                 </span>
@@ -328,7 +400,27 @@ const Notifications = () => {
                               markAsRead(notification._id)
                             }
                             title="Mark as read"
-                            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600"
+                            aria-label="Mark notification as read"
+                            className="
+                              flex
+                              h-9
+                              w-9
+                              items-center
+                              justify-center
+                              rounded-lg
+                              border
+                              border-border
+                              bg-card
+                              text-muted-foreground
+                              transition-all
+                              duration-200
+                              hover:border-[#B94A48]
+                              hover:bg-[#B94A48]/5
+                              hover:text-[#B94A48]
+                              dark:hover:border-[#D76562]
+                              dark:hover:bg-[#D76562]/10
+                              dark:hover:text-[#D76562]
+                            "
                           >
                             <Check size={17} />
                           </button>
@@ -343,7 +435,27 @@ const Notifications = () => {
                             )
                           }
                           title="Delete notification"
-                          className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                          aria-label="Delete notification"
+                          className="
+                            flex
+                            h-9
+                            w-9
+                            items-center
+                            justify-center
+                            rounded-lg
+                            border
+                            border-border
+                            bg-card
+                            text-muted-foreground
+                            transition-all
+                            duration-200
+                            hover:border-red-200
+                            hover:bg-red-50
+                            hover:text-red-600
+                            dark:hover:border-red-900
+                            dark:hover:bg-red-950/30
+                            dark:hover:text-red-400
+                          "
                         >
                           <Trash2 size={17} />
                         </button>
@@ -359,6 +471,7 @@ const Notifications = () => {
             )}
 
           </div>
+
         </div>
       </main>
     </div>

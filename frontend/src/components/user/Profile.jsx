@@ -1,10 +1,21 @@
 import { useEffect, useState } from "react";
-import { User, Mail, Phone, Edit, Save, X } from "lucide-react";
+import {
+  User,
+  Mail,
+  Phone,
+  Edit,
+  Save,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+
 import Navbar from "./Navbar";
 import axiosInstance from "../../axiosInterceptor";
 
 const Profile = () => {
+  const navigate = useNavigate();
+
   const [profile, setProfile] = useState({
     name: "",
     email: "",
@@ -19,29 +30,23 @@ const Profile = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
-
   const [errorMessage, setErrorMessage] = useState("");
 
   // GET PROFILE
-
   useEffect(() => {
     axiosInstance
       .get("/user/profile")
       .then((response) => {
         const user = response.data.user;
 
-        setProfile({
+        const userProfile = {
           name: user.name || "",
           email: user.email || "",
           phone: user.phone || "",
-        });
+        };
 
-        setFormData({
-          name: user.name || "",
-          email: user.email || "",
-          phone: user.phone || "",
-        });
-
+        setProfile(userProfile);
+        setFormData(userProfile);
         setLoading(false);
       })
       .catch((error) => {
@@ -57,7 +62,6 @@ const Profile = () => {
   }, []);
 
   // HANDLE INPUT
-
   const handleChange = (event) => {
     setFormData({
       ...formData,
@@ -68,7 +72,6 @@ const Profile = () => {
   };
 
   // EDIT PROFILE
-
   const handleEdit = () => {
     setFormData(profile);
     setErrorMessage("");
@@ -76,15 +79,20 @@ const Profile = () => {
   };
 
   // CANCEL EDIT
-
   const handleCancel = () => {
     setFormData(profile);
     setErrorMessage("");
     setIsEditing(false);
   };
 
-  // UPDATE PROFILE
+  // CLOSE DIALOG
+  const handleClose = () => {
+    setIsEditing(false);
+    setErrorMessage("");
+    navigate(-1);
+  };
 
+  // UPDATE PROFILE
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -132,7 +140,6 @@ const Profile = () => {
   };
 
   // CHECK WHICH FIELD HAS ERROR
-
   const getErrorField = () => {
     if (
       errorMessage.toLowerCase().includes("name")
@@ -158,218 +165,392 @@ const Profile = () => {
   const errorField = getErrorField();
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="min-h-screen lg:ml-72">
-        <div className="px-4 py-6 sm:px-6 lg:px-8">
+      {/* BACKGROUND CONTENT */}
+      <main className="min-h-[calc(100vh-72px)]">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <div className="rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
+            <User
+              size={32}
+              className="mx-auto mb-3 text-muted-foreground"
+            />
 
-          {/* Header */}
-
-          <div className="mb-8">
-            <p className="mb-1 text-sm font-medium text-slate-500">
-              Account
-            </p>
-
-            <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+            <h1 className="text-xl font-semibold text-foreground">
               Profile
             </h1>
 
-            <p className="mt-2 text-sm text-slate-600">
-              View and manage your personal information.
+            <p className="mt-2 text-sm text-muted-foreground">
+              Profile dialog is open.
             </p>
           </div>
+        </div>
+      </main>
 
-          {/* Loading */}
+      {/* PROFILE DIALOG OVERLAY */}
+      <div
+        className="
+          fixed
+          inset-0
+          z-50
+          flex
+          items-center
+          justify-center
+          bg-black/50
+          px-4
+          py-6
+          backdrop-blur-sm
+        "
+      >
+        {/* PROFILE DIALOG */}
+        <div
+          className="
+            relative
+            w-full
+            max-w-2xl
+            max-h-[90vh]
+            overflow-y-auto
+            rounded-2xl
+            border
+            border-border
+            bg-card
+            shadow-2xl
+          "
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="profile-title"
+        >
+          {/* HEADER */}
+          <div className="flex items-center justify-between border-b border-border px-6 py-5">
+            <div className="flex items-center gap-4">
 
-          {loading ? (
-            <div className="rounded-xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-              <p className="text-sm text-slate-500">
-                Loading profile...
-              </p>
+              <div
+                className="
+                  flex
+                  h-12
+                  w-12
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-muted
+                "
+              >
+                <User
+                  size={24}
+                  className="text-foreground"
+                />
+              </div>
+
+              <div>
+                <h1
+                  id="profile-title"
+                  className="text-xl font-semibold text-foreground"
+                >
+                  Profile
+                </h1>
+
+                <p className="mt-1 text-sm text-muted-foreground">
+                  View and manage your personal information.
+                </p>
+              </div>
+
             </div>
-          ) : (
-            <div className="max-w-3xl">
 
-              {/* Profile Card */}
+            {/* CLOSE BUTTON */}
+            <button
+              type="button"
+              onClick={handleClose}
+              className="
+                rounded-lg
+                p-2
+                text-muted-foreground
+                transition-all
+                duration-200
+                hover:bg-muted
+                hover:text-foreground
+              "
+              title="Close"
+              aria-label="Close profile"
+            >
+              <X size={20} />
+            </button>
+          </div>
 
-              <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          {/* CONTENT */}
+          <div className="px-6 py-6">
 
-                {/* Card Header */}
+            {/* LOADING */}
+            {loading ? (
+              <div className="py-12 text-center">
 
-                <div className="border-b border-slate-200 px-6 py-5">
-                  <div className="flex items-center justify-between">
+                <div
+                  className="
+                    mx-auto
+                    mb-4
+                    h-8
+                    w-8
+                    animate-spin
+                    rounded-full
+                    border-4
+                    border-border
+                    border-t-[#B94A48]
+                    dark:border-t-[#D76562]
+                  "
+                />
 
-                    <div className="flex items-center gap-4">
+                <p className="text-sm text-muted-foreground">
+                  Loading profile...
+                </p>
 
-                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-50">
-                        <User
-                          size={28}
-                          className="text-blue-600"
-                        />
-                      </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit}>
 
-                      <div>
-                        <h2 className="text-lg font-semibold text-slate-900">
-                          Personal Information
-                        </h2>
+                <div className="space-y-6">
 
-                        <p className="text-sm text-slate-500">
-                          Your registered account details
-                        </p>
-                      </div>
+                  {/* NAME */}
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="mb-2 block text-sm font-medium text-foreground"
+                    >
+                      Full Name
+                    </label>
+
+                    <div className="relative">
+
+                      <User
+                        size={18}
+                        className="
+                          absolute
+                          left-3
+                          top-1/2
+                          -translate-y-1/2
+                          text-muted-foreground
+                        "
+                      />
+
+                      <input
+                        id="name"
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        disabled={!isEditing}
+                        className={`
+                          w-full
+                          rounded-lg
+                          border
+                          bg-background
+                          py-3
+                          pl-10
+                          pr-4
+                          text-sm
+                          text-foreground
+                          outline-none
+                          transition
+                          disabled:cursor-default
+                          disabled:opacity-70
+                          ${
+                            errorField === "name"
+                              ? "border-red-400 focus:border-red-500"
+                              : "border-border focus:border-[#B94A48] dark:focus:border-[#D76562]"
+                          }
+                        `}
+                      />
 
                     </div>
 
-                    {!isEditing && (
-                      <button
-                        type="button"
-                        onClick={handleEdit}
-                        className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-                      >
-                        <Edit size={16} />
-                        Edit
-                      </button>
+                    {errorField === "name" && (
+                      <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                        {errorMessage}
+                      </p>
                     )}
-
                   </div>
+
+                  {/* EMAIL */}
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="mb-2 block text-sm font-medium text-foreground"
+                    >
+                      Email Address
+                    </label>
+
+                    <div className="relative">
+
+                      <Mail
+                        size={18}
+                        className="
+                          absolute
+                          left-3
+                          top-1/2
+                          -translate-y-1/2
+                          text-muted-foreground
+                        "
+                      />
+
+                      <input
+                        id="email"
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        disabled={!isEditing}
+                        className={`
+                          w-full
+                          rounded-lg
+                          border
+                          bg-background
+                          py-3
+                          pl-10
+                          pr-4
+                          text-sm
+                          text-foreground
+                          outline-none
+                          transition
+                          disabled:cursor-default
+                          disabled:opacity-70
+                          ${
+                            errorField === "email"
+                              ? "border-red-400 focus:border-red-500"
+                              : "border-border focus:border-[#B94A48] dark:focus:border-[#D76562]"
+                          }
+                        `}
+                      />
+
+                    </div>
+
+                    {errorField === "email" && (
+                      <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                        {errorMessage}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* PHONE */}
+                  <div>
+                    <label
+                      htmlFor="phone"
+                      className="mb-2 block text-sm font-medium text-foreground"
+                    >
+                      Phone Number
+                    </label>
+
+                    <div className="relative">
+
+                      <Phone
+                        size={18}
+                        className="
+                          absolute
+                          left-3
+                          top-1/2
+                          -translate-y-1/2
+                          text-muted-foreground
+                        "
+                      />
+
+                      <input
+                        id="phone"
+                        type="text"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        disabled={!isEditing}
+                        className={`
+                          w-full
+                          rounded-lg
+                          border
+                          bg-background
+                          py-3
+                          pl-10
+                          pr-4
+                          text-sm
+                          text-foreground
+                          outline-none
+                          transition
+                          disabled:cursor-default
+                          disabled:opacity-70
+                          ${
+                            errorField === "phone"
+                              ? "border-red-400 focus:border-red-500"
+                              : "border-border focus:border-[#B94A48] dark:focus:border-[#D76562]"
+                          }
+                        `}
+                      />
+
+                    </div>
+
+                    {errorField === "phone" && (
+                      <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                        {errorMessage}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* OTHER BACKEND ERROR */}
+                  {errorMessage && !errorField && (
+                    <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 dark:border-red-900 dark:bg-red-950/30">
+                      <p className="text-sm text-red-600 dark:text-red-400">
+                        {errorMessage}
+                      </p>
+                    </div>
+                  )}
+
                 </div>
 
-                {/* Form */}
+                {/* BUTTONS */}
+                <div className="mt-7 flex justify-end gap-3 border-t border-border pt-5">
 
-                <form onSubmit={handleSubmit}>
-
-                  <div className="space-y-6 px-6 py-6">
-
-                    {/* Name */}
-
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-slate-700">
-                        Full Name
-                      </label>
-
-                      <div className="relative">
-
-                        <User
-                          size={18}
-                          className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                        />
-
-                        <input
-                          type="text"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleChange}
-                          disabled={!isEditing}
-                          className={`w-full rounded-lg border bg-slate-50 py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition focus:ring-2 disabled:cursor-default disabled:text-slate-600 ${
-                            errorField === "name"
-                              ? "border-red-400 focus:border-red-500 focus:ring-red-100"
-                              : "border-slate-200 focus:border-blue-500 focus:ring-blue-100"
-                          }`}
-                        />
-
-                      </div>
-
-                      {errorField === "name" && (
-                        <p className="mt-2 text-sm text-red-600">
-                          {errorMessage}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Email */}
-
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-slate-700">
-                        Email Address
-                      </label>
-
-                      <div className="relative">
-
-                        <Mail
-                          size={18}
-                          className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                        />
-
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleChange}
-                          disabled={!isEditing}
-                          className={`w-full rounded-lg border bg-slate-50 py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition focus:ring-2 disabled:cursor-default disabled:text-slate-600 ${
-                            errorField === "email"
-                              ? "border-red-400 focus:border-red-500 focus:ring-red-100"
-                              : "border-slate-200 focus:border-blue-500 focus:ring-blue-100"
-                          }`}
-                        />
-
-                      </div>
-
-                      {errorField === "email" && (
-                        <p className="mt-2 text-sm text-red-600">
-                          {errorMessage}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Phone */}
-
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-slate-700">
-                        Phone Number
-                      </label>
-
-                      <div className="relative">
-
-                        <Phone
-                          size={18}
-                          className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                        />
-
-                        <input
-                          type="text"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          disabled={!isEditing}
-                          className={`w-full rounded-lg border bg-slate-50 py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition focus:ring-2 disabled:cursor-default disabled:text-slate-600 ${
-                            errorField === "phone"
-                              ? "border-red-400 focus:border-red-500 focus:ring-red-100"
-                              : "border-slate-200 focus:border-blue-500 focus:ring-blue-100"
-                          }`}
-                        />
-
-                      </div>
-
-                      {errorField === "phone" && (
-                        <p className="mt-2 text-sm text-red-600">
-                          {errorMessage}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Other Backend Error */}
-
-                    {errorMessage && !errorField && (
-                      <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-                        <p className="text-sm text-red-600">
-                          {errorMessage}
-                        </p>
-                      </div>
-                    )}
-
-                  </div>
-
-                  {/* Buttons */}
-
-                  {isEditing && (
-                    <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4">
-
+                  {!isEditing ? (
+                    <button
+                      type="button"
+                      onClick={handleEdit}
+                      className="
+                        inline-flex
+                        items-center
+                        gap-2
+                        rounded-lg
+                        bg-[#151A21]
+                        px-5
+                        py-2.5
+                        text-sm
+                        font-medium
+                        text-white
+                        transition-all
+                        duration-200
+                        hover:bg-[#343A40]
+                        dark:bg-[#E5E7EB]
+                        dark:text-[#151A21]
+                        dark:hover:bg-white
+                      "
+                    >
+                      <Edit size={17} />
+                      Edit Profile
+                    </button>
+                  ) : (
+                    <>
                       <button
                         type="button"
                         onClick={handleCancel}
-                        className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                        className="
+                          inline-flex
+                          items-center
+                          gap-2
+                          rounded-lg
+                          border
+                          border-border
+                          bg-background
+                          px-5
+                          py-2.5
+                          text-sm
+                          font-medium
+                          text-foreground
+                          transition-all
+                          duration-200
+                          hover:bg-muted
+                        "
                       >
                         <X size={17} />
                         Cancel
@@ -377,24 +558,39 @@ const Profile = () => {
 
                       <button
                         type="submit"
-                        className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
+                        className="
+                          inline-flex
+                          items-center
+                          gap-2
+                          rounded-lg
+                          bg-[#151A21]
+                          px-5
+                          py-2.5
+                          text-sm
+                          font-medium
+                          text-white
+                          transition-all
+                          duration-200
+                          hover:bg-[#343A40]
+                          dark:bg-[#E5E7EB]
+                          dark:text-[#151A21]
+                          dark:hover:bg-white
+                        "
                       >
                         <Save size={17} />
                         Save Changes
                       </button>
-
-                    </div>
+                    </>
                   )}
 
-                </form>
+                </div>
 
-              </div>
+              </form>
+            )}
 
-            </div>
-          )}
-
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

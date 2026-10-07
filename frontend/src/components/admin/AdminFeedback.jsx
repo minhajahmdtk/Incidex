@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import {
   ArrowLeft,
   MessageSquare,
@@ -11,6 +12,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+
 import axiosInstance from "../../axiosInterceptor";
 import { toast } from "sonner";
 
@@ -21,6 +23,10 @@ const AdminFeedback = () => {
   const [loading, setLoading] = useState(true);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
   const [deletingId, setDeletingId] = useState("");
+
+  // ==================================================
+  // GET FEEDBACK
+  // ==================================================
 
   useEffect(() => {
     axiosInstance
@@ -56,6 +62,10 @@ const AdminFeedback = () => {
         setLoading(false);
       });
   }, [navigate]);
+
+  // ==================================================
+  // DELETE FEEDBACK
+  // ==================================================
 
   const deleteFeedback = (id) => {
     const confirmDelete = window.confirm(
@@ -107,17 +117,36 @@ const AdminFeedback = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
 
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      {/* ==================================================
+          MAIN
+      ================================================== */}
+
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+
+        {/* ==================================================
+            PAGE HEADER
+        ================================================== */}
+
+        <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
 
           <div>
 
             <Link
               to="/admin/dashboard"
-              className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 mb-3"
+              className="
+                mb-4
+                inline-flex
+                items-center
+                gap-2
+                text-sm
+                font-medium
+                text-muted-foreground
+                transition-colors
+                duration-200
+                hover:text-[#B94A48]
+              "
             >
               <ArrowLeft size={17} />
               Back to Dashboard
@@ -125,20 +154,42 @@ const AdminFeedback = () => {
 
             <div className="flex items-center gap-3">
 
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <MessageSquare
-                  size={24}
-                  className="text-blue-600"
-                />
+              <div
+                className="
+                  flex
+                  h-12
+                  w-12
+                  items-center
+                  justify-center
+                  rounded-xl
+                  bg-[#B94A48]/10
+                  text-[#B94A48]
+                  dark:bg-[#D76562]/10
+                  dark:text-[#D76562]
+                "
+              >
+                <MessageSquare size={23} />
               </div>
 
               <div>
 
-                <h1 className="text-2xl font-bold text-slate-900">
+                <h1
+                  className="
+                    bg-gradient-to-r
+                    from-[#B94A48]
+                    via-[#7FAF8A]
+                    to-[#555C64]
+                    bg-clip-text
+                    text-2xl
+                    font-bold
+                    tracking-tight
+                    text-transparent
+                  "
+                >
                   Feedback
                 </h1>
 
-                <p className="text-sm text-slate-500">
+                <p className="mt-1 text-sm text-muted-foreground">
                   View feedback submitted by users
                 </p>
 
@@ -148,79 +199,197 @@ const AdminFeedback = () => {
 
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-lg px-4 py-3">
+          {/* ==================================================
+              TOTAL FEEDBACK
+          ================================================== */}
 
-            <p className="text-xs text-slate-500">
+          <div
+            className="
+              rounded-xl
+              border
+              border-border
+              bg-card
+              px-5
+              py-4
+              transition-colors
+              duration-300
+            "
+          >
+            <p className="text-xs font-medium text-muted-foreground">
               Total Feedback
             </p>
 
-            <p className="text-xl font-bold text-slate-900">
+            <p className="mt-1 text-2xl font-bold text-foreground">
               {feedback.length}
             </p>
-
           </div>
 
         </div>
 
-        {/* Feedback Card */}
-        <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        {/* ==================================================
+            FEEDBACK CARD
+        ================================================== */}
 
-          <div className="px-6 py-4 border-b border-slate-200">
+        <div
+          className="
+            overflow-hidden
+            rounded-2xl
+            border
+            border-border
+            bg-card
+            transition-colors
+            duration-300
+          "
+        >
 
-            <h2 className="text-lg font-semibold text-slate-900">
+          {/* Card Header */}
+
+          <div className="border-b border-border px-6 py-5">
+
+            <h2 className="text-lg font-semibold text-foreground">
               User Feedback
             </h2>
 
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="mt-1 text-sm text-muted-foreground">
               Feedback submitted for resolved cases
             </p>
 
           </div>
 
-          {/* Loading */}
+          {/* ==================================================
+              LOADING
+          ================================================== */}
+
           {loading ? (
-            <div className="p-10 text-center">
 
-              <p className="text-slate-500">
-                Loading feedback...
-              </p>
+            <div className="flex min-h-[300px] items-center justify-center p-10">
+
+              <div className="text-center">
+
+                <div
+                  className="
+                    mx-auto
+                    mb-4
+                    h-8
+                    w-8
+                    animate-spin
+                    rounded-full
+                    border-2
+                    border-border
+                    border-t-[#B94A48]
+                  "
+                />
+
+                <p className="text-sm text-muted-foreground">
+                  Loading feedback...
+                </p>
+
+              </div>
 
             </div>
+
           ) : feedback.length === 0 ? (
-            <div className="p-10 text-center">
 
-              <MessageSquare
-                size={40}
-                className="mx-auto text-slate-300 mb-3"
-              />
+            /* ==================================================
+                EMPTY STATE
+            ================================================== */
 
-              <p className="text-slate-500">
-                No feedback has been submitted yet.
-              </p>
+            <div className="flex min-h-[300px] items-center justify-center p-10">
+
+              <div className="text-center">
+
+                <div
+                  className="
+                    mx-auto
+                    mb-4
+                    flex
+                    h-14
+                    w-14
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-muted
+                    text-muted-foreground
+                  "
+                >
+                  <MessageSquare size={25} />
+                </div>
+
+                <p className="text-sm font-medium text-foreground">
+                  No feedback has been submitted yet.
+                </p>
+
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Feedback from resolved cases will appear here.
+                </p>
+
+              </div>
 
             </div>
+
           ) : (
+
+            /* ==================================================
+                FEEDBACK TABLE
+            ================================================== */
+
             <div className="overflow-x-auto">
 
-              <table className="w-full">
+              <table className="w-full min-w-[720px]">
 
                 <thead>
 
-                  <tr className="bg-slate-50 border-b border-slate-200">
+                  <tr className="border-b border-border bg-muted/40">
 
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">
+                    <th
+                      className="
+                        px-6
+                        py-4
+                        text-left
+                        text-sm
+                        font-semibold
+                        text-foreground
+                      "
+                    >
                       User Name
                     </th>
 
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">
+                    <th
+                      className="
+                        px-6
+                        py-4
+                        text-left
+                        text-sm
+                        font-semibold
+                        text-foreground
+                      "
+                    >
                       Phone
                     </th>
 
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">
+                    <th
+                      className="
+                        px-6
+                        py-4
+                        text-left
+                        text-sm
+                        font-semibold
+                        text-foreground
+                      "
+                    >
                       Case ID
                     </th>
 
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">
+                    <th
+                      className="
+                        px-6
+                        py-4
+                        text-left
+                        text-sm
+                        font-semibold
+                        text-foreground
+                      "
+                    >
                       Action
                     </th>
 
@@ -234,24 +403,42 @@ const AdminFeedback = () => {
 
                     <tr
                       key={item._id}
-                      className="border-b border-slate-100 hover:bg-slate-50 transition"
+                      className="
+                        border-b
+                        border-border
+                        transition-colors
+                        duration-200
+                        hover:bg-muted/40
+                      "
                     >
 
-                      {/* User Name */}
+                      {/* ==================================================
+                          USER NAME
+                      ================================================== */}
+
                       <td className="px-6 py-4">
 
                         <div className="flex items-center gap-3">
 
-                          <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
-
-                            <User
-                              size={18}
-                              className="text-blue-600"
-                            />
-
+                          <div
+                            className="
+                              flex
+                              h-9
+                              w-9
+                              shrink-0
+                              items-center
+                              justify-center
+                              rounded-full
+                              bg-[#B94A48]/10
+                              text-[#B94A48]
+                              dark:bg-[#D76562]/10
+                              dark:text-[#D76562]
+                            "
+                          >
+                            <User size={17} />
                           </div>
 
-                          <p className="font-medium text-slate-900">
+                          <p className="font-medium text-foreground">
                             {item.userId?.name || "N/A"}
                           </p>
 
@@ -259,10 +446,13 @@ const AdminFeedback = () => {
 
                       </td>
 
-                      {/* Phone */}
+                      {/* ==================================================
+                          PHONE
+                      ================================================== */}
+
                       <td className="px-6 py-4">
 
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
 
                           <Phone size={16} />
 
@@ -272,17 +462,20 @@ const AdminFeedback = () => {
 
                       </td>
 
-                      {/* Case ID */}
+                      {/* ==================================================
+                          CASE ID
+                      ================================================== */}
+
                       <td className="px-6 py-4">
 
                         <div className="flex items-center gap-2">
 
                           <FileText
                             size={16}
-                            className="text-slate-500"
+                            className="text-muted-foreground"
                           />
 
-                          <span className="font-medium text-slate-900">
+                          <span className="font-medium text-foreground">
                             {item.caseId?.caseId || "N/A"}
                           </span>
 
@@ -290,7 +483,10 @@ const AdminFeedback = () => {
 
                       </td>
 
-                      {/* View */}
+                      {/* ==================================================
+                          VIEW
+                      ================================================== */}
+
                       <td className="px-6 py-4">
 
                         <button
@@ -298,13 +494,26 @@ const AdminFeedback = () => {
                           onClick={() =>
                             setSelectedFeedback(item)
                           }
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition"
+                          className="
+                            inline-flex
+                            items-center
+                            gap-2
+                            rounded-lg
+                            bg-[#B94A48]
+                            px-4
+                            py-2
+                            text-sm
+                            font-medium
+                            text-white
+                            transition-all
+                            duration-200
+                            hover:-translate-y-0.5
+                            hover:bg-[#A33F3D]
+                            hover:shadow-md
+                          "
                         >
-
                           <Eye size={16} />
-
                           View
-
                         </button>
 
                       </td>
@@ -318,28 +527,70 @@ const AdminFeedback = () => {
               </table>
 
             </div>
+
           )}
 
         </div>
 
-      </div>
+      </main>
 
-      {/* View Feedback Modal */}
+      {/* ==================================================
+          VIEW FEEDBACK MODAL
+      ================================================== */}
+
       {selectedFeedback && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
 
-          <div className="w-full max-w-2xl bg-white rounded-xl shadow-xl">
+        <div
+          className="
+            fixed
+            inset-0
+            z-50
+            flex
+            items-center
+            justify-center
+            bg-black/50
+            p-4
+            backdrop-blur-sm
+          "
+        >
 
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+          <div
+            className="
+              max-h-[90vh]
+              w-full
+              max-w-2xl
+              overflow-y-auto
+              rounded-2xl
+              border
+              border-border
+              bg-card
+              shadow-2xl
+            "
+          >
+
+            {/* ==================================================
+                MODAL HEADER
+            ================================================== */}
+
+            <div
+              className="
+                flex
+                items-center
+                justify-between
+                border-b
+                border-border
+                px-6
+                py-5
+              "
+            >
 
               <div>
 
-                <h2 className="text-xl font-semibold text-slate-900">
+                <h2 className="text-xl font-semibold text-foreground">
                   Feedback Details
                 </h2>
 
-                <p className="text-sm text-slate-500 mt-1">
+                <p className="mt-1 text-sm text-muted-foreground">
                   {selectedFeedback.caseId?.caseId || "N/A"}
                 </p>
 
@@ -350,30 +601,53 @@ const AdminFeedback = () => {
                 onClick={() =>
                   setSelectedFeedback(null)
                 }
-                className="p-2 rounded-lg text-slate-500 hover:bg-slate-100"
+                className="
+                  rounded-lg
+                  p-2
+                  text-muted-foreground
+                  transition-colors
+                  duration-200
+                  hover:bg-muted
+                  hover:text-foreground
+                "
+                aria-label="Close"
               >
-
                 <X size={20} />
-
               </button>
 
             </div>
 
-            {/* Modal Body */}
-            <div className="p-6 space-y-5">
+            {/* ==================================================
+                MODAL BODY
+            ================================================== */}
 
-              {/* User Information */}
-              <div className="bg-slate-50 rounded-lg p-4">
+            <div className="space-y-6 p-6">
 
-                <h3 className="text-sm font-semibold text-slate-900 mb-4">
+              {/* ==================================================
+                  USER INFORMATION
+              ================================================== */}
+
+              <div
+                className="
+                  rounded-xl
+                  border
+                  border-border
+                  bg-muted/40
+                  p-5
+                "
+              >
+
+                <h3 className="mb-4 text-sm font-semibold text-foreground">
                   User Information
                 </h3>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+
+                  {/* Name */}
 
                   <div>
 
-                    <p className="text-xs text-slate-500 mb-1">
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">
                       Name
                     </p>
 
@@ -381,10 +655,10 @@ const AdminFeedback = () => {
 
                       <User
                         size={16}
-                        className="text-slate-500"
+                        className="text-muted-foreground"
                       />
 
-                      <p className="text-sm font-medium text-slate-900">
+                      <p className="text-sm font-medium text-foreground">
                         {selectedFeedback.userId?.name ||
                           "N/A"}
                       </p>
@@ -393,9 +667,11 @@ const AdminFeedback = () => {
 
                   </div>
 
+                  {/* Phone */}
+
                   <div>
 
-                    <p className="text-xs text-slate-500 mb-1">
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">
                       Phone
                     </p>
 
@@ -403,10 +679,10 @@ const AdminFeedback = () => {
 
                       <Phone
                         size={16}
-                        className="text-slate-500"
+                        className="text-muted-foreground"
                       />
 
-                      <p className="text-sm text-slate-700">
+                      <p className="text-sm text-foreground">
                         {selectedFeedback.userId?.phone ||
                           "N/A"}
                       </p>
@@ -415,9 +691,11 @@ const AdminFeedback = () => {
 
                   </div>
 
+                  {/* Email */}
+
                   <div className="sm:col-span-2">
 
-                    <p className="text-xs text-slate-500 mb-1">
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">
                       Email
                     </p>
 
@@ -425,10 +703,10 @@ const AdminFeedback = () => {
 
                       <Mail
                         size={16}
-                        className="text-slate-500"
+                        className="text-muted-foreground"
                       />
 
-                      <p className="text-sm text-slate-700 break-all">
+                      <p className="break-all text-sm text-foreground">
                         {selectedFeedback.userId?.email ||
                           "N/A"}
                       </p>
@@ -441,22 +719,25 @@ const AdminFeedback = () => {
 
               </div>
 
-              {/* Case Information */}
+              {/* ==================================================
+                  CASE INFORMATION
+              ================================================== */}
+
               <div>
 
-                <h3 className="text-sm font-semibold text-slate-900 mb-3">
+                <h3 className="mb-3 text-sm font-semibold text-foreground">
                   Case Information
                 </h3>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
 
                   <div>
 
-                    <p className="text-xs text-slate-500 mb-1">
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">
                       Case ID
                     </p>
 
-                    <p className="text-sm font-medium text-slate-900">
+                    <p className="text-sm font-medium text-foreground">
                       {selectedFeedback.caseId?.caseId ||
                         "N/A"}
                     </p>
@@ -465,11 +746,11 @@ const AdminFeedback = () => {
 
                   <div>
 
-                    <p className="text-xs text-slate-500 mb-1">
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">
                       Crime Category
                     </p>
 
-                    <p className="text-sm text-slate-700">
+                    <p className="text-sm text-foreground">
                       {selectedFeedback.caseId
                         ?.crimeCategory || "N/A"}
                     </p>
@@ -480,16 +761,27 @@ const AdminFeedback = () => {
 
               </div>
 
-              {/* Feedback */}
+              {/* ==================================================
+                  FEEDBACK
+              ================================================== */}
+
               <div>
 
-                <p className="text-sm font-semibold text-slate-900 mb-2">
+                <p className="mb-2 text-sm font-semibold text-foreground">
                   Feedback
                 </p>
 
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                <div
+                  className="
+                    rounded-xl
+                    border
+                    border-border
+                    bg-muted/40
+                    p-4
+                  "
+                >
 
-                  <p className="text-sm text-slate-700 leading-6">
+                  <p className="text-sm leading-6 text-foreground">
                     {selectedFeedback.feedbackDetails ||
                       "No feedback details"}
                   </p>
@@ -498,14 +790,17 @@ const AdminFeedback = () => {
 
               </div>
 
-              {/* Submitted Date */}
+              {/* ==================================================
+                  SUBMITTED DATE
+              ================================================== */}
+
               <div>
 
-                <p className="text-xs text-slate-500 mb-1">
+                <p className="mb-1 text-xs font-medium text-muted-foreground">
                   Submitted Date & Time
                 </p>
 
-                <p className="text-sm text-slate-700">
+                <p className="text-sm text-foreground">
                   {selectedFeedback.submittedDateTime
                     ? new Date(
                         selectedFeedback.submittedDateTime
@@ -523,15 +818,42 @@ const AdminFeedback = () => {
 
             </div>
 
-            {/* Modal Footer */}
-            <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-200">
+            {/* ==================================================
+                MODAL FOOTER
+            ================================================== */}
+
+            <div
+              className="
+                flex
+                flex-col-reverse
+                gap-3
+                border-t
+                border-border
+                px-6
+                py-4
+                sm:flex-row
+                sm:justify-end
+              "
+            >
 
               <button
                 type="button"
                 onClick={() =>
                   setSelectedFeedback(null)
                 }
-                className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50"
+                className="
+                  rounded-lg
+                  border
+                  border-border
+                  px-4
+                  py-2
+                  text-sm
+                  font-medium
+                  text-foreground
+                  transition-colors
+                  duration-200
+                  hover:bg-muted
+                "
               >
                 Close
               </button>
@@ -546,7 +868,25 @@ const AdminFeedback = () => {
                 disabled={
                   deletingId === selectedFeedback._id
                 }
-                className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                className="
+                  inline-flex
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-lg
+                  bg-[#B94A48]
+                  px-4
+                  py-2
+                  text-sm
+                  font-medium
+                  text-white
+                  transition-all
+                  duration-200
+                  hover:bg-[#A33F3D]
+                  hover:shadow-md
+                  disabled:cursor-not-allowed
+                  disabled:opacity-50
+                "
               >
 
                 <Trash2 size={16} />
@@ -562,6 +902,7 @@ const AdminFeedback = () => {
           </div>
 
         </div>
+
       )}
 
     </div>

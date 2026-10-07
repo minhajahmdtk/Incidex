@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ const AdminLogin = () => {
 
     // Email validation
     if (!form.email.trim()) {
-      setError("email is required");
+      setError("Email is required");
       return;
     }
 
@@ -43,7 +44,7 @@ const AdminLogin = () => {
 
     // Password validation
     if (!form.password) {
-      setError("password is required");
+      setError("Password is required");
       return;
     }
 
@@ -60,7 +61,6 @@ const AdminLogin = () => {
           );
         }
 
-        localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("role", "admin");
 
         if (response.data.admin) {
@@ -89,72 +89,260 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-      <form
-        className="w-full max-w-md bg-white p-8 rounded-xl shadow-sm border border-slate-200"
-        onSubmit={handleSubmit}
+    <div
+      className="
+        min-h-screen
+        bg-background
+        text-foreground
+        flex
+        items-center
+        justify-center
+        px-4
+        py-10
+        transition-colors
+        duration-300
+      "
+    >
+      <div
+        className="
+          w-full
+          max-w-md
+          rounded-2xl
+          border
+          border-border
+          bg-card
+          p-7
+          shadow-2xl
+          shadow-black/10
+          sm:p-8
+        "
       >
-        {/* Heading */}
+        {/* LOGO */}
 
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">
-          Admin Login
-        </h2>
-
-        <p className="text-sm text-slate-500 mb-6">
-          Login to your INCIDEX administrator account.
-        </p>
-
-        {/* Email */}
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Email
-          </label>
-
-          <input
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-blue-600"
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            placeholder="Enter admin email"
-          />
+        <div className="mb-6 flex justify-center">
+          <Link
+            to="/"
+            className="
+              flex
+              h-20
+              w-20
+              items-center
+              justify-center
+              rounded-full
+              border
+              border-border
+              bg-background
+              transition-all
+              duration-200
+              hover:scale-105
+            "
+            aria-label="Go to INCIDEX home page"
+          >
+            <img
+              src="/Crime.png"
+              alt="INCIDEX Logo"
+              className="
+                h-14
+                w-14
+                object-contain
+              "
+            />
+          </Link>
         </div>
 
-        {/* Password */}
+        {/* HEADING */}
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Password
-          </label>
+        <div className="mb-6 text-center">
+          <h2
+            className="
+              text-2xl
+              font-bold
+              tracking-tight
+              text-card-foreground
+            "
+          >
+            Admin Login
+          </h2>
 
-          <input
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-blue-600"
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            placeholder="Enter admin password"
-          />
+          <p
+            className="
+              mt-2
+              text-sm
+              text-muted-foreground
+            "
+          >
+            Login to your INCIDEX administrator account.
+          </p>
         </div>
 
-        {/* Error Message */}
+        {/* FORM */}
 
-        {error && (
-          <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
-            {error}
+        <form onSubmit={handleSubmit}>
+
+          {/* EMAIL */}
+
+          <div>
+            <label
+              htmlFor="email"
+              className="
+                mb-1.5
+                block
+                text-sm
+                font-medium
+                text-card-foreground
+              "
+            >
+              Email
+            </label>
+
+            <input
+              id="email"
+              className="
+                w-full
+                rounded-lg
+                border
+                border-input
+                bg-background
+                px-3.5
+                py-2.5
+                text-sm
+                text-foreground
+                outline-none
+                placeholder:text-muted-foreground
+                transition
+                focus:border-[#B94A48]
+                focus:ring-2
+                focus:ring-[#B94A48]/10
+                dark:focus:border-[#D76562]
+                dark:focus:ring-[#D76562]/10
+              "
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="Enter admin email"
+            />
           </div>
-        )}
 
-        {/* Login Button */}
+          {/* PASSWORD */}
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition"
-        >
-          Admin Login
-        </button>
-      </form>
+          <div className="mt-4">
+            <label
+              htmlFor="password"
+              className="
+                mb-1.5
+                block
+                text-sm
+                font-medium
+                text-card-foreground
+              "
+            >
+              Password
+            </label>
+
+            <input
+              id="password"
+              className="
+                w-full
+                rounded-lg
+                border
+                border-input
+                bg-background
+                px-3.5
+                py-2.5
+                text-sm
+                text-foreground
+                outline-none
+                placeholder:text-muted-foreground
+                transition
+                focus:border-[#B94A48]
+                focus:ring-2
+                focus:ring-[#B94A48]/10
+                dark:focus:border-[#D76562]
+                dark:focus:ring-[#D76562]/10
+              "
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Enter admin password"
+            />
+          </div>
+
+          {/* ERROR */}
+
+          {error && (
+            <div
+              className="
+                mt-4
+                rounded-lg
+                border
+                border-[#B94A48]/30
+                bg-[#B94A48]/5
+                p-3
+                text-sm
+                text-[#B94A48]
+                dark:border-[#D76562]/30
+                dark:bg-[#D76562]/10
+                dark:text-[#D76562]
+              "
+            >
+              {error}
+            </div>
+          )}
+
+          {/* LOGIN BUTTON */}
+
+          <button
+            type="submit"
+            className="
+              mt-5
+              w-full
+              rounded-lg
+              bg-[#151A21]
+              py-2.5
+              text-sm
+              font-semibold
+              text-white
+              shadow-sm
+              transition-all
+              duration-200
+              hover:-translate-y-0.5
+              hover:bg-[#343A40]
+              hover:shadow-md
+              dark:bg-[#E5E7EB]
+              dark:text-[#151A21]
+              dark:hover:bg-white
+            "
+          >
+            Admin Login
+          </button>
+
+          {/* BACK TO HOME */}
+
+          <p
+            className="
+              mt-5
+              text-center
+              text-sm
+              text-muted-foreground
+            "
+          >
+            <Link
+              to="/"
+              className="
+                font-medium
+                text-[#B94A48]
+                hover:underline
+                dark:text-[#D76562]
+              "
+            >
+              Back to Home
+            </Link>
+          </p>
+
+        </form>
+      </div>
     </div>
   );
 };

@@ -255,39 +255,52 @@ const ReportCrime = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="min-h-screen lg:ml-72">
-        <div className="px-4 py-6 sm:px-6 lg:px-8">
+      <main className="min-h-screen">
+        <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
 
           {/* Header */}
+
           <div className="mb-6">
             <button
               type="button"
               onClick={() => navigate("/user/dashboard")}
-              className="mb-4 flex items-center gap-2 text-sm text-slate-600 transition hover:text-blue-600"
+              className="
+                mb-4
+                flex
+                items-center
+                gap-2
+                text-sm
+                font-medium
+                text-muted-foreground
+                transition-colors
+                hover:text-foreground
+              "
             >
               <ArrowLeft size={18} />
               Back to Dashboard
             </button>
 
-            <h1 className="text-2xl font-bold text-slate-900">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               Report Crime
             </h1>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Submit a crime incident report with the required details.
             </p>
           </div>
 
           {/* Form Card */}
-          <div className="max-w-4xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
             <form onSubmit={handleSubmit}>
 
               {/* Crime Category */}
+
               <div className="mb-6">
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="mb-2 block text-sm font-medium text-foreground">
                   Crime Category
                 </label>
 
@@ -297,11 +310,23 @@ const ReportCrime = () => {
                     setCrimeCategory(event.target.value);
                     setErrorMessage("");
                   }}
-                  className={`w-full rounded-lg border bg-white px-4 py-3 text-sm outline-none transition ${
-                    errorField === "category"
-                      ? "border-red-500 focus:ring-2 focus:ring-red-100"
-                      : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  }`}
+                  className={`
+                    w-full
+                    rounded-lg
+                    border
+                    bg-background
+                    px-4
+                    py-3
+                    text-sm
+                    text-foreground
+                    outline-none
+                    transition
+                    ${
+                      errorField === "category"
+                        ? "border-red-500 focus:ring-2 focus:ring-red-500/20"
+                        : "border-border focus:border-foreground focus:ring-2 focus:ring-foreground/10"
+                    }
+                  `}
                 >
                   <option value="">
                     Select crime category
@@ -320,15 +345,16 @@ const ReportCrime = () => {
                 </select>
 
                 {errorField === "category" && (
-                  <p className="mt-2 text-sm text-red-600">
+                  <p className="mt-2 text-sm text-red-600 dark:text-red-400">
                     {errorMessage}
                   </p>
                 )}
               </div>
 
               {/* Description */}
+
               <div className="mb-6">
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="mb-2 block text-sm font-medium text-foreground">
                   Incident Description
                 </label>
 
@@ -340,45 +366,62 @@ const ReportCrime = () => {
                   }}
                   rows="6"
                   placeholder="Describe what happened..."
-                  className={`w-full resize-none rounded-lg border px-4 py-3 text-sm outline-none transition ${
-                    errorField === "description"
-                      ? "border-red-500 focus:ring-2 focus:ring-red-100"
-                      : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  }`}
+                  className={`
+                    w-full
+                    resize-none
+                    rounded-lg
+                    border
+                    bg-background
+                    px-4
+                    py-3
+                    text-sm
+                    text-foreground
+                    placeholder:text-muted-foreground
+                    outline-none
+                    transition
+                    ${
+                      errorField === "description"
+                        ? "border-red-500 focus:ring-2 focus:ring-red-500/20"
+                        : "border-border focus:border-foreground focus:ring-2 focus:ring-foreground/10"
+                    }
+                  `}
                 />
 
                 <div className="mt-2 flex justify-between">
                   {errorField === "description" ? (
-                    <p className="text-sm text-red-600">
+                    <p className="text-sm text-red-600 dark:text-red-400">
                       {errorMessage}
                     </p>
                   ) : (
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted-foreground">
                       Minimum 5 characters and maximum 500 characters.
                     </p>
                   )}
 
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-muted-foreground">
                     {incidentDescription.length}/500
                   </span>
                 </div>
               </div>
 
               {/* Incident Location */}
+
               <div className="mb-6">
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="mb-2 block text-sm font-medium text-foreground">
                   Incident Location
                 </label>
 
                 <div className="relative">
 
                   {/* Search Icon */}
+
                   <Search
                     size={18}
-                    className="absolute left-3 top-3.5 z-10 text-slate-400"
+                    className="absolute left-3 top-3.5 z-10 text-muted-foreground"
                   />
 
                   {/* Location Input */}
+
                   <input
                     type="text"
                     value={incidentLocation}
@@ -391,27 +434,65 @@ const ReportCrime = () => {
                       setSearching(false);
                     }}
                     placeholder="Search incident location..."
-                    className={`w-full rounded-lg border py-3 pl-10 pr-10 text-sm outline-none transition ${
-                      errorField === "location"
-                        ? "border-red-500 focus:ring-2 focus:ring-red-100"
-                        : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                    }`}
+                    className={`
+                      w-full
+                      rounded-lg
+                      border
+                      bg-background
+                      py-3
+                      pl-10
+                      pr-10
+                      text-sm
+                      text-foreground
+                      placeholder:text-muted-foreground
+                      outline-none
+                      transition
+                      ${
+                        errorField === "location"
+                          ? "border-red-500 focus:ring-2 focus:ring-red-500/20"
+                          : "border-border focus:border-foreground focus:ring-2 focus:ring-foreground/10"
+                      }
+                    `}
                   />
 
                   {/* Clear Button */}
+
                   {incidentLocation && (
                     <button
                       type="button"
                       onClick={handleClearLocation}
-                      className="absolute right-3 top-3 text-slate-400 hover:text-slate-700"
+                      className="
+                        absolute
+                        right-3
+                        top-3
+                        text-muted-foreground
+                        transition-colors
+                        hover:text-foreground
+                      "
                     >
                       <X size={18} />
                     </button>
                   )}
 
                   {/* Search Suggestions */}
+
                   {suggestions.length > 0 && (
-                    <div className="absolute left-0 right-0 top-full z-[1000] mt-1 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
+                    <div
+                      className="
+                        absolute
+                        left-0
+                        right-0
+                        top-full
+                        z-[1000]
+                        mt-1
+                        overflow-hidden
+                        rounded-lg
+                        border
+                        border-border
+                        bg-card
+                        shadow-lg
+                      "
+                    >
                       {suggestions.map((location, index) => (
                         <button
                           key={
@@ -422,21 +503,34 @@ const ReportCrime = () => {
                           onClick={() =>
                             handleLocationSelect(location)
                           }
-                          className="flex w-full items-start gap-3 border-b border-slate-100 px-4 py-3 text-left transition last:border-b-0 hover:bg-slate-50"
+                          className="
+                            flex
+                            w-full
+                            items-start
+                            gap-3
+                            border-b
+                            border-border
+                            px-4
+                            py-3
+                            text-left
+                            transition-colors
+                            last:border-b-0
+                            hover:bg-muted
+                          "
                         >
                           <MapPin
                             size={18}
-                            className="mt-0.5 flex-shrink-0 text-blue-600"
+                            className="mt-0.5 flex-shrink-0 text-muted-foreground"
                           />
 
                           <div>
-                            <p className="text-sm font-medium text-slate-800">
+                            <p className="text-sm font-medium text-foreground">
                               {location.address_line1 ||
                                 location.name ||
                                 "Location"}
                             </p>
 
-                            <p className="mt-1 text-xs text-slate-500">
+                            <p className="mt-1 text-xs text-muted-foreground">
                               {location.address_line2 ||
                                 location.formatted}
                             </p>
@@ -447,10 +541,27 @@ const ReportCrime = () => {
                   )}
 
                   {/* Searching */}
+
                   {searching &&
                     incidentLocation.trim().length >= 3 && (
-                      <div className="absolute left-0 right-0 top-full z-[1000] mt-1 rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-lg">
-                        <p className="text-sm text-slate-500">
+                      <div
+                        className="
+                          absolute
+                          left-0
+                          right-0
+                          top-full
+                          z-[1000]
+                          mt-1
+                          rounded-lg
+                          border
+                          border-border
+                          bg-card
+                          px-4
+                          py-3
+                          shadow-lg
+                        "
+                      >
+                        <p className="text-sm text-muted-foreground">
                           Searching locations...
                         </p>
                       </div>
@@ -458,24 +569,25 @@ const ReportCrime = () => {
                 </div>
 
                 {errorField === "location" && (
-                  <p className="mt-2 text-sm text-red-600">
+                  <p className="mt-2 text-sm text-red-600 dark:text-red-400">
                     {errorMessage}
                   </p>
                 )}
 
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-2 text-xs text-muted-foreground">
                   Search for a location and select a suggestion, or
                   click directly on the map.
                 </p>
               </div>
 
               {/* Map */}
+
               <div className="mb-6">
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="mb-2 block text-sm font-medium text-foreground">
                   Select Location on Map
                 </label>
 
-                <div className="overflow-hidden rounded-xl border border-slate-200">
+                <div className="overflow-hidden rounded-xl border border-border">
                   <MapContainer
                     center={[8.5241, 76.9366]}
                     zoom={13}
@@ -525,7 +637,7 @@ const ReportCrime = () => {
 
                 {latitude !== null &&
                   longitude !== null && (
-                    <div className="mt-2 flex items-center gap-2 text-sm text-green-600">
+                    <div className="mt-3 flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-400">
                       <MapPin size={16} />
                       Location selected successfully.
                     </div>
@@ -533,20 +645,41 @@ const ReportCrime = () => {
               </div>
 
               {/* General Error */}
+
               {errorMessage && errorField === "" && (
-                <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-                  <p className="text-sm text-red-600">
+                <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 dark:border-red-900/50 dark:bg-red-950/20">
+                  <p className="text-sm text-red-600 dark:text-red-400">
                     {errorMessage}
                   </p>
                 </div>
               )}
 
               {/* Submit Button */}
+
               <div className="flex justify-end">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    rounded-lg
+                    bg-[#151A21]
+                    px-6
+                    py-3
+                    text-sm
+                    font-semibold
+                    text-white
+                    transition-all
+                    duration-200
+                    hover:bg-[#343A40]
+                    disabled:cursor-not-allowed
+                    disabled:opacity-60
+                    dark:bg-[#E5E7EB]
+                    dark:text-[#151A21]
+                    dark:hover:bg-white
+                  "
                 >
                   <Send size={17} />
 

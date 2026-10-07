@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import AdminNavbar from './AdminNavbar';
 import {
   Users,
   FileText,
-  Bell,
   MessageSquare,
-  LogOut,
   AlertCircle,
   Clock,
   CheckCircle,
-  Shield,
   ArrowRight,
 } from "lucide-react";
 
@@ -25,13 +23,16 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  Sector,
 } from "recharts";
 
 import { toast } from "sonner";
 import axios from "axios";
 
 const AdminDashboard = () => {
-  const navigate = useNavigate();
+  // ==================================================
+  // DASHBOARD STATE
+  // ==================================================
 
   const [dashboardData, setDashboardData] = useState({
     totalUsers: 0,
@@ -46,10 +47,13 @@ const AdminDashboard = () => {
 
   const [categoryData, setCategoryData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
-
+  const [activePieIndex, setActivePieIndex] = useState(-1);
   const [error, setError] = useState("");
 
-  // Get dashboard data
+  // ==================================================
+  // GET DASHBOARD DATA
+  // ==================================================
+
   const getDashboardData = () => {
     axios
       .get("http://localhost:3000/admin/dashboard", {
@@ -61,6 +65,7 @@ const AdminDashboard = () => {
         setDashboardData({
           totalUsers: response.data.totalUsers || 0,
           totalCases: response.data.totalCases || 0,
+
           casesByStatus: {
             new: response.data.casesByStatus?.new || 0,
             acknowledged:
@@ -84,7 +89,10 @@ const AdminDashboard = () => {
       });
   };
 
-  // Get category data
+  // ==================================================
+  // GET CATEGORY DATA
+  // ==================================================
+
   const getCategoryData = () => {
     axios
       .get("http://localhost:3000/admin/dashboard/category", {
@@ -104,7 +112,10 @@ const AdminDashboard = () => {
       });
   };
 
-  // Get monthly data
+  // ==================================================
+  // GET MONTHLY DATA
+  // ==================================================
+
   const getMonthlyData = () => {
     axios
       .get("http://localhost:3000/admin/dashboard/monthly", {
@@ -124,32 +135,29 @@ const AdminDashboard = () => {
       });
   };
 
-  // Logout
-  const handleLogout = () => {
-    localStorage.removeItem("loginToken");
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("role");
-    localStorage.removeItem("userInfo");
+  // ==================================================
+  // LOAD DATA
+  // ==================================================
 
-    toast.success("Logged out successfully");
-
-    navigate("/admin/login");
-  };
-
-  // Load dashboard data
   useEffect(() => {
     getDashboardData();
     getCategoryData();
     getMonthlyData();
   }, []);
 
-  // Pie chart data
+  // ==================================================
+  // CATEGORY CHART DATA
+  // ==================================================
+
   const categoryChartData = categoryData.map((item) => ({
     name: item._id,
     value: item.count,
   }));
 
-  // Line chart data
+  // ==================================================
+  // MONTHLY CHART DATA
+  // ==================================================
+
   const monthlyChartData = monthlyData.map((item) => {
     const monthNames = [
       "Jan",
@@ -172,306 +180,355 @@ const AdminDashboard = () => {
     };
   });
 
-  // Chart colors
+  // ==================================================
+  // CHART COLORS
+  // NO RED / NO GREEN
+  // ==================================================
+
   const chartColors = [
-    "#2563EB",
-    "#16A34A",
+    "#6366F1",
+    "#F59E0B",
+    "#0EA5E9",
+    "#A855F7",
+    "#64748B",
+    "#06B6D4",
     "#D97706",
-    "#DC2626",
-    "#7C3AED",
-    "#0891B2",
-    "#EA580C",
-    "#475569",
+    "#8B5CF6",
   ];
 
-  // Statistics cards
+  // ==================================================
+  // ACTIVE PIE SHAPE
+  // ==================================================
+
+  const renderActiveShape = (props) => {
+    const {
+      cx,
+      cy,
+      innerRadius,
+      outerRadius,
+      startAngle,
+      endAngle,
+      fill,
+    } = props;
+
+    return (
+      <g>
+        <Sector
+          cx={cx}
+          cy={cy}
+          innerRadius={innerRadius}
+          outerRadius={outerRadius + 10}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          fill={fill}
+          cornerRadius={6}
+        />
+
+        <Sector
+          cx={cx}
+          cy={cy}
+          innerRadius={innerRadius - 3}
+          outerRadius={innerRadius + 5}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          fill={fill}
+          opacity={0.35}
+        />
+      </g>
+    );
+  };
+
+  // ==================================================
+  // STATISTIC CARDS
+  // ==================================================
+
   const statCards = [
     {
       title: "Total Users",
       value: dashboardData.totalUsers,
       icon: Users,
-      iconClass: "bg-blue-100 text-blue-600",
+      iconClass:
+        "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
     },
     {
       title: "Total Cases",
       value: dashboardData.totalCases,
       icon: FileText,
-      iconClass: "bg-slate-100 text-slate-600",
+      iconClass:
+        "bg-slate-500/10 text-slate-600 dark:text-slate-400",
     },
     {
       title: "New Cases",
       value: dashboardData.casesByStatus.new,
       icon: AlertCircle,
-      iconClass: "bg-amber-100 text-amber-600",
+      iconClass:
+        "bg-amber-500/10 text-amber-600 dark:text-amber-400",
     },
     {
       title: "Acknowledged",
       value: dashboardData.casesByStatus.acknowledged,
       icon: Clock,
-      iconClass: "bg-blue-100 text-blue-600",
+      iconClass:
+        "bg-orange-500/10 text-orange-600 dark:text-orange-400",
     },
     {
       title: "In Progress",
       value: dashboardData.casesByStatus.inProgress,
       icon: Clock,
-      iconClass: "bg-orange-100 text-orange-600",
+      iconClass:
+        "bg-sky-500/10 text-sky-600 dark:text-sky-400",
     },
     {
       title: "Resolved",
       value: dashboardData.casesByStatus.resolved,
       icon: CheckCircle,
-      iconClass: "bg-emerald-100 text-emerald-600",
+      iconClass:
+        "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
     },
   ];
 
-  // Management cards
+  // ==================================================
+  // MANAGEMENT CARDS
+  // ==================================================
+
   const managementCards = [
     {
       title: "Users",
       description: "View and manage registered users",
       path: "/admin/users",
       icon: Users,
-      iconClass: "bg-blue-100 text-blue-600",
+      iconClass:
+        "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
     },
     {
       title: "Cases",
       description: "View and manage crime cases",
       path: "/admin/cases",
       icon: FileText,
-      iconClass: "bg-slate-100 text-slate-600",
+      iconClass:
+        "bg-slate-500/10 text-slate-600 dark:text-slate-400",
     },
     {
       title: "Feedback",
       description: "View feedback submitted by users",
       path: "/admin/feedback",
       icon: MessageSquare,
-      iconClass: "bg-emerald-100 text-emerald-600",
+      iconClass:
+        "bg-violet-500/10 text-violet-600 dark:text-violet-400",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+  <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+    <AdminNavbar />
+      {/* ==================================================
+          MAIN
+      ================================================== */}
 
-      {/* Header */}
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* ==================================================
+            PAGE TITLE
+        ================================================== */}
 
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
-              <Shield size={21} />
-            </div>
-
-            <div>
-              <h1 className="text-xl font-bold text-slate-900">
-                INCIDEX
-              </h1>
-
-              <p className="text-xs text-slate-500">
-                Crime Incident Reporting System
-              </p>
-            </div>
-
-          </div>
-
-          {/* Top actions */}
-          <div className="flex items-center gap-3">
-
-            {/* Notifications */}
-            <Link
-              to="/admin/notifications"
-              className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
-            >
-              <Bell size={17} />
-              Notifications
-            </Link>
-
-            {/* Logout */}
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
-            >
-              <LogOut size={17} />
-              Logout
-            </button>
-
-          </div>
-
-        </div>
-      </header>
-
-      {/* Main content */}
-      <main className="mx-auto max-w-7xl px-6 py-8">
-
-        {/* Heading */}
         <div className="mb-8">
-
-          <h2 className="text-2xl font-bold text-slate-900">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">
             Administrator Dashboard
           </h2>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             Monitor and manage crime incident reports.
           </p>
-
         </div>
 
-        {/* Error */}
+        {/* ==================================================
+            ERROR
+        ================================================== */}
+
         {error && (
-          <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
-            <p className="text-sm text-red-600">
+          <div className="mb-6 rounded-xl border border-[#B94A48]/30 bg-[#B94A48]/5 p-4 dark:bg-[#D76562]/5">
+            <p className="text-sm text-[#B94A48] dark:text-[#D76562]">
               {error}
             </p>
           </div>
         )}
 
-        {/* Statistics */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {/* ==================================================
+            SIX STATISTIC CARDS
+            NO SHADOW
+        ================================================== */}
 
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {statCards.map((card) => {
             const Icon = card.icon;
 
             return (
               <div
                 key={card.title}
-                className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+                className="
+                  group
+                  relative
+                  overflow-hidden
+                  rounded-2xl
+                  border
+                  border-border
+                  bg-white
+                  dark:bg-[#252A32]
+                  p-5
+                  transition-colors
+                  duration-300
+                  hover:border-muted-foreground/30
+                "
               >
-
-                <div className="flex items-center justify-between">
-
+                <div className="relative flex items-center justify-between">
                   <div>
-
-                    <p className="text-sm font-medium text-slate-500">
+                    <p className="text-sm font-medium text-muted-foreground">
                       {card.title}
                     </p>
 
-                    <p className="mt-2 text-3xl font-bold text-slate-900">
+                    <p className="mt-2 text-3xl font-bold tracking-tight text-foreground">
                       {card.value}
                     </p>
-
                   </div>
 
                   <div
-                    className={`flex h-11 w-11 items-center justify-center rounded-lg ${card.iconClass}`}
+                    className={`
+                      flex
+                      h-12
+                      w-12
+                      items-center
+                      justify-center
+                      rounded-xl
+                      ${card.iconClass}
+                      transition-transform
+                      duration-300
+                      group-hover:scale-105
+                    `}
                   >
-                    <Icon size={21} />
+                    <Icon size={22} />
                   </div>
-
                 </div>
-
               </div>
             );
           })}
-
         </div>
 
-        {/* Charts */}
+        {/* ==================================================
+            CHARTS
+            NORMAL CARDS - NO 3D
+        ================================================== */}
+
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* ==================================================
+              CRIME CATEGORY PIE CHART
+          ================================================== */}
 
-          {/* Crime Category Pie Chart */}
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-
+          <div className="rounded-2xl border border-border bg-white p-6 dark:bg-[#252A32]">
             <div className="mb-4">
-
-              <h3 className="text-lg font-semibold text-slate-900">
+              <h3 className="text-lg font-semibold text-foreground">
                 Crime Categories
               </h3>
 
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Distribution of reported cases by crime category.
               </p>
-
             </div>
 
             {categoryChartData.length === 0 ? (
-
               <div className="flex h-80 items-center justify-center">
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   No category data available.
                 </p>
               </div>
-
             ) : (
-
               <div className="h-80">
-
                 <ResponsiveContainer width="100%" height="100%">
-
                   <PieChart>
-
                     <Pie
                       data={categoryChartData}
                       dataKey="value"
                       nameKey="name"
                       cx="50%"
                       cy="45%"
-                      outerRadius={95}
+                      innerRadius={48}
+                      outerRadius={100}
+                      paddingAngle={3}
+                      cornerRadius={6}
                       label={({ name, value }) =>
                         `${name}: ${value}`
                       }
+                      isAnimationActive={true}
+                      animationBegin={100}
+                      animationDuration={1200}
+                      animationEasing="ease-out"
+                      activeIndex={activePieIndex}
+                      activeShape={renderActiveShape}
+                      onMouseEnter={(_, index) =>
+                        setActivePieIndex(index)
+                      }
+                      onMouseLeave={() =>
+                        setActivePieIndex(-1)
+                      }
                     >
-
-                      {categoryChartData.map((entry, index) => (
-                        <Cell
-                          key={`category-${index}`}
-                          fill={
-                            chartColors[
-                              index % chartColors.length
-                            ]
-                          }
-                        />
-                      ))}
-
+                      {categoryChartData.map(
+                        (entry, index) => (
+                          <Cell
+                            key={`category-${index}`}
+                            fill={
+                              chartColors[
+                                index %
+                                  chartColors.length
+                              ]
+                            }
+                            stroke="var(--card)"
+                            strokeWidth={3}
+                          />
+                        )
+                      )}
                     </Pie>
 
-                    <Tooltip />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "var(--card)",
+                        border: "1px solid var(--border)",
+                        borderRadius: "10px",
+                        color: "var(--foreground)",
+                      }}
+                    />
 
                     <Legend
                       verticalAlign="bottom"
                       height={40}
                     />
-
                   </PieChart>
-
                 </ResponsiveContainer>
-
               </div>
-
             )}
-
           </div>
 
-          {/* Monthly Line Chart */}
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          {/* ==================================================
+              MONTHLY CASES LINE CHART
+          ================================================== */}
 
+          <div className="rounded-2xl border border-border bg-white p-6 dark:bg-[#252A32]">
             <div className="mb-4">
-
-              <h3 className="text-lg font-semibold text-slate-900">
+              <h3 className="text-lg font-semibold text-foreground">
                 Monthly Case Reports
               </h3>
 
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Number of cases reported each month.
               </p>
-
             </div>
 
             {monthlyChartData.length === 0 ? (
-
               <div className="flex h-80 items-center justify-center">
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   No monthly data available.
                 </p>
               </div>
-
             ) : (
-
               <div className="h-80">
-
                 <ResponsiveContainer width="100%" height="100%">
-
                   <LineChart
                     data={monthlyChartData}
                     margin={{
@@ -481,72 +538,78 @@ const AdminDashboard = () => {
                       bottom: 10,
                     }}
                   >
-
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="var(--border)"
+                    />
 
                     <XAxis
                       dataKey="month"
-                      label={{
-                        value: "Months",
-                        position: "insideBottom",
-                        offset: -5,
+                      stroke="var(--muted-foreground)"
+                      tick={{
+                        fill: "var(--muted-foreground)",
                       }}
                     />
 
                     <YAxis
                       allowDecimals={false}
-                      label={{
-                        value: "Number of Cases",
-                        angle: -90,
-                        position: "insideLeft",
+                      stroke="var(--muted-foreground)"
+                      tick={{
+                        fill: "var(--muted-foreground)",
                       }}
                     />
 
-                    <Tooltip />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "var(--card)",
+                        border: "1px solid var(--border)",
+                        borderRadius: "10px",
+                        color: "var(--foreground)",
+                      }}
+                    />
 
                     <Line
                       type="monotone"
                       dataKey="cases"
                       name="Cases"
-                      stroke="#2563EB"
+                      stroke="#6366F1"
                       strokeWidth={3}
                       dot={{
                         r: 5,
+                        fill: "#6366F1",
                       }}
                       activeDot={{
-                        r: 7,
+                        r: 8,
+                        fill: "#6366F1",
                       }}
+                      isAnimationActive={true}
+                      animationDuration={1200}
+                      animationEasing="ease-out"
                     />
-
                   </LineChart>
-
                 </ResponsiveContainer>
-
               </div>
-
             )}
-
           </div>
-
         </div>
 
-        {/* Management */}
+        {/* ==================================================
+            MANAGEMENT
+            3D EFFECT ONLY HERE
+        ================================================== */}
+
         <div className="mt-8">
-
           <div className="mb-5">
-
-            <h3 className="text-lg font-semibold text-slate-900">
+            <h3 className="text-lg font-semibold text-foreground">
               Management
             </h3>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               Select an option to manage the INCIDEX system.
             </p>
-
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {managementCards.map((card) => {
               const Icon = card.icon;
 
@@ -554,42 +617,89 @@ const AdminDashboard = () => {
                 <Link
                   key={card.title}
                   to={card.path}
-                  className="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md"
+                  className="
+                    group
+                    relative
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    border-border
+                    bg-white
+                    dark:bg-[#252A32]
+                    p-5
+                    shadow-sm
+                    transition-all
+                    duration-300
+                    ease-out
+                    hover:-translate-y-2
+                    hover:scale-[1.015]
+                    hover:shadow-xl
+                    hover:border-muted-foreground/30
+                  "
                 >
+                  {/* 3D BACKGROUND ELEMENT */}
 
-                  <div className="flex items-start justify-between">
+                  <div
+                    className="
+                      pointer-events-none
+                      absolute
+                      -bottom-10
+                      -right-10
+                      h-28
+                      w-28
+                      rounded-full
+                      bg-muted/30
+                      transition-transform
+                      duration-500
+                      group-hover:scale-150
+                    "
+                  />
 
+                  <div className="relative flex items-start justify-between">
                     <div
-                      className={`flex h-11 w-11 items-center justify-center rounded-lg ${card.iconClass}`}
+                      className={`
+                        flex
+                        h-12
+                        w-12
+                        items-center
+                        justify-center
+                        rounded-xl
+                        ${card.iconClass}
+                        shadow-sm
+                        transition-all
+                        duration-300
+                        group-hover:scale-110
+                        group-hover:rotate-3
+                      `}
                     >
-                      <Icon size={21} />
+                      <Icon size={22} />
                     </div>
 
                     <ArrowRight
-                      size={18}
-                      className="text-slate-400 transition group-hover:translate-x-1 group-hover:text-blue-600"
+                      size={19}
+                      className="
+                        text-muted-foreground
+                        transition-all
+                        duration-300
+                        group-hover:translate-x-2
+                        group-hover:text-foreground
+                      "
                     />
-
                   </div>
 
-                  <h4 className="mt-4 text-base font-semibold text-slate-900">
+                  <h4 className="relative mt-5 text-base font-semibold text-foreground">
                     {card.title}
                   </h4>
 
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="relative mt-1 text-sm text-muted-foreground">
                     {card.description}
                   </p>
-
                 </Link>
               );
             })}
-
           </div>
-
         </div>
-
       </main>
-
     </div>
   );
 };

@@ -65,155 +65,565 @@ function Home() {
     <>
       <Navbar />
 
-      <main>
-        {/* Hero */}
+      <main className="min-h-screen bg-background text-foreground transition-colors duration-300">
+
+        {/* ============================================================
+            HERO / HOME
+        ============================================================ */}
+
         <section
           id="home"
-          className="relative overflow-hidden border-b border-slate-200 bg-white"
+          className="
+            relative
+            min-h-[calc(100vh-72px)]
+            overflow-hidden
+            bg-gradient-to-br
+            from-[#F2F3F4]
+            via-[#F1E8E8]
+            to-[#E5F0E7]
+            transition-colors
+            duration-300
+            dark:from-[#151A21]
+            dark:via-[#211C20]
+            dark:to-[#18251C]
+          "
         >
-          <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-blue-100/50 blur-3xl" />
+          {/* Background decoration */}
 
-          <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 sm:py-24 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:px-8 lg:py-28">
-            <div>
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600">
-                <ShieldCheck className="h-3.5 w-3.5 text-blue-600" />
-                Secure Crime Incident Reporting
-              </div>
+          <div
+            className="
+              pointer-events-none
+              absolute
+              -right-24
+              -top-24
+              h-96
+              w-96
+              rounded-full
+              bg-[#B94A48]/10
+              blur-3xl
+              dark:bg-[#D76562]/10
+            "
+          />
 
-              <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-[#172033] sm:text-5xl lg:text-6xl">
-                Report. Track.
-                <span className="block text-blue-600">
-                  Resolve.
-                </span>
-              </h1>
+          <div
+            className="
+              pointer-events-none
+              absolute
+              -bottom-40
+              -left-32
+              h-96
+              w-96
+              rounded-full
+              bg-[#7FAF8A]/15
+              blur-3xl
+              dark:bg-[#91BD9C]/10
+            "
+          />
 
-              <p className="mt-6 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-                INCIDEX provides a structured digital platform for
-                reporting crime incidents and tracking case progress
-                from submission through resolution.
-              </p>
+          {/* Hero Container */}
 
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a
-                  href="/register"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#172033] px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-[#25314a]"
+          <div
+            className="
+              relative
+              mx-auto
+              flex
+              min-h-[calc(100vh-72px)]
+              w-full
+              max-w-7xl
+              items-center
+              px-4
+              py-16
+              sm:px-6
+              sm:py-20
+              lg:px-8
+              lg:py-16
+            "
+          >
+            <div
+              className="
+                grid
+                w-full
+                items-center
+                gap-14
+                lg:grid-cols-[1.08fr_0.92fr]
+                lg:gap-16
+              "
+            >
+              {/* ======================================================
+                  HERO CONTENT
+              ====================================================== */}
+
+              <div>
+
+                {/* Badge */}
+
+                <div
+                  className="
+                    mb-6
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-full
+                    border
+                    border-border
+                    bg-card
+                    px-3.5
+                    py-1.5
+                    text-xs
+                    font-semibold
+                    text-card-foreground
+                    shadow-sm
+                  "
                 >
-                  Report an Incident
-                  <ArrowRight className="h-4 w-4" />
-                </a>
+                  <ShieldCheck
+                    className="
+                      h-3.5
+                      w-3.5
+                      text-[#B94A48]
+                      dark:text-[#D76562]
+                    "
+                  />
 
-                <a
-                  href="#how-it-works"
-                  className="inline-flex h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-6 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                  <span>Secure Crime Incident Reporting</span>
+                </div>
+
+                {/* Main Heading */}
+
+                <h1
+                  className="
+                    max-w-4xl
+                    text-5xl
+                    font-bold
+                    leading-[1.05]
+                    tracking-tight
+                    sm:text-6xl
+                    lg:text-7xl
+                  "
                 >
-                  Learn How It Works
-                </a>
+                  {/* REPORT = RED */}
+
+                  <span
+                    className="
+                      block
+                      text-[#B94A48]
+                      dark:text-[#D76562]
+                    "
+                  >
+                    Report.
+                  </span>
+
+                  {/* TRACK + RESOLVE = RED TO GREEN */}
+
+                  <span
+                    className="
+                      block
+                      bg-gradient-to-r
+                      from-[#B94A48]
+                      via-[#7FAF8A]
+                      to-[#5F9F6B]
+                      bg-clip-text
+                      text-transparent
+                      dark:from-[#D76562]
+                      dark:via-[#91BD9C]
+                      dark:to-[#7FBF8B]
+                    "
+                  >
+                    Track. Resolve.
+                  </span>
+                </h1>
+
+                {/* Description */}
+
+                <p
+                  className="
+                    mt-7
+                    max-w-2xl
+                    text-base
+                    leading-7
+                    text-muted-foreground
+                    sm:text-lg
+                    sm:leading-8
+                  "
+                >
+                  INCIDEX provides a structured digital platform for reporting
+                  crime incidents and tracking case progress from submission
+                  through resolution.
+                </p>
+
+                {/* CTA Buttons */}
+
+                <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+
+                  {/* Primary */}
+
+                  <a
+                    href="/register"
+                    className="
+                      group
+                      inline-flex
+                      h-12
+                      items-center
+                      justify-center
+                      gap-2
+                      rounded-xl
+                      bg-[#343A40]
+                      px-7
+                      text-sm
+                      font-semibold
+                      text-white
+                      shadow-md
+                      transition-all
+                      duration-200
+                      hover:-translate-y-0.5
+                      hover:bg-[#4A5157]
+                      hover:shadow-lg
+                      dark:bg-[#C4C8CC]
+                      dark:text-[#151A21]
+                      dark:hover:bg-[#D5D8DA]
+                    "
+                  >
+                    <span>Report an Incident</span>
+
+                    <ArrowRight
+                      className="
+                        h-4
+                        w-4
+                        transition-transform
+                        duration-200
+                        group-hover:translate-x-1
+                      "
+                    />
+                  </a>
+
+                  {/* Secondary */}
+
+                  <a
+                    href="#how-it-works"
+                    className="
+                      inline-flex
+                      h-12
+                      items-center
+                      justify-center
+                      rounded-xl
+                      border
+                      border-border
+                      bg-card
+                      px-7
+                      text-sm
+                      font-semibold
+                      text-card-foreground
+                      transition-all
+                      duration-200
+                      hover:-translate-y-0.5
+                      hover:border-[#7FAF8A]
+                      hover:bg-[#E1E4E6]
+                      dark:hover:border-[#91BD9C]
+                      dark:hover:bg-[#303842]
+                    "
+                  >
+                    Learn How It Works
+                  </a>
+                </div>
+
+                {/* Highlights */}
+
+                <div
+                  className="
+                    mt-9
+                    flex
+                    flex-wrap
+                    gap-x-7
+                    gap-y-3
+                    text-sm
+                    text-muted-foreground
+                  "
+                >
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2
+                      className="
+                        h-4
+                        w-4
+                        text-[#B94A48]
+                        dark:text-[#D76562]
+                      "
+                    />
+                    <span>Structured reporting</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2
+                      className="
+                        h-4
+                        w-4
+                        text-[#7FAF8A]
+                        dark:text-[#91BD9C]
+                      "
+                    />
+                    <span>Case tracking</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2
+                      className="
+                        h-4
+                        w-4
+                        text-[#5F9F6B]
+                        dark:text-[#7FBF8B]
+                      "
+                    />
+                    <span>Secure access</span>
+                  </div>
+                </div>
               </div>
 
-              <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-500">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  Structured reporting
+              {/* ======================================================
+                  HERO CASE PREVIEW
+              ====================================================== */}
+
+              <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
+
+                {/* Main card */}
+
+                <div
+                  className="
+                    rounded-3xl
+                    border
+                    border-border
+                    bg-card
+                    p-3
+                    shadow-xl
+                    shadow-foreground/5
+                    dark:shadow-black/20
+                    sm:p-4
+                  "
+                >
+                  <div
+                    className="
+                      rounded-2xl
+                      border
+                      border-border
+                      bg-secondary
+                      p-5
+                      shadow-sm
+                      sm:p-6
+                    "
+                  >
+                    {/* Header */}
+
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground">
+                          Case Overview
+                        </p>
+
+                        <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">
+                          INC-0024
+                        </p>
+                      </div>
+
+                      <span
+                        className="
+                          rounded-full
+                          border
+                          border-[#7FAF8A]/40
+                          bg-[#7FAF8A]/10
+                          px-3
+                          py-1.5
+                          text-xs
+                          font-semibold
+                          text-[#4F8059]
+                          dark:border-[#91BD9C]/40
+                          dark:bg-[#91BD9C]/10
+                          dark:text-[#91BD9C]
+                        "
+                      >
+                        In Progress
+                      </span>
+                    </div>
+
+                    {/* Details */}
+
+                    <div className="mt-6 space-y-3">
+
+                      {/* Category */}
+
+                      <div
+                        className="
+                          rounded-xl
+                          border
+                          border-border
+                          bg-card
+                          p-4
+                          shadow-sm
+                        "
+                      >
+                        <div className="flex items-center justify-between gap-4">
+                          <div>
+                            <p className="text-xs text-muted-foreground">
+                              Category
+                            </p>
+
+                            <p className="mt-1 font-semibold text-card-foreground">
+                              Theft
+                            </p>
+                          </div>
+
+                          <div
+                            className="
+                              flex
+                              h-10
+                              w-10
+                              items-center
+                              justify-center
+                              rounded-xl
+                              bg-[#B94A48]/10
+                              dark:bg-[#D76562]/10
+                            "
+                          >
+                            <FileText
+                              className="
+                                h-5
+                                w-5
+                                text-[#B94A48]
+                                dark:text-[#D76562]
+                              "
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Location */}
+
+                      <div
+                        className="
+                          rounded-xl
+                          border
+                          border-border
+                          bg-card
+                          p-4
+                          shadow-sm
+                        "
+                      >
+                        <div className="flex items-center justify-between gap-4">
+                          <div>
+                            <p className="text-xs text-muted-foreground">
+                              Incident Location
+                            </p>
+
+                            <p className="mt-1 font-semibold text-card-foreground">
+                              Reported Location
+                            </p>
+                          </div>
+
+                          <div
+                            className="
+                              flex
+                              h-10
+                              w-10
+                              items-center
+                              justify-center
+                              rounded-xl
+                              bg-[#7FAF8A]/10
+                              dark:bg-[#91BD9C]/10
+                            "
+                          >
+                            <MapPin
+                              className="
+                                h-5
+                                w-5
+                                text-[#5F9F6B]
+                                dark:text-[#7FBF8B]
+                              "
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Progress */}
+
+                    <div className="mt-6">
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">
+                          Case progress
+                        </span>
+
+                        <span className="text-xs font-semibold text-foreground">
+                          75%
+                        </span>
+                      </div>
+
+                      <div className="h-2 overflow-hidden rounded-full bg-border">
+                        <div
+                          className="
+                            h-full
+                            w-3/4
+                            rounded-full
+                            bg-gradient-to-r
+                            from-[#B94A48]
+                            via-[#7FAF8A]
+                            to-[#5F9F6B]
+                            dark:from-[#D76562]
+                            dark:via-[#91BD9C]
+                            dark:to-[#7FBF8B]
+                          "
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  Case tracking
-                </div>
+                {/* Floating status card */}
 
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  Secure access
-                </div>
-              </div>
-            </div>
+                <div
+                  className="
+                    absolute
+                    -bottom-6
+                    -left-6
+                    hidden
+                    rounded-2xl
+                    border
+                    border-border
+                    bg-card
+                    p-4
+                    shadow-lg
+                    shadow-foreground/5
+                    dark:shadow-black/20
+                    sm:block
+                  "
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="
+                        flex
+                        h-10
+                        w-10
+                        items-center
+                        justify-center
+                        rounded-xl
+                        bg-[#7FAF8A]/10
+                        dark:bg-[#91BD9C]/10
+                      "
+                    >
+                      <UserCheck
+                        className="
+                          h-5
+                          w-5
+                          text-[#5F9F6B]
+                          dark:text-[#7FBF8B]
+                        "
+                      />
+                    </div>
 
-            {/* Hero visual */}
-            <div className="relative">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm sm:p-5">
-                <div className="rounded-xl bg-[#172033] p-5 text-white sm:p-6">
-                  <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-medium text-slate-400">
-                        Case Overview
+                      <p className="text-xs text-muted-foreground">
+                        Case tracking
                       </p>
 
-                      <p className="mt-1 text-xl font-bold">
-                        INC-0024
+                      <p className="text-sm font-bold text-card-foreground">
+                        Status updates
                       </p>
                     </div>
-
-                    <span className="rounded-full bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-300">
-                      In Progress
-                    </span>
-                  </div>
-
-                  <div className="mt-6 space-y-3">
-                    <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <p className="text-xs text-slate-400">
-                            Category
-                          </p>
-
-                          <p className="mt-1 font-medium">
-                            Theft
-                          </p>
-                        </div>
-
-                        <FileText className="h-5 w-5 text-slate-400" />
-                      </div>
-                    </div>
-
-                    <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <p className="text-xs text-slate-400">
-                            Incident Location
-                          </p>
-
-                          <p className="mt-1 font-medium">
-                            Reported Location
-                          </p>
-                        </div>
-
-                        <MapPin className="h-5 w-5 text-blue-400" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-5">
-                    <div className="mb-2 flex justify-between text-xs">
-                      <span className="text-slate-400">
-                        Case progress
-                      </span>
-
-                      <span className="font-medium text-white">
-                        75%
-                      </span>
-                    </div>
-
-                    <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                      <div className="h-full w-3/4 rounded-full bg-blue-500" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="absolute -bottom-5 -left-5 hidden rounded-xl border border-slate-200 bg-white p-4 shadow-lg sm:block">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-50">
-                    <UserCheck className="h-5 w-5 text-green-600" />
-                  </div>
-
-                  <div>
-                    <p className="text-xs text-slate-500">
-                      Case tracking
-                    </p>
-
-                    <p className="text-sm font-bold text-slate-900">
-                      Status updates
-                    </p>
                   </div>
                 </div>
               </div>
@@ -221,42 +631,105 @@ function Home() {
           </div>
         </section>
 
-        {/* How it works */}
+        {/* ============================================================
+            HOW IT WORKS
+        ============================================================ */}
+
         <section
           id="how-it-works"
-          className="border-b border-slate-200 bg-[#F8FAFC]"
+          className="
+            bg-background
+            transition-colors
+            duration-300
+          "
         >
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+
             <div className="max-w-2xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.15em] text-blue-600">
+              <p
+                className="
+                  text-sm
+                  font-semibold
+                  uppercase
+                  tracking-[0.15em]
+                  text-[#B94A48]
+                  dark:text-[#D76562]
+                "
+              >
                 How it works
               </p>
 
-              <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#172033]">
+              <h2
+                className="
+                  mt-2
+                  text-3xl
+                  font-bold
+                  tracking-tight
+                  text-foreground
+                  sm:text-4xl
+                "
+              >
                 A clear reporting process
               </h2>
 
-              <p className="mt-4 text-sm leading-6 text-slate-600 sm:text-base">
+              <p
+                className="
+                  mt-4
+                  text-sm
+                  leading-6
+                  text-muted-foreground
+                  sm:text-base
+                "
+              >
                 INCIDEX keeps incident reporting and case tracking
                 straightforward with a structured workflow.
               </p>
             </div>
 
             <div className="mt-10 grid gap-5 md:grid-cols-3">
-              {steps.map((step) => (
+              {steps.map((step, index) => (
                 <div
                   key={step.number}
-                  className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                  className="
+                    group
+                    rounded-2xl
+                    bg-card
+                    p-6
+                    shadow-sm
+                    transition-all
+                    duration-200
+                    hover:-translate-y-1
+                    hover:shadow-md
+                  "
                 >
-                  <span className="text-sm font-bold text-blue-600">
+                  <span
+                    className={`
+                      inline-flex
+                      h-8
+                      min-w-8
+                      items-center
+                      justify-center
+                      rounded-lg
+                      px-2
+                      text-sm
+                      font-bold
+                      ${
+                        index === 0
+                          ? "bg-[#B94A48]/10 text-[#B94A48] dark:bg-[#D76562]/10 dark:text-[#D76562]"
+                          : index === 1
+                            ? "bg-[#7FAF8A]/10 text-[#5F805F] dark:bg-[#91BD9C]/10 dark:text-[#91BD9C]"
+                            : "bg-[#5F9F6B]/10 text-[#4F8059] dark:bg-[#7FBF8B]/10 dark:text-[#7FBF8B]"
+                      }
+                    `}
+                  >
                     {step.number}
                   </span>
 
-                  <h3 className="mt-5 text-lg font-bold text-slate-900">
+                  <h3 className="mt-5 text-lg font-bold text-card-foreground">
                     {step.title}
                   </h3>
 
-                  <p className="mt-2 text-sm leading-6 text-slate-500">
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
                     {step.description}
                   </p>
                 </div>
@@ -265,45 +738,123 @@ function Home() {
           </div>
         </section>
 
-        {/* Features */}
+        {/* ============================================================
+            FEATURES
+        ============================================================ */}
+
         <section
           id="features"
-          className="border-b border-slate-200 bg-white"
+          className="
+            bg-background
+            transition-colors
+            duration-300
+          "
         >
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+
             <div className="text-center">
-              <p className="text-sm font-semibold uppercase tracking-[0.15em] text-blue-600">
+              <p
+                className="
+                  text-sm
+                  font-semibold
+                  uppercase
+                  tracking-[0.15em]
+                  text-[#B94A48]
+                  dark:text-[#D76562]
+                "
+              >
                 Platform features
               </p>
 
-              <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#172033]">
+              <h2
+                className="
+                  mt-2
+                  text-3xl
+                  font-bold
+                  tracking-tight
+                  text-foreground
+                  sm:text-4xl
+                "
+              >
                 Built around the case lifecycle
               </h2>
 
-              <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-                The platform focuses on structured incident reporting,
-                case visibility and a clear status workflow.
+              <p
+                className="
+                  mx-auto
+                  mt-4
+                  max-w-2xl
+                  text-sm
+                  leading-6
+                  text-muted-foreground
+                  sm:text-base
+                "
+              >
+                The platform focuses on structured incident reporting, case
+                visibility and a clear status workflow.
               </p>
             </div>
 
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {features.map((feature) => {
+              {features.map((feature, index) => {
                 const Icon = feature.icon;
 
                 return (
                   <div
                     key={feature.title}
-                    className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                    className="
+                      group
+                      rounded-2xl
+                      border
+                      border-border
+                      bg-card
+                      p-6
+                      shadow-sm
+                      transition-all
+                      duration-200
+                      hover:-translate-y-1
+                      hover:shadow-md
+                    "
                   >
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50">
-                      <Icon className="h-5 w-5 text-blue-600" />
+                    <div
+                      className={`
+                        flex
+                        h-11
+                        w-11
+                        items-center
+                        justify-center
+                        rounded-xl
+                        transition-colors
+                        duration-200
+                        ${
+                          index === 0
+                            ? "bg-[#B94A48]/10 group-hover:bg-[#B94A48]/15 dark:bg-[#D76562]/10 dark:group-hover:bg-[#D76562]/15"
+                            : index === 1
+                              ? "bg-[#7FAF8A]/10 group-hover:bg-[#7FAF8A]/15 dark:bg-[#91BD9C]/10 dark:group-hover:bg-[#91BD9C]/15"
+                              : "bg-[#5F9F6B]/10 group-hover:bg-[#5F9F6B]/15 dark:bg-[#7FBF8B]/10 dark:group-hover:bg-[#7FBF8B]/15"
+                        }
+                      `}
+                    >
+                      <Icon
+                        className={`
+                          h-5
+                          w-5
+                          ${
+                            index === 0
+                              ? "text-[#B94A48] dark:text-[#D76562]"
+                              : index === 1
+                                ? "text-[#5F805F] dark:text-[#91BD9C]"
+                                : "text-[#4F8059] dark:text-[#7FBF8B]"
+                          }
+                        `}
+                      />
                     </div>
 
-                    <h3 className="mt-5 text-base font-bold text-slate-900">
+                    <h3 className="mt-5 text-base font-bold text-card-foreground">
                       {feature.title}
                     </h3>
 
-                    <p className="mt-2 text-sm leading-6 text-slate-500">
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
                       {feature.description}
                     </p>
                   </div>
@@ -313,52 +864,158 @@ function Home() {
           </div>
         </section>
 
-        {/* Trust */}
+        {/* ============================================================
+            TRUST
+        ============================================================ */}
+
         <section
           id="trust"
-          className="border-b border-slate-200 bg-[#F8FAFC]"
+          className="
+            border-b
+            border-border
+            bg-background
+            transition-colors
+            duration-300
+          "
         >
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+
             <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.15em] text-blue-600">
+                <p
+                  className="
+                    text-sm
+                    font-semibold
+                    uppercase
+                    tracking-[0.15em]
+                    text-[#B94A48]
+                    dark:text-[#D76562]
+                  "
+                >
                   Designed for responsible reporting
                 </p>
 
-                <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#172033]">
+                <h2
+                  className="
+                    mt-2
+                    text-3xl
+                    font-bold
+                    tracking-tight
+                    text-foreground
+                    sm:text-4xl
+                  "
+                >
                   Clear information. Clear case status.
                 </h2>
 
-                <p className="mt-5 max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
+                <p
+                  className="
+                    mt-5
+                    max-w-xl
+                    text-sm
+                    leading-7
+                    text-muted-foreground
+                    sm:text-base
+                  "
+                >
                   INCIDEX separates reporting, case tracking and
-                  administrative case management into a structured
-                  workflow so users can understand where their case
-                  stands.
+                  administrative case management into a structured workflow so
+                  users can understand where their case stands.
                 </p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                  <LockKeyhole className="h-5 w-5 text-[#172033]" />
 
-                  <h3 className="mt-4 font-bold text-slate-900">
+                {/* Secure Access */}
+
+                <div
+                  className="
+                    rounded-2xl
+                    border
+                    border-border
+                    bg-card
+                    p-5
+                    shadow-sm
+                    transition-shadow
+                    duration-200
+                    hover:shadow-md
+                  "
+                >
+                  <div
+                    className="
+                      flex
+                      h-10
+                      w-10
+                      items-center
+                      justify-center
+                      rounded-xl
+                      bg-[#B94A48]/10
+                      dark:bg-[#D76562]/10
+                    "
+                  >
+                    <LockKeyhole
+                      className="
+                        h-5
+                        w-5
+                        text-[#B94A48]
+                        dark:text-[#D76562]
+                      "
+                    />
+                  </div>
+
+                  <h3 className="mt-4 font-bold text-card-foreground">
                     Secure access
                   </h3>
 
-                  <p className="mt-2 text-sm leading-6 text-slate-500">
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
                     Account-based access keeps user and administrator
                     functions separated.
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                  <ShieldCheck className="h-5 w-5 text-[#172033]" />
+                {/* Structured Workflow */}
 
-                  <h3 className="mt-4 font-bold text-slate-900">
+                <div
+                  className="
+                    rounded-2xl
+                    border
+                    border-border
+                    bg-card
+                    p-5
+                    shadow-sm
+                    transition-shadow
+                    duration-200
+                    hover:shadow-md
+                  "
+                >
+                  <div
+                    className="
+                      flex
+                      h-10
+                      w-10
+                      items-center
+                      justify-center
+                      rounded-xl
+                      bg-[#5F9F6B]/10
+                      dark:bg-[#7FBF8B]/10
+                    "
+                  >
+                    <ShieldCheck
+                      className="
+                        h-5
+                        w-5
+                        text-[#5F9F6B]
+                        dark:text-[#7FBF8B]
+                      "
+                    />
+                  </div>
+
+                  <h3 className="mt-4 font-bold text-card-foreground">
                     Structured workflow
                   </h3>
 
-                  <p className="mt-2 text-sm leading-6 text-slate-500">
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
                     Cases move through clearly defined status stages.
                   </p>
                 </div>
@@ -367,44 +1024,43 @@ function Home() {
           </div>
         </section>
 
-        {/* CTA */}
-        <section className="bg-[#172033]">
-          <div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold tracking-tight text-white">
-              Ready to report an incident?
-            </h2>
+        {/* ============================================================
+            FOOTER
+        ============================================================ */}
 
-            <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-slate-300">
-              Create an account to submit a report and track your case
-              through the INCIDEX system.
-            </p>
-
-            <div className="mt-7">
-              <a
-                href="/register"
-                className="inline-flex h-11 items-center gap-2 rounded-lg bg-white px-6 text-sm font-semibold text-[#172033] transition hover:bg-slate-100"
-              >
-                Create an Account
-                <ArrowRight className="h-4 w-4" />
-              </a>
-            </div>
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="bg-[#0F172A]">
-          <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+        <footer
+          className="
+            border-t
+            border-border
+            bg-primary
+            text-primary-foreground
+          "
+        >
+          <div
+            className="
+              mx-auto
+              flex
+              max-w-7xl
+              flex-col
+              gap-4
+              px-4
+              py-8
+              sm:px-6
+              md:flex-row
+              md:items-center
+              md:justify-between
+              lg:px-8
+            "
+          >
             <div>
-              <p className="font-bold text-white">
-                INCIDEX
-              </p>
+              <p className="font-bold">INCIDEX</p>
 
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs opacity-60">
                 Crime Incident Reporting System
               </p>
             </div>
 
-            <p className="text-xs text-slate-500">
+            <p className="text-xs opacity-50">
               Report. Track. Resolve.
             </p>
           </div>

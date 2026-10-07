@@ -9,13 +9,14 @@ import {
 import Home from "./components/user/Home";
 import Login from "./components/user/Login";
 import Register from "./components/user/Register";
+import ForgotPassword from "./components/user/ForgotPassword";
+import ResetPassword from "./components/user/ResetPassword";
 import Dashboard from "./components/user/Dashboard";
 import Profile from "./components/user/Profile";
 import ReportCrime from "./components/user/ReportCrime";
 import MyCases from "./components/user/MyCases";
 import CaseDetails from "./components/user/CaseDetails";
 import Notifications from "./components/user/Notifications";
-import StatusHistory from "./components/user/StatusHistory";
 import Feedback from "./components/user/Feedback";
 
 // Admin components
@@ -26,7 +27,6 @@ import AdminCases from "./components/admin/AdminCases";
 import AdminCaseDetails from "./components/admin/AdminCaseDetails";
 import AdminNotifications from "./components/admin/AdminNotifications";
 import AdminFeedback from "./components/admin/AdminFeedback";
-
 
 /*
   USER PROTECTED ROUTES
@@ -45,7 +45,6 @@ const UserProtectedRoutes = ({ children }) => {
   return children;
 };
 
-
 /*
   ADMIN PROTECTED ROUTES
 
@@ -63,37 +62,66 @@ const AdminProtectedRoutes = ({ children }) => {
   return children;
 };
 
-
 function App() {
   return (
     <BrowserRouter>
-
       <Routes>
 
         {/* =========================
             PUBLIC ROUTES
         ========================== */}
 
+        {/* Home */}
+
         <Route
           path="/"
           element={<Home />}
         />
 
+        {/* Login Modal Over Home */}
+
         <Route
           path="/login"
-          element={<Login />}
+          element={
+            <>
+              <Home />
+              <Login />
+            </>
+          }
         />
+
+        {/* Register Modal Over Home */}
 
         <Route
           path="/register"
-          element={<Register />}
+          element={
+            <>
+              <Home />
+              <Register />
+            </>
+          }
         />
+
+        {/* FORGOT PASSWORD */}
+
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
+        />
+
+        {/* RESET PASSWORD */}
+
+        <Route
+          path="/reset-password/:token"
+          element={<ResetPassword />}
+        />
+
+        {/* ADMIN LOGIN */}
 
         <Route
           path="/admin/login"
           element={<AdminLogin />}
         />
-
 
         {/* =========================
             USER ROUTES
@@ -154,15 +182,6 @@ function App() {
         />
 
         <Route
-          path="/user/history"
-          element={
-            <UserProtectedRoutes>
-              <StatusHistory />
-            </UserProtectedRoutes>
-          }
-        />
-
-        <Route
           path="/user/feedback/:id"
           element={
             <UserProtectedRoutes>
@@ -170,7 +189,6 @@ function App() {
             </UserProtectedRoutes>
           }
         />
-
 
         {/* =========================
             ADMIN ROUTES
@@ -230,8 +248,6 @@ function App() {
           }
         />
 
-       
-
         <Route
           path="/admin/feedback"
           element={
@@ -240,7 +256,6 @@ function App() {
             </AdminProtectedRoutes>
           }
         />
-
 
         {/* =========================
             UNKNOWN ROUTES
@@ -252,7 +267,6 @@ function App() {
         />
 
       </Routes>
-
     </BrowserRouter>
   );
 }

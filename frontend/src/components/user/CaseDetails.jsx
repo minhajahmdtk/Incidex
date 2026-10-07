@@ -100,19 +100,19 @@ const CaseDetails = () => {
   const getStatusStyle = (status) => {
     switch (status) {
       case "New":
-        return "bg-blue-50 text-blue-700 border-blue-200";
+        return "bg-muted text-muted-foreground border-border";
 
       case "Acknowledged":
-        return "bg-amber-50 text-amber-700 border-amber-200";
+        return "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900";
 
       case "In Progress":
-        return "bg-indigo-50 text-indigo-700 border-indigo-200";
+        return "bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-900/40 dark:text-stone-300 dark:border-stone-700";
 
       case "Resolved":
-        return "bg-green-50 text-green-700 border-green-200";
+        return "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900";
 
       default:
-        return "bg-slate-50 text-slate-700 border-slate-200";
+        return "bg-muted text-muted-foreground border-border";
     }
   };
 
@@ -151,13 +151,13 @@ const CaseDetails = () => {
   // Loading
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-background">
         <Navbar />
 
-        <main className="min-h-screen lg:ml-72">
-          <div className="px-4 py-10 sm:px-6 lg:px-8">
-            <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-              <p className="text-sm text-slate-500">
+        <main className="min-h-screen">
+          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+            <div className="rounded-2xl border border-border bg-card p-10 text-center shadow-sm">
+              <p className="text-sm text-muted-foreground">
                 Loading case details...
               </p>
             </div>
@@ -170,20 +170,35 @@ const CaseDetails = () => {
   // Error
   if (errorMessage || !caseData) {
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-background">
         <Navbar />
 
-        <main className="min-h-screen lg:ml-72">
-          <div className="px-4 py-10 sm:px-6 lg:px-8">
-            <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
-              <p className="text-sm text-red-600">
+        <main className="min-h-screen">
+          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+            <div className="rounded-2xl border border-red-200 bg-red-50 p-6 dark:border-red-900 dark:bg-red-950/30">
+              <p className="text-sm text-red-600 dark:text-red-400">
                 {errorMessage || "Case details not found"}
               </p>
 
               <button
                 type="button"
                 onClick={() => navigate("/user/cases")}
-                className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+                className="
+                  mt-4
+                  rounded-lg
+                  bg-[#151A21]
+                  px-4
+                  py-2
+                  text-sm
+                  font-medium
+                  text-white
+                  transition-all
+                  duration-200
+                  hover:bg-[#343A40]
+                  dark:bg-[#E5E7EB]
+                  dark:text-[#151A21]
+                  dark:hover:bg-white
+                "
               >
                 Back to My Cases
               </button>
@@ -195,18 +210,30 @@ const CaseDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="min-h-screen lg:ml-72">
-        <div className="px-4 py-6 sm:px-6 lg:px-8">
+      <main className="min-h-screen">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 
           {/* Header */}
           <div className="mb-6">
+
             <button
               type="button"
               onClick={() => navigate("/user/cases")}
-              className="mb-4 flex items-center gap-2 text-sm text-slate-600 transition hover:text-blue-600"
+              className="
+                mb-4
+                flex
+                items-center
+                gap-2
+                text-sm
+                text-muted-foreground
+                transition-all
+                duration-200
+                hover:text-[#B94A48]
+                dark:hover:text-[#D76562]
+              "
             >
               <ArrowLeft size={18} />
               Back to My Cases
@@ -215,11 +242,11 @@ const CaseDetails = () => {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">
+                <h1 className="text-2xl font-bold text-foreground">
                   Case Details
                 </h1>
 
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-muted-foreground">
                   View the details and status history of your reported case.
                 </p>
               </div>
@@ -231,7 +258,24 @@ const CaseDetails = () => {
                   <button
                     type="button"
                     onClick={downloadPdf}
-                    className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-green-700"
+                    className="
+                      flex
+                      items-center
+                      gap-2
+                      rounded-lg
+                      bg-[#151A21]
+                      px-4
+                      py-2.5
+                      text-sm
+                      font-medium
+                      text-white
+                      transition-all
+                      duration-200
+                      hover:bg-[#343A40]
+                      dark:bg-[#E5E7EB]
+                      dark:text-[#151A21]
+                      dark:hover:bg-white
+                    "
                   >
                     <Download size={17} />
                     Download Final Report
@@ -247,7 +291,28 @@ const CaseDetails = () => {
                         `/user/feedback/${caseData.caseId}`
                       )
                     }
-                    className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
+                    className="
+                      flex
+                      items-center
+                      gap-2
+                      rounded-lg
+                      border
+                      border-border
+                      bg-background
+                      px-4
+                      py-2.5
+                      text-sm
+                      font-medium
+                      text-foreground
+                      transition-all
+                      duration-200
+                      hover:border-[#B94A48]
+                      hover:bg-[#B94A48]/5
+                      hover:text-[#B94A48]
+                      dark:hover:border-[#D76562]
+                      dark:hover:bg-[#D76562]/10
+                      dark:hover:text-[#D76562]
+                    "
                   >
                     <MessageSquare size={17} />
                     Give Feedback
@@ -269,23 +334,23 @@ const CaseDetails = () => {
           </div>
 
           {/* Case Information */}
-          <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
 
             <div className="mb-5 flex items-center gap-3">
 
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
                 <FileText
                   size={20}
-                  className="text-blue-600"
+                  className="text-foreground"
                 />
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">
+                <h2 className="text-lg font-semibold text-foreground">
                   Case Information
                 </h2>
 
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   Incident report details
                 </p>
               </div>
@@ -296,36 +361,36 @@ const CaseDetails = () => {
 
               {/* Case ID */}
               <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   Case ID
                 </p>
 
-                <p className="mt-1 text-sm font-semibold text-slate-900">
+                <p className="mt-1 text-sm font-semibold text-foreground">
                   {caseData.caseId}
                 </p>
               </div>
 
               {/* Crime Category */}
               <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   Crime Category
                 </p>
 
-                <p className="mt-1 text-sm font-semibold text-slate-900">
+                <p className="mt-1 text-sm font-semibold text-foreground">
                   {caseData.crimeCategory}
                 </p>
               </div>
 
               {/* Report Date */}
               <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   Reported Date & Time
                 </p>
 
-                <div className="mt-1 flex items-center gap-2 text-sm text-slate-700">
+                <div className="mt-1 flex items-center gap-2 text-sm text-foreground">
                   <Calendar
                     size={16}
-                    className="text-slate-400"
+                    className="text-muted-foreground"
                   />
                   {formatDate(caseData.reportDateTime)}
                 </div>
@@ -333,14 +398,14 @@ const CaseDetails = () => {
 
               {/* Location */}
               <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   Incident Location
                 </p>
 
-                <div className="mt-1 flex items-start gap-2 text-sm text-slate-700">
+                <div className="mt-1 flex items-start gap-2 text-sm text-foreground">
                   <MapPin
                     size={16}
-                    className="mt-0.5 flex-shrink-0 text-slate-400"
+                    className="mt-0.5 flex-shrink-0 text-muted-foreground"
                   />
 
                   <span>
@@ -351,11 +416,11 @@ const CaseDetails = () => {
 
               {/* Description */}
               <div className="sm:col-span-2">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   Incident Description
                 </p>
 
-                <p className="mt-2 rounded-lg bg-slate-50 p-4 text-sm leading-6 text-slate-700">
+                <p className="mt-2 rounded-lg bg-muted/50 p-4 text-sm leading-6 text-foreground">
                   {caseData.incidentDescription}
                 </p>
               </div>
@@ -368,19 +433,19 @@ const CaseDetails = () => {
             caseData.latitude !== undefined &&
             caseData.longitude !== null &&
             caseData.longitude !== undefined && (
-              <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
 
                 <div className="mb-4">
-                  <h2 className="text-lg font-semibold text-slate-900">
+                  <h2 className="text-lg font-semibold text-foreground">
                     Incident Location
                   </h2>
 
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     Location selected when the incident was reported.
                   </p>
                 </div>
 
-                <div className="overflow-hidden rounded-xl border border-slate-200">
+                <div className="overflow-hidden rounded-xl border border-border">
 
                   <MapContainer
                     center={[
@@ -409,21 +474,21 @@ const CaseDetails = () => {
             )}
 
           {/* Status History */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
 
             <div className="mb-6">
-              <h2 className="text-lg font-semibold text-slate-900">
+              <h2 className="text-lg font-semibold text-foreground">
                 Status History
               </h2>
 
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Track how your case status has changed.
               </p>
             </div>
 
             {history.length === 0 ? (
-              <div className="rounded-lg bg-slate-50 p-6 text-center">
-                <p className="text-sm text-slate-500">
+              <div className="rounded-lg bg-muted/50 p-6 text-center">
+                <p className="text-sm text-muted-foreground">
                   No status history available.
                 </p>
               </div>
@@ -448,7 +513,7 @@ const CaseDetails = () => {
                       </div>
 
                       {index !== history.length - 1 && (
-                        <div className="mt-2 h-full min-h-8 w-px bg-slate-200" />
+                        <div className="mt-2 h-full min-h-8 w-px bg-border" />
                       )}
 
                     </div>
@@ -456,11 +521,11 @@ const CaseDetails = () => {
                     {/* Timeline Content */}
                     <div className="pb-2">
 
-                      <p className="text-sm font-semibold text-slate-900">
+                      <p className="text-sm font-semibold text-foreground">
                         {item.status}
                       </p>
 
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {formatDate(item.updatedDateTime)}
                       </p>
 
