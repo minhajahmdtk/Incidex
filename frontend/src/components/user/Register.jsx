@@ -30,10 +30,15 @@ const Register = () => {
     setError("");
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    setError("");
+  setError("");
+
+  if (form.password !== form.confirmPassword) {
+    setError("Passwords do not match");
+    return;
+  }
 
     axios
       .post("http://localhost:3000/user/register", form)

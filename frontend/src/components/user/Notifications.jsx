@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Bell,
   BellOff,
@@ -7,6 +8,7 @@ import {
   Trash2,
   Clock,
   FileText,
+  ArrowLeft,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -14,10 +16,12 @@ import Navbar from "./Navbar";
 import axiosInstance from "../../axiosInterceptor";
 
 const Notifications = () => {
+  const navigate = useNavigate();
+
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // GET NOTIFICATIONS
+  // Get notifications
   useEffect(() => {
     const getNotifications = async () => {
       try {
@@ -40,7 +44,7 @@ const Notifications = () => {
     getNotifications();
   }, []);
 
-  // FORMAT DATE
+  // Format date
   const formatDate = (date) => {
     if (!date) {
       return "Not available";
@@ -55,7 +59,7 @@ const Notifications = () => {
     });
   };
 
-  // MARK ONE NOTIFICATION AS READ
+  // Mark one notification as read
   const markAsRead = async (id) => {
     try {
       await axiosInstance.put(
@@ -83,7 +87,7 @@ const Notifications = () => {
     }
   };
 
-  // MARK ALL NOTIFICATIONS AS READ
+  // Mark all notifications as read
   const markAllAsRead = async () => {
     try {
       await axiosInstance.put(
@@ -107,7 +111,7 @@ const Notifications = () => {
     }
   };
 
-  // DELETE NOTIFICATION
+  // Delete notification
   const deleteNotification = async (id) => {
     try {
       await axiosInstance.delete(
@@ -130,7 +134,7 @@ const Notifications = () => {
     }
   };
 
-  // COUNT UNREAD NOTIFICATIONS
+  // Count unread notifications
   const unreadCount = notifications.filter(
     (notification) => !notification.isRead
   ).length;
@@ -143,82 +147,109 @@ const Notifications = () => {
         <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 
           {/* HEADER */}
-          <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
-              <div
-                className="
-                  flex
-                  h-11
-                  w-11
-                  items-center
-                  justify-center
-                  rounded-xl
-                  bg-[#B94A48]/10
-                  text-[#B94A48]
-                  dark:bg-[#D76562]/10
-                  dark:text-[#D76562]
-                "
-              >
-                <Bell size={22} />
-              </div>
+          <div className="mb-8">
 
-              <div>
-                <h1
+            {/* BACK TO DASHBOARD */}
+            <button
+              type="button"
+              onClick={() => navigate("/user/dashboard")}
+              className="
+                mb-5
+                inline-flex
+                items-center
+                gap-2
+                text-sm
+                font-medium
+                text-muted-foreground
+                transition-colors
+                hover:text-[#B94A48]
+                dark:hover:text-[#D76562]
+              "
+            >
+              <ArrowLeft size={18} />
+              Back to Dashboard
+            </button>
+
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+
+              {/* TITLE */}
+              <div className="flex items-center gap-3">
+                <div
                   className="
-                    bg-gradient-to-r
-                    from-[#B94A48]
-                    via-[#7FAF8A]
-                    to-[#555C64]
-                    bg-clip-text
-                    text-2xl
-                    font-bold
-                    tracking-tight
-                    text-transparent
-                    sm:text-3xl
+                    flex
+                    h-11
+                    w-11
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-xl
+                    bg-[#B94A48]/10
+                    text-[#B94A48]
+                    dark:bg-[#D76562]/10
+                    dark:text-[#D76562]
                   "
                 >
-                  Notifications
-                </h1>
+                  <Bell size={22} />
+                </div>
 
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Stay updated about your reported cases.
-                </p>
+                <div>
+                  <h1
+                    className="
+                      bg-gradient-to-r
+                      from-[#B94A48]
+                      via-[#7FAF8A]
+                      to-[#555C64]
+                      bg-clip-text
+                      text-2xl
+                      font-bold
+                      tracking-tight
+                      text-transparent
+                      sm:text-3xl
+                    "
+                  >
+                    Notifications
+                  </h1>
+
+                  <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                    Stay updated about your reported cases.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            {/* MARK ALL AS READ */}
-            {unreadCount > 0 && (
-              <button
-                type="button"
-                onClick={markAllAsRead}
-                className="
-                  inline-flex
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-lg
-                  border
-                  border-border
-                  bg-background
-                  px-4
-                  py-2.5
-                  text-sm
-                  font-medium
-                  text-foreground
-                  transition-all
-                  duration-200
-                  hover:border-[#B94A48]
-                  hover:bg-[#B94A48]/5
-                  hover:text-[#B94A48]
-                  dark:hover:border-[#D76562]
-                  dark:hover:bg-[#D76562]/10
-                  dark:hover:text-[#D76562]
-                "
-              >
-                <CheckCheck size={17} />
-                Mark all as read
-              </button>
-            )}
+              {/* MARK ALL AS READ */}
+              {unreadCount > 0 && (
+                <button
+                  type="button"
+                  onClick={markAllAsRead}
+                  className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-lg
+                    border
+                    border-border
+                    bg-background
+                    px-4
+                    py-2.5
+                    text-sm
+                    font-medium
+                    text-foreground
+                    transition-all
+                    duration-200
+                    hover:border-[#B94A48]
+                    hover:bg-[#B94A48]/5
+                    hover:text-[#B94A48]
+                    dark:hover:border-[#D76562]
+                    dark:hover:bg-[#D76562]/10
+                    dark:hover:text-[#D76562]
+                  "
+                >
+                  <CheckCheck size={17} />
+                  Mark all as read
+                </button>
+              )}
+            </div>
           </div>
 
           {/* MAIN CARD */}
@@ -234,8 +265,19 @@ const Notifications = () => {
               duration-300
             "
           >
+
             {/* CARD HEADER */}
-            <div className="flex items-center justify-between border-b border-border px-5 py-5">
+            <div
+              className="
+                flex
+                items-center
+                justify-between
+                border-b
+                border-border
+                px-5
+                py-5
+              "
+            >
               <div>
                 <h2 className="text-base font-semibold text-foreground">
                   Recent Notifications
@@ -313,7 +355,16 @@ const Notifications = () => {
                   No Notifications
                 </h2>
 
-                <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+                <p
+                  className="
+                    mx-auto
+                    mt-2
+                    max-w-md
+                    text-sm
+                    leading-6
+                    text-muted-foreground
+                  "
+                >
                   You don't have any notifications yet.
                   You will receive updates when there is a
                   change in the status of your reported cases.
@@ -362,6 +413,8 @@ const Notifications = () => {
 
                       {/* NOTIFICATION CONTENT */}
                       <div className="min-w-0 flex-1">
+
+                        {/* TITLE */}
                         <div className="flex flex-wrap items-center gap-2">
                           <h3 className="text-sm font-semibold text-foreground">
                             Case Notification
@@ -390,12 +443,29 @@ const Notifications = () => {
                         </div>
 
                         {/* MESSAGE */}
-                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        <p
+                          className="
+                            mt-2
+                            text-sm
+                            leading-6
+                            text-muted-foreground
+                          "
+                        >
                           {notification.message}
                         </p>
 
                         {/* CASE AND DATE */}
-                        <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                        <div
+                          className="
+                            mt-3
+                            flex
+                            flex-wrap
+                            items-center
+                            gap-4
+                            text-xs
+                            text-muted-foreground
+                          "
+                        >
 
                           {/* CASE ID */}
                           {notification.caseId && (

@@ -10,6 +10,8 @@ import {
 
 import { toast } from "sonner";
 
+import axiosInstance from "../../axiosInterceptor";
+
 const AdminNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -17,6 +19,8 @@ const AdminNavbar = () => {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
+
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // ==================================================
   // DARK / LIGHT THEME
@@ -33,6 +37,36 @@ const AdminNavbar = () => {
       localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
+
+  // ==================================================
+  // GET UNREAD NOTIFICATION COUNT
+  // ==================================================
+
+  useEffect(() => {
+    const getUnreadCount = async () => {
+      try {
+        const response = await axiosInstance.get(
+          "/admin/notifications"
+        );
+
+        const notifications =
+          response.data.notifications || [];
+
+        const count = notifications.filter(
+          (notification) => !notification.isRead
+        ).length;
+
+        setUnreadCount(count);
+      } catch (error) {
+        console.error(
+          "Failed to load notification count:",
+          error
+        );
+      }
+    };
+
+    getUnreadCount();
+  }, [location.pathname]);
 
   // ==================================================
   // LOGOUT
@@ -111,6 +145,7 @@ const AdminNavbar = () => {
             aria-label="Notifications"
             title="Notifications"
             className={`
+              relative
               flex
               h-10
               w-10
@@ -130,6 +165,36 @@ const AdminNavbar = () => {
               size={19}
               strokeWidth={1.9}
             />
+
+            {/* UNREAD COUNT */}
+            {unreadCount > 0 && (
+              <span
+                className="
+                  absolute
+                  -right-0.5
+                  -top-0.5
+                  flex
+                  min-h-4
+                  min-w-4
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-[#B94A48]
+                  px-1
+                  text-[9px]
+                  font-bold
+                  leading-none
+                  text-white
+                  ring-2
+                  ring-navbar
+                  dark:bg-[#D76562]
+                "
+              >
+                {unreadCount > 99
+                  ? "99+"
+                  : unreadCount}
+              </span>
+            )}
           </Link>
 
           {/* ==================================================
@@ -138,7 +203,11 @@ const AdminNavbar = () => {
 
           <button
             type="button"
-            onClick={() => setDarkMode((previous) => !previous)}
+            onClick={() =>
+              setDarkMode(
+                (previous) => !previous
+              )
+            }
             aria-label={
               darkMode
                 ? "Switch to light mode"

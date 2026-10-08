@@ -7,6 +7,7 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
+  ArrowLeft,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -21,13 +22,16 @@ const MyCases = () => {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
+  // Get user's cases
   useEffect(() => {
     const getMyCases = async () => {
       try {
         setLoading(true);
         setErrorMessage("");
 
-        const response = await axiosInstance.get("/cases/my-cases");
+        const response = await axiosInstance.get(
+          "/cases/my-cases"
+        );
 
         setCases(response.data.cases || []);
       } catch (error) {
@@ -45,6 +49,7 @@ const MyCases = () => {
     getMyCases();
   }, []);
 
+  // Get status style
   const getStatusStyle = (status) => {
     switch (status) {
       case "New":
@@ -93,6 +98,7 @@ const MyCases = () => {
     }
   };
 
+  // Get status icon
   const getStatusIcon = (status) => {
     switch (status) {
       case "Resolved":
@@ -109,6 +115,7 @@ const MyCases = () => {
     }
   };
 
+  // Format date
   const formatDate = (date) => {
     if (!date) {
       return "Not available";
@@ -121,6 +128,7 @@ const MyCases = () => {
     });
   };
 
+  // Filter cases
   const filteredCases = cases.filter((item) => {
     const searchText = search.toLowerCase();
 
@@ -141,12 +149,33 @@ const MyCases = () => {
 
           {/* HEADER */}
           <div className="mb-8">
+            <button
+              type="button"
+              onClick={() => navigate("/user/dashboard")}
+              className="
+                mb-5
+                inline-flex
+                items-center
+                gap-2
+                text-sm
+                font-medium
+                text-muted-foreground
+                transition-colors
+                hover:text-[#B94A48]
+                dark:hover:text-[#D76562]
+              "
+            >
+              <ArrowLeft size={18} />
+              Back to Dashboard
+            </button>
+
             <div className="flex items-center gap-3">
               <div
                 className="
                   flex
                   h-11
                   w-11
+                  shrink-0
                   items-center
                   justify-center
                   rounded-xl
@@ -177,7 +206,7 @@ const MyCases = () => {
                   My Cases
                 </h1>
 
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
                   View and track all your reported crime incidents.
                 </p>
               </div>
@@ -482,9 +511,7 @@ const MyCases = () => {
                               py-1
                               text-xs
                               font-medium
-                              ${getStatusStyle(
-                                item.currentStatus
-                              )}
+                              ${getStatusStyle(item.currentStatus)}
                             `}
                           >
                             {getStatusIcon(item.currentStatus)}
@@ -576,3 +603,4 @@ const MyCases = () => {
 };
 
 export default MyCases;
+
