@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import AdminNavbar from './AdminNavbar';
+import AdminNavbar from "./AdminNavbar";
 import {
   Users,
   FileText,
@@ -319,8 +319,9 @@ const AdminDashboard = () => {
   ];
 
   return (
-  <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-    <AdminNavbar />
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      <AdminNavbar />
+
       {/* ==================================================
           MAIN
       ================================================== */}
@@ -331,7 +332,19 @@ const AdminDashboard = () => {
         ================================================== */}
 
         <div className="mb-8">
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
+          <h2
+            className="
+              bg-gradient-to-r
+              from-[#B94A48]
+              via-[#7FAF8A]
+              to-[#555C64]
+              bg-clip-text
+              text-2xl
+              font-bold
+              tracking-tight
+              text-transparent
+            "
+          >
             Administrator Dashboard
           </h2>
 
@@ -465,9 +478,7 @@ const AdminDashboard = () => {
                       onMouseEnter={(_, index) =>
                         setActivePieIndex(index)
                       }
-                      onMouseLeave={() =>
-                        setActivePieIndex(-1)
-                      }
+                      onMouseLeave={() => setActivePieIndex(-1)}
                     >
                       {categoryChartData.map(
                         (entry, index) => (
@@ -475,8 +486,7 @@ const AdminDashboard = () => {
                             key={`category-${index}`}
                             fill={
                               chartColors[
-                                index %
-                                  chartColors.length
+                                index % chartColors.length
                               ]
                             }
                             stroke="var(--card)"

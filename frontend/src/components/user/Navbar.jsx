@@ -164,10 +164,6 @@ const Navbar = () => {
       name: "Features",
       path: "#features",
     },
-    {
-      name: "Trust",
-      path: "#trust",
-    },
   ];
 
   /* ============================================================

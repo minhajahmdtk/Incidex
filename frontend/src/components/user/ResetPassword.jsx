@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -11,9 +13,9 @@ const ResetPassword = () => {
     confirmPassword: "",
   });
 
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,24 +24,18 @@ const ResetPassword = () => {
       ...prev,
       [name]: value,
     }));
-
-    setError("");
-    setMessage("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setError("");
-    setMessage("");
-
     if (!form.password) {
-      setError("Password is required");
+      toast.error("Password is required");
       return;
     }
 
     if (!form.confirmPassword) {
-      setError("Confirm password is required");
+      toast.error("Confirm password is required");
       return;
     }
 
@@ -47,14 +43,14 @@ const ResetPassword = () => {
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,20}$/;
 
     if (!passwordRegex.test(form.password)) {
-      setError(
+      toast.error(
         "Password must be 8 to 20 characters and contain uppercase, lowercase, number and special character"
       );
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -69,7 +65,7 @@ const ResetPassword = () => {
         }
       );
 
-      setMessage(response.data.message);
+      toast.success(response.data.message || "Password changed successfully!");
 
       setForm({
         password: "",
@@ -81,9 +77,9 @@ const ResetPassword = () => {
       }, 2000);
     } catch (error) {
       if (error.response?.data?.message) {
-        setError(error.response.data.message);
+        toast.error(error.response.data.message);
       } else {
-        setError("Cannot connect to the backend server.");
+        toast.error("Cannot connect to the backend server.");
       }
     } finally {
       setLoading(false);
@@ -159,34 +155,62 @@ const ResetPassword = () => {
               New Password
             </label>
 
-            <input
-              id="password"
-              type="password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="Enter new password"
-              className="
-                w-full
-                rounded-lg
-                border
-                border-border
-                bg-background
-                px-4
-                py-3
-                text-sm
-                text-foreground
-                outline-none
-                transition-all
-                duration-200
-                placeholder:text-muted-foreground
-                focus:border-[#B94A48]
-                focus:ring-2
-                focus:ring-[#B94A48]/10
-                dark:focus:border-[#D76562]
-                dark:focus:ring-[#D76562]/10
-              "
-            />
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Enter new password"
+                className="
+                  w-full
+                  rounded-lg
+                  border
+                  border-border
+                  bg-background
+                  px-4
+                  py-3
+                  pr-11
+                  text-sm
+                  text-foreground
+                  outline-none
+                  transition-all
+                  duration-200
+                  placeholder:text-muted-foreground
+                  focus:border-[#B94A48]
+                  focus:ring-2
+                  focus:ring-[#B94A48]/10
+                  dark:focus:border-[#D76562]
+                  dark:focus:ring-[#D76562]/10
+                "
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="
+                  absolute
+                  right-2.5
+                  top-1/2
+                  -translate-y-1/2
+                  rounded-md
+                  p-1.5
+                  text-muted-foreground
+                  transition-colors
+                  duration-200
+                  hover:bg-accent
+                  hover:text-foreground
+                "
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4.5 w-4.5" />
+                ) : (
+                  <Eye className="h-4.5 w-4.5" />
+                )}
+              </button>
+            </div>
           </div>
 
           {/* CONFIRM PASSWORD */}
@@ -198,83 +222,69 @@ const ResetPassword = () => {
               Confirm Password
             </label>
 
-            <input
-              id="confirmPassword"
-              type="password"
-              name="confirmPassword"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirm new password"
-              className="
-                w-full
-                rounded-lg
-                border
-                border-border
-                bg-background
-                px-4
-                py-3
-                text-sm
-                text-foreground
-                outline-none
-                transition-all
-                duration-200
-                placeholder:text-muted-foreground
-                focus:border-[#B94A48]
-                focus:ring-2
-                focus:ring-[#B94A48]/10
-                dark:focus:border-[#D76562]
-                dark:focus:ring-[#D76562]/10
-              "
-            />
+            <div className="relative">
+              <input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                placeholder="Confirm new password"
+                className="
+                  w-full
+                  rounded-lg
+                  border
+                  border-border
+                  bg-background
+                  px-4
+                  py-3
+                  pr-11
+                  text-sm
+                  text-foreground
+                  outline-none
+                  transition-all
+                  duration-200
+                  placeholder:text-muted-foreground
+                  focus:border-[#B94A48]
+                  focus:ring-2
+                  focus:ring-[#B94A48]/10
+                  dark:focus:border-[#D76562]
+                  dark:focus:ring-[#D76562]/10
+                "
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  setShowConfirmPassword((prev) => !prev)
+                }
+                className="
+                  absolute
+                  right-2.5
+                  top-1/2
+                  -translate-y-1/2
+                  rounded-md
+                  p-1.5
+                  text-muted-foreground
+                  transition-colors
+                  duration-200
+                  hover:bg-accent
+                  hover:text-foreground
+                "
+                aria-label={
+                  showConfirmPassword
+                    ? "Hide confirm password"
+                    : "Show confirm password"
+                }
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="h-4.5 w-4.5" />
+                ) : (
+                  <Eye className="h-4.5 w-4.5" />
+                )}
+              </button>
+            </div>
           </div>
-
-          {/* ERROR */}
-          {error && (
-            <div
-              className="
-                mb-5
-                rounded-lg
-                border
-                border-[#B94A48]/30
-                bg-[#B94A48]/5
-                px-4
-                py-3
-                text-sm
-                text-[#B94A48]
-                dark:border-[#D76562]/30
-                dark:bg-[#D76562]/10
-                dark:text-[#D76562]
-              "
-            >
-              {error}
-            </div>
-          )}
-
-          {/* SUCCESS */}
-          {message && (
-            <div
-              className="
-                mb-5
-                rounded-lg
-                border
-                border-[#7FAF8A]/30
-                bg-[#7FAF8A]/10
-                px-4
-                py-3
-                text-sm
-                text-[#5F8D6A]
-                dark:border-[#91BD9C]/30
-                dark:bg-[#91BD9C]/10
-                dark:text-[#9BC7A4]
-              "
-            >
-              {message}
-
-              <div className="mt-1 text-xs">
-                Redirecting to login...
-              </div>
-            </div>
-          )}
 
           {/* BUTTON */}
           <button
@@ -301,9 +311,7 @@ const ResetPassword = () => {
               disabled:hover:shadow-sm
             "
           >
-            {loading
-              ? "Changing Password..."
-              : "Change Password"}
+            {loading ? "Changing Password..." : "Change Password"}
           </button>
 
           {/* LOGIN LINK */}

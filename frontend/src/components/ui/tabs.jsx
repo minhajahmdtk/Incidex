@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs"
 import { cva } from "class-variance-authority";
 import { cn } from "cn"

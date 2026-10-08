@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { X } from "lucide-react";
+import { Eye, EyeOff, X } from "lucide-react";
 import { toast } from "sonner";
 
 const Register = () => {
@@ -16,6 +16,8 @@ const Register = () => {
   });
 
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,7 +38,7 @@ const Register = () => {
     axios
       .post("http://localhost:3000/user/register", form)
       .then((response) => {
-        toast.success("Registration successful");
+        toast.success("Account created successfully!");
 
         console.log("Registration Successful", response.data);
 
@@ -207,6 +209,7 @@ const Register = () => {
           {/* NAME + PHONE */}
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
             {/* NAME */}
 
             <div>
@@ -294,6 +297,7 @@ const Register = () => {
                 "
               />
             </div>
+
           </div>
 
           {/* EMAIL */}
@@ -343,6 +347,7 @@ const Register = () => {
           {/* PASSWORD + CONFIRM PASSWORD */}
 
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+
             {/* PASSWORD */}
 
             <div>
@@ -358,33 +363,67 @@ const Register = () => {
                 Password
               </label>
 
-              <input
-                type="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-                required
-                className="
-                  w-full
-                  rounded-lg
-                  border
-                  border-input
-                  bg-background
-                  px-3.5
-                  py-2.5
-                  text-sm
-                  text-foreground
-                  outline-none
-                  placeholder:text-muted-foreground
-                  transition
-                  focus:border-[#B94A48]
-                  focus:ring-2
-                  focus:ring-[#B94A48]/10
-                  dark:focus:border-[#D76562]
-                  dark:focus:ring-[#D76562]/10
-                "
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  required
+                  className="
+                    w-full
+                    rounded-lg
+                    border
+                    border-input
+                    bg-background
+                    px-3.5
+                    py-2.5
+                    pr-11
+                    text-sm
+                    text-foreground
+                    outline-none
+                    placeholder:text-muted-foreground
+                    transition
+                    focus:border-[#B94A48]
+                    focus:ring-2
+                    focus:ring-[#B94A48]/10
+                    dark:focus:border-[#D76562]
+                    dark:focus:ring-[#D76562]/10
+                  "
+                />
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowPassword((prev) => !prev)
+                  }
+                  className="
+                    absolute
+                    right-2.5
+                    top-1/2
+                    -translate-y-1/2
+                    rounded-md
+                    p-1.5
+                    text-muted-foreground
+                    transition-colors
+                    duration-200
+                    hover:bg-accent
+                    hover:text-foreground
+                  "
+                  aria-label={
+                    showPassword
+                      ? "Hide password"
+                      : "Show password"
+                  }
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4.5 w-4.5" />
+                  ) : (
+                    <Eye className="h-4.5 w-4.5" />
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* CONFIRM PASSWORD */}
@@ -402,34 +441,75 @@ const Register = () => {
                 Confirm Password
               </label>
 
-              <input
-                type="password"
-                name="confirmPassword"
-                value={form.confirmPassword}
-                onChange={handleChange}
-                placeholder="Confirm your password"
-                required
-                className="
-                  w-full
-                  rounded-lg
-                  border
-                  border-input
-                  bg-background
-                  px-3.5
-                  py-2.5
-                  text-sm
-                  text-foreground
-                  outline-none
-                  placeholder:text-muted-foreground
-                  transition
-                  focus:border-[#B94A48]
-                  focus:ring-2
-                  focus:ring-[#B94A48]/10
-                  dark:focus:border-[#D76562]
-                  dark:focus:ring-[#D76562]/10
-                "
-              />
+              <div className="relative">
+                <input
+                  type={
+                    showConfirmPassword
+                      ? "text"
+                      : "password"
+                  }
+                  name="confirmPassword"
+                  value={form.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Confirm your password"
+                  required
+                  className="
+                    w-full
+                    rounded-lg
+                    border
+                    border-input
+                    bg-background
+                    px-3.5
+                    py-2.5
+                    pr-11
+                    text-sm
+                    text-foreground
+                    outline-none
+                    placeholder:text-muted-foreground
+                    transition
+                    focus:border-[#B94A48]
+                    focus:ring-2
+                    focus:ring-[#B94A48]/10
+                    dark:focus:border-[#D76562]
+                    dark:focus:ring-[#D76562]/10
+                  "
+                />
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowConfirmPassword(
+                      (prev) => !prev
+                    )
+                  }
+                  className="
+                    absolute
+                    right-2.5
+                    top-1/2
+                    -translate-y-1/2
+                    rounded-md
+                    p-1.5
+                    text-muted-foreground
+                    transition-colors
+                    duration-200
+                    hover:bg-accent
+                    hover:text-foreground
+                  "
+                  aria-label={
+                    showConfirmPassword
+                      ? "Hide confirm password"
+                      : "Show confirm password"
+                  }
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4.5 w-4.5" />
+                  ) : (
+                    <Eye className="h-4.5 w-4.5" />
+                  )}
+                </button>
+              </div>
             </div>
+
           </div>
 
           {/* ERROR MESSAGE */}
@@ -503,6 +583,7 @@ const Register = () => {
               Login
             </Link>
           </p>
+
         </form>
       </div>
     </div>
@@ -510,3 +591,4 @@ const Register = () => {
 };
 
 export default Register;
+

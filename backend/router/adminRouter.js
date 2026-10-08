@@ -4,7 +4,9 @@ const User = require('../models/user');
 const CrimeReport = require('../models/crimeReport');
 const StatusHistory = require('../models/statusHistory');
 const UserNotification = require('../models/userNotification');
-const Feedback=require('../models/userFeedback');
+const Feedback = require('../models/userFeedback');
+const PDFDocument = require('pdfkit');
+const transporter = require("../config/email");
 
 const router = express.Router();
 
@@ -12,6 +14,7 @@ const router = express.Router();
 
 function verifyAdmin(req, res, next) {
   const token = req.headers.token;
+
   try {
     if (!token) {
       return res.status(401).json({
@@ -26,19 +29,19 @@ function verifyAdmin(req, res, next) {
 
     if (payload.role !== "admin") {
       return res.status(404).json({
-        message: 'Admin access required',
+        message: 'Admin access required'
       });
     }
+
     req.admin = payload;
     next();
 
   } catch (error) {
     return res.status(401).json({
       message: 'Invalid or expired token'
-    })
+    });
   }
 }
-
 
 
 //VIEW ALL USERS
@@ -52,16 +55,19 @@ router.get('/users', verifyAdmin, async (req, res) => {
       .sort({ createdAt: -1 });
 
     return res.status(200).json({
-      users: users,
+      users: users
     });
 
   } catch (error) {
+
     return res.status(500).json({
-      message: error.message,
+      message: error.message
     });
 
   }
+
 });
+
 
 //VIEW SINGLE USER
 
@@ -74,23 +80,24 @@ router.get('/users/:id', verifyAdmin, async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
-        message: "User not found",
+        message: "User not found"
       });
     }
 
     return res.status(200).json({
-      user: user,
+      user: user
     });
 
   } catch (error) {
 
     return res.status(500).json({
-      message: error.message,
+      message: error.message
     });
 
   }
 
 });
+
 
 //VIEW ALL CRIME CASES
 
@@ -103,18 +110,19 @@ router.get('/cases', verifyAdmin, async (req, res) => {
       .sort({ reportDateTime: -1 });
 
     return res.status(200).json({
-      cases: cases,
+      cases: cases
     });
 
   } catch (error) {
 
     return res.status(400).json({
-      message: error.message,
+      message: error.message
     });
 
   }
 
 });
+
 
 //VIEW SINGLE CASE
 
@@ -123,7 +131,7 @@ router.get('/cases/:id', verifyAdmin, async (req, res) => {
   try {
 
     const Report = await CrimeReport.findOne({
-      caseId: req.params.id,
+      caseId: req.params.id
     }).populate(
       'userId',
       'name email phone'
@@ -131,18 +139,18 @@ router.get('/cases/:id', verifyAdmin, async (req, res) => {
 
     if (!Report) {
       return res.status(400).json({
-        message: 'Case not found',
+        message: 'Case not found'
       });
     }
 
     return res.status(200).json({
-      case: Report,
+      case: Report
     });
 
   } catch (error) {
 
     return res.status(500).json({
-      message: error.message,
+      message: error.message
     });
 
   }
@@ -194,14 +202,18 @@ router.patch('/cases/status/:id', verifyAdmin, async (req, res) => {
     }
 
     if (
-      currentStatus === 'New' && status !== 'Acknowledged') {
+      currentStatus === 'New' &&
+      status !== 'Acknowledged'
+    ) {
       return res.status(400).json({
         message: 'New case can only be changed to Acknowledged'
       });
     }
 
     if (
-      currentStatus === 'Acknowledged' && status !== 'In Progress') {
+      currentStatus === 'Acknowledged' &&
+      status !== 'In Progress'
+    ) {
       return res.status(400).json({
         message: 'Acknowledged case can only be changed to In Progress'
       });
@@ -217,6 +229,8 @@ router.patch('/cases/status/:id', verifyAdmin, async (req, res) => {
       updatedDateTime: new Date()
     });
 
+    //CREATE IN-SITE USER NOTIFICATION
+
     await UserNotification.create({
       userId: Report.userId,
       caseId: Report._id,
@@ -224,6 +238,45 @@ router.patch('/cases/status/:id', verifyAdmin, async (req, res) => {
       isRead: false,
       createdDateTime: new Date()
     });
+
+    //SEND EMAIL NOTIFICATION
+
+    try {
+
+      const user = await User.findById(Report.userId);
+
+      if (user && user.email) {
+
+        await transporter.sendMail({
+          from: `"INCIDEX" <${process.env.EMAIL_USER}>`,
+          to: user.email,
+          subject: `INCIDEX Case ${Report.caseId} Status Update`,
+          text: `Hello ${user.name},
+
+Your INCIDEX case ${Report.caseId} status has been updated.
+
+Current Status: ${status}
+
+Please log in to INCIDEX to view your case details.
+
+Regards,
+INCIDEX Team`
+        });
+
+        console.log(
+          `Email notification sent to ${user.email}`
+        );
+
+      }
+
+    } catch (emailError) {
+
+      console.error(
+        "Email notification failed:",
+        emailError.message
+      );
+
+    }
 
     return res.status(200).json({
       message: 'Case status updated successfully',
@@ -300,6 +353,8 @@ router.patch('/cases/resolve/:id', verifyAdmin, async (req, res) => {
       updatedDateTime: new Date()
     });
 
+    //CREATE IN-SITE USER NOTIFICATION
+
     await UserNotification.create({
       userId: Report.userId,
       caseId: Report._id,
@@ -307,6 +362,55 @@ router.patch('/cases/resolve/:id', verifyAdmin, async (req, res) => {
       isRead: false,
       createdDateTime: new Date()
     });
+
+    //SEND RESOLUTION EMAIL
+
+    try {
+
+      const user = await User.findById(Report.userId);
+
+      if (user && user.email) {
+
+        await transporter.sendMail({
+          from: `"INCIDEX" <${process.env.EMAIL_USER}>`,
+          to: user.email,
+          subject: `INCIDEX Case ${Report.caseId} Resolved`,
+          text: `Hello ${user.name},
+
+Your INCIDEX case ${Report.caseId} has been resolved.
+
+Case ID: ${Report.caseId}
+Status: Resolved
+
+Final Details:
+${Report.finalDetails}
+
+Action Taken:
+${Report.actionTaken}
+
+Resolution Details:
+${Report.resolutionDetails}
+
+Please log in to INCIDEX to view the complete case details.
+
+Regards,
+INCIDEX Team`
+        });
+
+        console.log(
+          `Resolution email sent to ${user.email}`
+        );
+
+      }
+
+    } catch (emailError) {
+
+      console.error(
+        "Resolution email failed:",
+        emailError.message
+      );
+
+    }
 
     return res.status(200).json({
       message: 'Case resolved successfully',
@@ -325,10 +429,13 @@ router.patch('/cases/resolve/:id', verifyAdmin, async (req, res) => {
 
 
 //DOWNLOAD FINAL CASE REPORT
+
 router.get('/cases/pdf/:id', verifyAdmin, async (req, res) => {
+
   try {
+
     const Report = await CrimeReport.findOne({
-      caseId: req.params.id,
+      caseId: req.params.id
     }).populate(
       'userId',
       'name email phone'
@@ -336,17 +443,15 @@ router.get('/cases/pdf/:id', verifyAdmin, async (req, res) => {
 
     if (!Report) {
       return res.status(404).json({
-        message: 'Case not found',
+        message: 'Case not found'
       });
     }
 
     if (Report.currentStatus !== 'Resolved') {
       return res.status(400).json({
-        message: 'Final report is available only for resolved cases',
+        message: 'Final report is available only for resolved cases'
       });
     }
-
-    const PDFDocument = require('pdfkit');
 
     const doc = new PDFDocument();
 
@@ -363,10 +468,11 @@ router.get('/cases/pdf/:id', verifyAdmin, async (req, res) => {
     doc.pipe(res);
 
     // TITLE
+
     doc
       .fontSize(20)
       .text('INCIDEX', {
-        align: 'center',
+        align: 'center'
       });
 
     doc.moveDown();
@@ -374,12 +480,13 @@ router.get('/cases/pdf/:id', verifyAdmin, async (req, res) => {
     doc
       .fontSize(16)
       .text('Crime Incident Final Report', {
-        align: 'center',
+        align: 'center'
       });
 
     doc.moveDown(2);
 
     // CASE INFORMATION
+
     doc.fontSize(12);
 
     doc.text(`Case ID: ${Report.caseId}`);
@@ -405,6 +512,7 @@ router.get('/cases/pdf/:id', verifyAdmin, async (req, res) => {
     doc.moveDown();
 
     // INCIDENT LOCATION
+
     doc.text('Incident Location:');
 
     doc.text(
@@ -414,6 +522,7 @@ router.get('/cases/pdf/:id', verifyAdmin, async (req, res) => {
     doc.moveDown();
 
     // INCIDENT DESCRIPTION
+
     doc.text('Incident Description:');
 
     doc.moveDown(0.5);
@@ -425,6 +534,7 @@ router.get('/cases/pdf/:id', verifyAdmin, async (req, res) => {
     doc.moveDown();
 
     // USER INFORMATION
+
     doc.text('Reporting User:');
 
     doc.moveDown(0.5);
@@ -450,6 +560,7 @@ router.get('/cases/pdf/:id', verifyAdmin, async (req, res) => {
     doc.moveDown();
 
     // RESOLUTION INFORMATION
+
     doc.text('Resolution Information:');
 
     doc.moveDown(0.5);
@@ -485,16 +596,20 @@ router.get('/cases/pdf/:id', verifyAdmin, async (req, res) => {
     doc.end();
 
   } catch (error) {
+
     return res.status(500).json({
-      message: error.message,
+      message: error.message
     });
+
   }
+
 });
 
 
 //VIEW ALL USER FEEDBACK
 
 router.get('/feedback', verifyAdmin, async (req, res) => {
+
   try {
 
     const feedback = await Feedback.find()
@@ -503,21 +618,24 @@ router.get('/feedback', verifyAdmin, async (req, res) => {
       .sort({ submittedDateTime: -1 });
 
     return res.status(200).json({
-      feedback: feedback,
+      feedback: feedback
     });
 
   } catch (error) {
 
     return res.status(500).json({
-      message: error.message,
+      message: error.message
     });
 
   }
+
 });
+
 
 //DELETE USER FEEDBACK
 
 router.delete('/feedback/:id', verifyAdmin, async (req, res) => {
+
   try {
 
     const feedback = await Feedback.findById(
@@ -526,7 +644,7 @@ router.delete('/feedback/:id', verifyAdmin, async (req, res) => {
 
     if (!feedback) {
       return res.status(404).json({
-        message: "Feedback not found",
+        message: "Feedback not found"
       });
     }
 
@@ -535,17 +653,18 @@ router.delete('/feedback/:id', verifyAdmin, async (req, res) => {
     );
 
     return res.status(200).json({
-      message: "Feedback deleted successfully",
+      message: "Feedback deleted successfully"
     });
 
   } catch (error) {
 
     return res.status(500).json({
-      message: error.message,
+      message: error.message
     });
 
   }
+
 });
 
 
-module.exports = router
+module.exports = router;

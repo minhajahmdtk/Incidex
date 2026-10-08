@@ -1,28 +1,24 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { toast } from "sonner";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setMessage("");
-    setError("");
-
     if (!email.trim()) {
-      setError("Email is required");
+      toast.error("Email is required");
       return;
     }
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailPattern.test(email.trim())) {
-      setError("Please enter a valid email address");
+      toast.error("Please enter a valid email address");
       return;
     }
 
@@ -36,7 +32,9 @@ const ForgotPassword = () => {
         }
       );
 
-      setMessage(response.data.message);
+      toast.success(
+        response.data.message || "Password reset link sent successfully!"
+      );
 
       // Temporary development testing
       if (response.data.resetLink) {
@@ -44,9 +42,9 @@ const ForgotPassword = () => {
       }
     } catch (error) {
       if (error.response?.data?.message) {
-        setError(error.response.data.message);
+        toast.error(error.response.data.message);
       } else {
-        setError("Cannot connect to the backend server.");
+        toast.error("Cannot connect to the backend server.");
       }
     } finally {
       setLoading(false);
@@ -134,11 +132,7 @@ const ForgotPassword = () => {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setError("");
-                setMessage("");
-              }}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="
                 w-full
@@ -162,50 +156,6 @@ const ForgotPassword = () => {
               "
             />
           </div>
-
-          {/* ERROR */}
-
-          {error && (
-            <div
-              className="
-                mb-5
-                rounded-xl
-                border
-                border-[#B94A48]/30
-                bg-[#B94A48]/5
-                p-3.5
-                text-sm
-                text-[#B94A48]
-                dark:border-[#D76562]/30
-                dark:bg-[#D76562]/10
-                dark:text-[#D76562]
-              "
-            >
-              {error}
-            </div>
-          )}
-
-          {/* SUCCESS */}
-
-          {message && (
-            <div
-              className="
-                mb-5
-                rounded-xl
-                border
-                border-[#7FAF8A]/30
-                bg-[#7FAF8A]/10
-                p-3.5
-                text-sm
-                text-[#5F8D6A]
-                dark:border-[#91BD9C]/30
-                dark:bg-[#91BD9C]/10
-                dark:text-[#9BC7A4]
-              "
-            >
-              {message}
-            </div>
-          )}
 
           {/* SUBMIT */}
 

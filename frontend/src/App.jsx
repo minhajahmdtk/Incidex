@@ -4,6 +4,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { Toaster } from "sonner";
 
 // User components
 import Home from "./components/user/Home";
@@ -65,21 +66,26 @@ const AdminProtectedRoutes = ({ children }) => {
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
+      {/* Global Sonner Toast */}
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        duration={3000}
+      />
 
+      <Routes>
         {/* =========================
             PUBLIC ROUTES
         ========================== */}
 
         {/* Home */}
-
         <Route
           path="/"
           element={<Home />}
         />
 
         {/* Login Modal Over Home */}
-
         <Route
           path="/login"
           element={
@@ -91,7 +97,6 @@ function App() {
         />
 
         {/* Register Modal Over Home */}
-
         <Route
           path="/register"
           element={
@@ -103,21 +108,18 @@ function App() {
         />
 
         {/* FORGOT PASSWORD */}
-
         <Route
           path="/forgot-password"
           element={<ForgotPassword />}
         />
 
         {/* RESET PASSWORD */}
-
         <Route
           path="/reset-password/:token"
           element={<ResetPassword />}
         />
 
         {/* ADMIN LOGIN */}
-
         <Route
           path="/admin/login"
           element={<AdminLogin />}
@@ -265,7 +267,6 @@ function App() {
           path="*"
           element={<Navigate to="/" replace />}
         />
-
       </Routes>
     </BrowserRouter>
   );

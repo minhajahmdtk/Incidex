@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { X } from "lucide-react";
+import { Eye, EyeOff, X } from "lucide-react";
 import { toast } from "sonner";
 
 const Login = () => {
@@ -13,6 +13,7 @@ const Login = () => {
   });
 
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -287,31 +288,67 @@ const Login = () => {
               Password
             </label>
 
-            <input
-              id="password"
-              className="
-                w-full
-                rounded-lg
-                border
-                border-input
-                bg-background
-                px-3.5
-                py-2.5
-                text-sm
-                text-foreground
-                outline-none
-                placeholder:text-muted-foreground
-                transition
-                focus:border-[#B94A48]
-                focus:ring-2
-                focus:ring-[#B94A48]/10
-              "
-              type="password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-            />
+            <div className="relative">
+              <input
+                id="password"
+                className="
+                  w-full
+                  rounded-lg
+                  border
+                  border-input
+                  bg-background
+                  px-3.5
+                  py-2.5
+                  pr-11
+                  text-sm
+                  text-foreground
+                  outline-none
+                  placeholder:text-muted-foreground
+                  transition
+                  focus:border-[#B94A48]
+                  focus:ring-2
+                  focus:ring-[#B94A48]/10
+                "
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+              />
+
+              {/* SHOW / HIDE PASSWORD */}
+
+              <button
+                type="button"
+                onClick={() =>
+                  setShowPassword((prev) => !prev)
+                }
+                className="
+                  absolute
+                  right-2.5
+                  top-1/2
+                  -translate-y-1/2
+                  rounded-md
+                  p-1.5
+                  text-muted-foreground
+                  transition-colors
+                  duration-200
+                  hover:bg-accent
+                  hover:text-foreground
+                "
+                aria-label={
+                  showPassword
+                    ? "Hide password"
+                    : "Show password"
+                }
+              >
+                {showPassword ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
+              </button>
+            </div>
           </div>
 
           {/* FORGOT PASSWORD */}
@@ -407,3 +444,5 @@ const Login = () => {
 };
 
 export default Login;
+
+

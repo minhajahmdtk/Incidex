@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -10,7 +12,8 @@ const AdminLogin = () => {
     password: "",
   });
 
-  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,70 +22,75 @@ const AdminLogin = () => {
       ...prev,
       [name]: value,
     }));
-
-    setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    setError("");
 
     // Email validation
     if (!form.email.trim()) {
-      setError("Email is required");
+      toast.error("Email is required");
       return;
     }
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailPattern.test(form.email.trim())) {
-      setError("Please enter a valid email address");
+      toast.error("Please enter a valid email address");
       return;
     }
 
     // Password validation
     if (!form.password) {
-      setError("Password is required");
+      toast.error("Password is required");
       return;
     }
 
-    axios
-      .post("http://localhost:3000/admin/login", {
-        email: form.email,
-        password: form.password,
-      })
-      .then((response) => {
-        if (response.data.token) {
-          localStorage.setItem(
-            "loginToken",
-            response.data.token
-          );
+    try {
+      setLoading(true);
+
+      const response = await axios.post(
+        "http://localhost:3000/admin/login",
+        {
+          email: form.email,
+          password: form.password,
         }
+      );
 
-        localStorage.setItem("role", "admin");
+      if (response.data.token) {
+        localStorage.setItem(
+          "loginToken",
+          response.data.token
+        );
+      }
 
-        if (response.data.admin) {
-          localStorage.setItem(
-            "userInfo",
-            JSON.stringify(response.data.admin)
-          );
-        }
+      localStorage.setItem("role", "admin");
 
+      if (response.data.admin) {
+        localStorage.setItem(
+          "userInfo",
+          JSON.stringify(response.data.admin)
+        );
+      }
+
+      toast.success("Admin login successful!");
+
+      setTimeout(() => {
         navigate("/admin/dashboard");
-      })
-      .catch((error) => {
-        if (error.response && error.response.data) {
-          setError(
-            error.response.data.message ||
-              "Login failed"
-          );
-        } else {
-          setError(
-            "Cannot connect to the backend server."
-          );
-        }
-      });
+      }, 800);
+    } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(
+          error.response.data.message || "Login failed"
+        );
+      } else {
+        toast.error(
+          "Cannot connect to the backend server."
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -243,61 +251,74 @@ const AdminLogin = () => {
               Password
             </label>
 
-            <input
-              id="password"
-              className="
-                w-full
-                rounded-lg
-                border
-                border-input
-                bg-background
-                px-3.5
-                py-2.5
-                text-sm
-                text-foreground
-                outline-none
-                placeholder:text-muted-foreground
-                transition
-                focus:border-[#B94A48]
-                focus:ring-2
-                focus:ring-[#B94A48]/10
-                dark:focus:border-[#D76562]
-                dark:focus:ring-[#D76562]/10
-              "
-              type="password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="Enter admin password"
-            />
-          </div>
+            <div className="relative">
+              <input
+                id="password"
+                className="
+                  w-full
+                  rounded-lg
+                  border
+                  border-input
+                  bg-background
+                  px-3.5
+                  py-2.5
+                  pr-11
+                  text-sm
+                  text-foreground
+                  outline-none
+                  placeholder:text-muted-foreground
+                  transition
+                  focus:border-[#B94A48]
+                  focus:ring-2
+                  focus:ring-[#B94A48]/10
+                  dark:focus:border-[#D76562]
+                  dark:focus:ring-[#D76562]/10
+                "
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Enter admin password"
+              />
 
-          {/* ERROR */}
-
-          {error && (
-            <div
-              className="
-                mt-4
-                rounded-lg
-                border
-                border-[#B94A48]/30
-                bg-[#B94A48]/5
-                p-3
-                text-sm
-                text-[#B94A48]
-                dark:border-[#D76562]/30
-                dark:bg-[#D76562]/10
-                dark:text-[#D76562]
-              "
-            >
-              {error}
+              <button
+                type="button"
+                onClick={() =>
+                  setShowPassword((prev) => !prev)
+                }
+                className="
+                  absolute
+                  right-2.5
+                  top-1/2
+                  -translate-y-1/2
+                  rounded-md
+                  p-1.5
+                  text-muted-foreground
+                  transition-colors
+                  duration-200
+                  hover:bg-accent
+                  hover:text-foreground
+                "
+                aria-label={
+                  showPassword
+                    ? "Hide password"
+                    : "Show password"
+                }
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4.5 w-4.5" />
+                ) : (
+                  <Eye className="h-4.5 w-4.5" />
+                )}
+              </button>
             </div>
-          )}
+          </div>
 
           {/* LOGIN BUTTON */}
 
           <button
             type="submit"
+            disabled={loading}
             className="
               mt-5
               w-full
@@ -314,9 +335,13 @@ const AdminLogin = () => {
               hover:bg-primary
               hover:text-primary-foreground
               hover:shadow-md
+              disabled:cursor-not-allowed
+              disabled:opacity-60
+              disabled:hover:translate-y-0
+              disabled:hover:shadow-sm
             "
           >
-            Admin Login
+            {loading ? "Logging in..." : "Admin Login"}
           </button>
 
           {/* BACK TO HOME */}
