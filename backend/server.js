@@ -38,23 +38,6 @@ const userNotificationRouter = require("./router/userNotificationRouter");
 const userFeedbackRouter = require("./router/userFeedbackRouter");
 
 //-------------------
-//    Models
-//-------------------
-
-//user Model
-
-const userModel = require("./models/user");
-
-//admin Model
-
-const adminModel = require("./models/admin");
-
-//case Model
-
-const crimeReport = require("./models/crimeReport");
-
-
-//-------------------
 // Middleware
 //-------------------
 

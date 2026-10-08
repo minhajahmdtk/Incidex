@@ -500,12 +500,11 @@ router.get('/cases/pdf/:id', verifyAdmin, async (req, res) => {
     );
 
     doc.text(
-      `Report Date & Time: ${
-        Report.reportDateTime
-          ? new Date(
-              Report.reportDateTime
-            ).toLocaleString()
-          : 'N/A'
+      `Report Date & Time: ${Report.reportDateTime
+        ? new Date(
+          Report.reportDateTime
+        ).toLocaleString()
+        : 'N/A'
       }`
     );
 
@@ -540,20 +539,17 @@ router.get('/cases/pdf/:id', verifyAdmin, async (req, res) => {
     doc.moveDown(0.5);
 
     doc.text(
-      `Name: ${
-        Report.userId?.name || 'N/A'
+      `Name: ${Report.userId?.name || 'N/A'
       }`
     );
 
     doc.text(
-      `Email: ${
-        Report.userId?.email || 'N/A'
+      `Email: ${Report.userId?.email || 'N/A'
       }`
     );
 
     doc.text(
-      `Phone: ${
-        Report.userId?.phone || 'N/A'
+      `Phone: ${Report.userId?.phone || 'N/A'
       }`
     );
 
@@ -566,24 +562,21 @@ router.get('/cases/pdf/:id', verifyAdmin, async (req, res) => {
     doc.moveDown(0.5);
 
     doc.text(
-      `Final Details: ${
-        Report.finalDetails || 'N/A'
+      `Final Details: ${Report.finalDetails || 'N/A'
       }`
     );
 
     doc.moveDown();
 
     doc.text(
-      `Action Taken: ${
-        Report.actionTaken || 'N/A'
+      `Action Taken: ${Report.actionTaken || 'N/A'
       }`
     );
 
     doc.moveDown();
 
     doc.text(
-      `Resolution Details: ${
-        Report.resolutionDetails || 'N/A'
+      `Resolution Details: ${Report.resolutionDetails || 'N/A'
       }`
     );
 

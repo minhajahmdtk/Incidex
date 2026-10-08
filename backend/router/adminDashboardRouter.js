@@ -1,10 +1,10 @@
-const express=require('express');
-const jwt=require('jsonwebtoken');
-const User=require('../models/user');
-const CrimeReport=require('../models/crimeReport');
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const User = require('../models/user');
+const CrimeReport = require('../models/crimeReport');
 
 
-const router=express.Router()
+const router = express.Router()
 
 //VERIFY ADMIN TOKEN
 
