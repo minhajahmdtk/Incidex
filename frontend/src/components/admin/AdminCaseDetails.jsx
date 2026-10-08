@@ -695,22 +695,19 @@ const AdminCaseDetails = () => {
                   disabled={downloading}
                   className="
                     inline-flex
-                    items-center
-                    gap-2
-                    rounded-lg
-                    bg-[#B94A48]
-                    px-5
-                    py-2.5
-                    text-sm
-                    font-medium
-                    text-white
-                    transition-colors
-                    hover:bg-[#A33F3D]
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
-                    dark:bg-[#D76562]
-                    dark:hover:bg-[#C55451]
-                  "
+  items-center
+  gap-2
+  rounded-lg
+  bg-[#7FAF8A]
+  px-5
+  py-2.5
+  text-sm
+  font-medium
+  text-white
+  transition-colors
+  hover:bg-[#6F9D79]
+  disabled:cursor-not-allowed
+  disabled:opacity-50"
                 >
                   <Download size={18} />
 

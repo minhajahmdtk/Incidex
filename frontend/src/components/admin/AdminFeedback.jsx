@@ -23,6 +23,7 @@ const AdminFeedback = () => {
   const [loading, setLoading] = useState(true);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
   const [deletingId, setDeletingId] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // ==================================================
   // GET FEEDBACK
@@ -64,17 +65,35 @@ const AdminFeedback = () => {
   }, [navigate]);
 
   // ==================================================
+  // OPEN DELETE CONFIRMATION
+  // ==================================================
+
+  const openDeleteConfirmation = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  // ==================================================
+  // CLOSE DELETE CONFIRMATION
+  // ==================================================
+
+  const closeDeleteConfirmation = () => {
+    if (deletingId) {
+      return;
+    }
+
+    setShowDeleteConfirm(false);
+  };
+
+  // ==================================================
   // DELETE FEEDBACK
   // ==================================================
 
-  const deleteFeedback = (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this feedback?"
-    );
-
-    if (!confirmDelete) {
+  const deleteFeedback = () => {
+    if (!selectedFeedback?._id) {
       return;
     }
+
+    const id = selectedFeedback._id;
 
     setDeletingId(id);
 
@@ -86,6 +105,7 @@ const AdminFeedback = () => {
         );
 
         setSelectedFeedback(null);
+        setShowDeleteConfirm(false);
 
         toast.success(
           response.data.message ||
@@ -412,9 +432,7 @@ const AdminFeedback = () => {
                       "
                     >
 
-                      {/* ==================================================
-                          USER NAME
-                      ================================================== */}
+                      {/* USER NAME */}
 
                       <td className="px-6 py-4">
 
@@ -446,9 +464,7 @@ const AdminFeedback = () => {
 
                       </td>
 
-                      {/* ==================================================
-                          PHONE
-                      ================================================== */}
+                      {/* PHONE */}
 
                       <td className="px-6 py-4">
 
@@ -462,9 +478,7 @@ const AdminFeedback = () => {
 
                       </td>
 
-                      {/* ==================================================
-                          CASE ID
-                      ================================================== */}
+                      {/* CASE ID */}
 
                       <td className="px-6 py-4">
 
@@ -483,9 +497,7 @@ const AdminFeedback = () => {
 
                       </td>
 
-                      {/* ==================================================
-                          VIEW
-                      ================================================== */}
+                      {/* VIEW */}
 
                       <td className="px-6 py-4">
 
@@ -568,9 +580,7 @@ const AdminFeedback = () => {
             "
           >
 
-            {/* ==================================================
-                MODAL HEADER
-            ================================================== */}
+            {/* MODAL HEADER */}
 
             <div
               className="
@@ -617,15 +627,11 @@ const AdminFeedback = () => {
 
             </div>
 
-            {/* ==================================================
-                MODAL BODY
-            ================================================== */}
+            {/* MODAL BODY */}
 
             <div className="space-y-6 p-6">
 
-              {/* ==================================================
-                  USER INFORMATION
-              ================================================== */}
+              {/* USER INFORMATION */}
 
               <div
                 className="
@@ -642,8 +648,6 @@ const AdminFeedback = () => {
                 </h3>
 
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-
-                  {/* Name */}
 
                   <div>
 
@@ -667,8 +671,6 @@ const AdminFeedback = () => {
 
                   </div>
 
-                  {/* Phone */}
-
                   <div>
 
                     <p className="mb-1 text-xs font-medium text-muted-foreground">
@@ -690,8 +692,6 @@ const AdminFeedback = () => {
                     </div>
 
                   </div>
-
-                  {/* Email */}
 
                   <div className="sm:col-span-2">
 
@@ -719,9 +719,7 @@ const AdminFeedback = () => {
 
               </div>
 
-              {/* ==================================================
-                  CASE INFORMATION
-              ================================================== */}
+              {/* CASE INFORMATION */}
 
               <div>
 
@@ -761,9 +759,7 @@ const AdminFeedback = () => {
 
               </div>
 
-              {/* ==================================================
-                  FEEDBACK
-              ================================================== */}
+              {/* FEEDBACK */}
 
               <div>
 
@@ -790,9 +786,7 @@ const AdminFeedback = () => {
 
               </div>
 
-              {/* ==================================================
-                  SUBMITTED DATE
-              ================================================== */}
+              {/* SUBMITTED DATE */}
 
               <div>
 
@@ -818,9 +812,7 @@ const AdminFeedback = () => {
 
             </div>
 
-            {/* ==================================================
-                MODAL FOOTER
-            ================================================== */}
+            {/* MODAL FOOTER */}
 
             <div
               className="
@@ -860,11 +852,7 @@ const AdminFeedback = () => {
 
               <button
                 type="button"
-                onClick={() =>
-                  deleteFeedback(
-                    selectedFeedback._id
-                  )
-                }
+                onClick={openDeleteConfirmation}
                 disabled={
                   deletingId === selectedFeedback._id
                 }
@@ -891,7 +879,148 @@ const AdminFeedback = () => {
 
                 <Trash2 size={16} />
 
-                {deletingId === selectedFeedback._id
+                Delete Feedback
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
+
+      {/* ==================================================
+          DELETE CONFIRMATION MODAL
+      ================================================== */}
+
+      {showDeleteConfirm && selectedFeedback && (
+
+        <div
+          className="
+            fixed
+            inset-0
+            z-[60]
+            flex
+            items-center
+            justify-center
+            bg-black/50
+            p-4
+            backdrop-blur-sm
+          "
+        >
+
+          <div
+            className="
+              w-full
+              max-w-md
+              rounded-2xl
+              border
+              border-border
+              bg-card
+              p-6
+              shadow-2xl
+            "
+          >
+
+            <div className="flex items-start gap-4">
+
+              <div
+                className="
+                  flex
+                  h-11
+                  w-11
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-[#B94A48]/10
+                  text-[#B94A48]
+                  dark:bg-[#D76562]/10
+                  dark:text-[#D76562]
+                "
+              >
+                <Trash2 size={20} />
+              </div>
+
+              <div>
+
+                <h2 className="text-lg font-semibold text-foreground">
+                  Delete Feedback?
+                </h2>
+
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  Are you sure you want to delete this feedback?
+                  This action cannot be undone.
+                </p>
+
+              </div>
+
+            </div>
+
+            <div
+              className="
+                mt-6
+                flex
+                flex-col-reverse
+                gap-3
+                sm:flex-row
+                sm:justify-end
+              "
+            >
+
+              <button
+                type="button"
+                onClick={closeDeleteConfirmation}
+                disabled={Boolean(deletingId)}
+                className="
+                  rounded-lg
+                  border
+                  border-border
+                  px-4
+                  py-2.5
+                  text-sm
+                  font-medium
+                  text-foreground
+                  transition-colors
+                  duration-200
+                  hover:bg-muted
+                  disabled:cursor-not-allowed
+                  disabled:opacity-50
+                "
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={deleteFeedback}
+                disabled={Boolean(deletingId)}
+                className="
+                  inline-flex
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-lg
+                  bg-[#B94A48]
+                  px-4
+                  py-2.5
+                  text-sm
+                  font-medium
+                  text-white
+                  transition-all
+                  duration-200
+                  hover:bg-[#A33F3D]
+                  hover:shadow-md
+                  disabled:cursor-not-allowed
+                  disabled:opacity-50
+                "
+              >
+
+                <Trash2 size={16} />
+
+                {deletingId
                   ? "Deleting..."
                   : "Delete Feedback"}
 
