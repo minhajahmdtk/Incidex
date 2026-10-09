@@ -21,7 +21,7 @@ import Notifications from "./components/user/Notifications";
 import Feedback from "./components/user/Feedback";
 
 // Admin components
-import AdminLogin from "./components/admin/AdminLogin";
+
 import AdminDashboard from "./components/admin/AdminDashboard";
 import AdminUsers from "./components/admin/AdminUsers";
 import AdminCases from "./components/admin/AdminCases";
@@ -57,7 +57,7 @@ const AdminProtectedRoutes = ({ children }) => {
   const role = localStorage.getItem("role");
 
   if (!token || role !== "admin") {
-    return <Navigate to="/admin/login" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return children;
@@ -119,11 +119,6 @@ function App() {
           element={<ResetPassword />}
         />
 
-        {/* ADMIN LOGIN */}
-        <Route
-          path="/admin/login"
-          element={<AdminLogin />}
-        />
 
         {/* =========================
             USER ROUTES

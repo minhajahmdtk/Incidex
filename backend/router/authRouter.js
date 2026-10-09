@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const Admin = require("../models/admin");
 const transporter = require("../config/email");
 
 const router = express.Router();
@@ -48,8 +49,10 @@ router.post("/register", async (req, res) => {
       });
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+
     const existingEmail = await User.findOne({
-      email: email.trim().toLowerCase(),
+      email: normalizedEmail,
     });
 
     if (existingEmail) {
@@ -72,7 +75,7 @@ router.post("/register", async (req, res) => {
 
     const user = new User({
       name: name.trim(),
-      email: email.trim().toLowerCase(),
+      email: normalizedEmail,
       phone: phone.trim(),
       password: hashedPassword,
     });
@@ -89,63 +92,130 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// LOGIN USER
+// LOGIN USER OR ADMIN
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
+    if (
+      typeof email !== "string" ||
+      !email.trim() ||
+      typeof password !== "string" ||
+      !password
+    ) {
       return res.status(400).json({
         message: "Email and password are required",
       });
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!emailRegex.test(normalizedEmail)) {
+      return res.status(400).json({
+        message: "Please enter a valid email address",
+      });
+    }
+
+    // FIND USER AND ADMIN
     const user = await User.findOne({
-      email: email.trim().toLowerCase(),
+      email: normalizedEmail,
     });
 
-    if (!user) {
-      return res.status(401).json({
-        message: "Invalid email or password",
+    const admin = await Admin.findOne({
+      email: normalizedEmail,
+    });
+
+    // PREVENT AMBIGUOUS LOGIN
+    if (user && admin) {
+      return res.status(409).json({
+        message:
+          "This email belongs to multiple account types. Contact the administrator.",
       });
     }
 
-    const passwordMatch = await bcrypt.compare(
-      password,
-      user.password
-    );
+    // USER LOGIN
+    if (user) {
+      const passwordMatch = await bcrypt.compare(
+        password,
+        user.password
+      );
 
-    if (!passwordMatch) {
-      return res.status(401).json({
-        message: "Invalid email or password",
-      });
-    }
-
-    const token = jwt.sign(
-      {
-        id: user._id,
-        email: user.email,
-        role: "user",
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "1d",
+      if (!passwordMatch) {
+        return res.status(401).json({
+          message: "Invalid email or password",
+        });
       }
-    );
 
-    return res.status(200).json({
-      message: "Login successful",
-      token: token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-      },
+      const token = jwt.sign(
+        {
+          id: user._id,
+          email: user.email,
+          role: "user",
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "1d",
+        }
+      );
+
+      return res.status(200).json({
+        message: "Login successful",
+        token: token,
+        role: "user",
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+        },
+      });
+    }
+
+    // ADMIN LOGIN
+    if (admin) {
+      const passwordMatch = await bcrypt.compare(
+        password,
+        admin.password
+      );
+
+      if (!passwordMatch) {
+        return res.status(401).json({
+          message: "Invalid email or password",
+        });
+      }
+
+      const token = jwt.sign(
+        {
+          id: admin._id,
+          email: admin.email,
+          role: "admin",
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "1h",
+        }
+      );
+
+      return res.status(200).json({
+        message: "Login successful",
+        token: token,
+        role: "admin",
+        admin: {
+          id: admin._id,
+          email: admin.email,
+          role: "admin",
+        },
+      });
+    }
+
+    // ACCOUNT NOT FOUND
+    return res.status(401).json({
+      message: "Invalid email or password",
     });
   } catch (error) {
     return res.status(500).json({
-      message: error.message,
+      message: "Unable to log in. Please try again.",
     });
   }
 });

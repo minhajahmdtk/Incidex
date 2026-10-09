@@ -79,7 +79,7 @@ const AdminNavbar = () => {
 
     toast.success("Logged out successfully");
 
-    navigate("/admin/login");
+    navigate("/home");
   };
 
   // ==================================================

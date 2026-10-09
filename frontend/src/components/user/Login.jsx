@@ -14,6 +14,7 @@ const Login = () => {
 
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,12 +31,11 @@ const Login = () => {
     navigate("/");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     setError("");
 
-    // Email validation
+    // EMAIL VALIDATION
     if (!form.email.trim()) {
       setError("Email is required");
       return;
@@ -48,64 +48,79 @@ const Login = () => {
       return;
     }
 
-    // Password validation
+    // PASSWORD VALIDATION
     if (!form.password) {
       setError("Password is required");
       return;
     }
 
-    axios
-      .post("http://localhost:3000/user/login", {
-        email: form.email,
-        password: form.password,
-      })
-      .then((response) => {
-        if (response.data.token) {
-          localStorage.setItem(
-            "loginToken",
-            response.data.token
-          );
+    if (isLoading) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // COMMON LOGIN FOR USER AND ADMIN
+      const response = await axios.post(
+        "http://localhost:3000/user/login",
+        {
+          email: form.email.trim(),
+          password: form.password,
         }
+      );
 
-        localStorage.setItem("role", "user");
+      const { token, role, user, admin } = response.data;
 
-        if (response.data.user) {
-          localStorage.setItem(
-            "userInfo",
-            JSON.stringify(response.data.user)
-          );
-        }
+      // CHECK RESPONSE
+      if (!token || !["user", "admin"].includes(role)) {
+        setError("Invalid login response from server");
+        return;
+      }
 
-        toast.success("Login successful");
+      // SAVE LOGIN TOKEN
+      localStorage.setItem("loginToken", token);
 
-        navigate("/user/dashboard");
-      })
-      .catch((error) => {
-        if (error.response && error.response.data) {
-          setError(
-            error.response.data.message ||
-              "Login failed"
-          );
-        } else {
-          setError(
-            "Cannot connect to the backend server."
-          );
-        }
-      });
+      // SAVE ROLE RETURNED BY BACKEND
+      localStorage.setItem("role", role);
+
+      // SAVE ACCOUNT DETAILS
+      const accountInfo = role === "admin" ? admin : user;
+
+      if (accountInfo) {
+        localStorage.setItem(
+          "userInfo",
+          JSON.stringify(accountInfo)
+        );
+      } else {
+        localStorage.removeItem("userInfo");
+      }
+
+      toast.success("Login successful");
+
+      // REDIRECT BASED ON ROLE
+      if (role === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+      } else {
+        navigate("/user/dashboard", { replace: true });
+      }
+    } catch (error) {
+      if (error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Cannot connect to the backend server.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div
       className="
-        fixed
-        inset-0
-        z-50
-        flex
-        items-center
-        justify-center
-        bg-black/50
-        px-4
-        py-6
+        fixed inset-0 z-50
+        flex items-center justify-center
+        bg-black/50 px-4 py-6
         backdrop-blur-sm
       "
       onMouseDown={(e) => {
@@ -116,38 +131,23 @@ const Login = () => {
     >
       <div
         className="
-          relative
-          w-full
-          max-w-md
-          rounded-2xl
-          border
-          border-border
-          bg-card
-          p-7
-          shadow-2xl
-          shadow-black/20
-          transition-colors
-          duration-300
-          sm:p-8
+          relative w-full max-w-md
+          rounded-2xl border border-border
+          bg-card p-7 shadow-2xl shadow-black/20
+          transition-colors duration-300 sm:p-8
         "
         onMouseDown={(e) => e.stopPropagation()}
       >
         {/* CLOSE BUTTON */}
-
         <button
           type="button"
           onClick={handleClose}
           className="
-            absolute
-            right-4
-            top-4
-            rounded-lg
-            p-2
+            absolute right-4 top-4
+            rounded-lg p-2
             text-muted-foreground
-            transition-colors
-            duration-200
-            hover:bg-accent
-            hover:text-accent-foreground
+            transition-colors duration-200
+            hover:bg-accent hover:text-accent-foreground
           "
           aria-label="Close login"
         >
@@ -155,24 +155,15 @@ const Login = () => {
         </button>
 
         {/* LOGO */}
-
         <div className="mb-6 flex justify-center">
           <Link
             to="/"
             onClick={handleClose}
             className="
-              group
-              flex
-              h-20
-              w-20
-              items-center
-              justify-center
-              rounded-full
-              border
-              border-border
-              bg-background
-              transition-all
-              duration-200
+              group flex h-20 w-20
+              items-center justify-center
+              rounded-full border border-border
+              bg-background transition-all duration-200
               hover:scale-105
             "
             aria-label="Go to INCIDEX home page"
@@ -181,11 +172,8 @@ const Login = () => {
               src="/Crime.png"
               alt="INCIDEX Logo"
               className="
-                h-14
-                w-14
-                object-contain
-                transition-transform
-                duration-200
+                h-14 w-14 object-contain
+                transition-transform duration-200
                 group-hover:scale-105
               "
             />
@@ -193,52 +181,36 @@ const Login = () => {
         </div>
 
         {/* HEADING */}
-
         <div className="mb-6 text-center">
           <h2
             className="
               bg-gradient-to-r
-              from-[#B94A48]
-              via-[#7FAF8A]
-              to-[#5F9F6B]
-              bg-clip-text
-              text-2xl
-              font-bold
-              tracking-tight
+              from-[#B94A48] via-[#7FAF8A] to-[#5F9F6B]
+              bg-clip-text text-2xl font-bold tracking-tight
               text-transparent
-              dark:from-[#D76562]
-              dark:via-[#91BD9C]
-              dark:to-[#7FBF8B]
+              dark:from-[#D76562] dark:via-[#91BD9C] dark:to-[#7FBF8B]
             "
           >
             Welcome Back
           </h2>
 
-          <p
-            className="
-              mt-2
-              text-sm
-              text-muted-foreground
-            "
-          >
+          <p className="mt-2 text-sm text-muted-foreground">
             Login to your INCIDEX account.
+          </p>
+
+          <p className="mt-1 text-xs text-muted-foreground">
+            Users and administrators can log in here.
           </p>
         </div>
 
-        {/* FORM */}
-
+        {/* LOGIN FORM */}
         <form onSubmit={handleSubmit}>
-
           {/* EMAIL */}
-
           <div>
             <label
               htmlFor="email"
               className="
-                mb-1.5
-                block
-                text-sm
-                font-medium
+                mb-1.5 block text-sm font-medium
                 text-card-foreground
               "
             >
@@ -248,40 +220,30 @@ const Login = () => {
             <input
               id="email"
               className="
-                w-full
-                rounded-lg
-                border
-                border-input
-                bg-background
-                px-3.5
-                py-2.5
-                text-sm
-                text-foreground
-                outline-none
+                w-full rounded-lg border border-input
+                bg-background px-3.5 py-2.5
+                text-sm text-foreground outline-none
                 placeholder:text-muted-foreground
                 transition
                 focus:border-[#B94A48]
-                focus:ring-2
-                focus:ring-[#B94A48]/10
+                focus:ring-2 focus:ring-[#B94A48]/10
               "
               type="email"
               name="email"
               value={form.email}
               onChange={handleChange}
               placeholder="Enter your email"
+              autoComplete="username"
+              required
             />
           </div>
 
           {/* PASSWORD */}
-
           <div className="mt-4">
             <label
               htmlFor="password"
               className="
-                mb-1.5
-                block
-                text-sm
-                font-medium
+                mb-1.5 block text-sm font-medium
                 text-card-foreground
               "
             >
@@ -292,49 +254,35 @@ const Login = () => {
               <input
                 id="password"
                 className="
-                  w-full
-                  rounded-lg
-                  border
-                  border-input
-                  bg-background
-                  px-3.5
-                  py-2.5
-                  pr-11
-                  text-sm
-                  text-foreground
-                  outline-none
+                  w-full rounded-lg border border-input
+                  bg-background px-3.5 py-2.5 pr-11
+                  text-sm text-foreground outline-none
                   placeholder:text-muted-foreground
                   transition
                   focus:border-[#B94A48]
-                  focus:ring-2
-                  focus:ring-[#B94A48]/10
+                  focus:ring-2 focus:ring-[#B94A48]/10
                 "
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={form.password}
                 onChange={handleChange}
                 placeholder="Enter your password"
+                autoComplete="current-password"
+                required
               />
 
               {/* SHOW / HIDE PASSWORD */}
-
               <button
                 type="button"
                 onClick={() =>
                   setShowPassword((prev) => !prev)
                 }
                 className="
-                  absolute
-                  right-2.5
-                  top-1/2
-                  -translate-y-1/2
-                  rounded-md
-                  p-1.5
+                  absolute right-2.5 top-1/2
+                  -translate-y-1/2 rounded-md p-1.5
                   text-muted-foreground
-                  transition-colors
-                  duration-200
-                  hover:bg-accent
-                  hover:text-foreground
+                  transition-colors duration-200
+                  hover:bg-accent hover:text-foreground
                 "
                 aria-label={
                   showPassword
@@ -352,16 +300,12 @@ const Login = () => {
           </div>
 
           {/* FORGOT PASSWORD */}
-
           <div className="mb-5 mt-3 flex justify-end">
             <Link
               to="/forgot-password"
               className="
-                text-sm
-                font-medium
-                text-[#B94A48]
-                transition-colors
-                hover:underline
+                text-sm font-medium text-[#B94A48]
+                transition-colors hover:underline
               "
             >
               Forgot Password?
@@ -369,18 +313,13 @@ const Login = () => {
           </div>
 
           {/* ERROR */}
-
           {error && (
             <div
+              role="alert"
               className="
-                mb-4
-                rounded-lg
-                border
-                border-[#B94A48]/30
-                bg-[#B94A48]/5
-                p-3
-                text-sm
-                text-[#B94A48]
+                mb-4 rounded-lg border
+                border-[#B94A48]/30 bg-[#B94A48]/5
+                p-3 text-sm text-[#B94A48]
                 dark:bg-[#B94A48]/10
               "
             >
@@ -389,36 +328,26 @@ const Login = () => {
           )}
 
           {/* LOGIN BUTTON */}
-
           <button
             type="submit"
+            disabled={isLoading}
             className="
-              w-full
-              rounded-lg
-              bg-primary
-              py-2.5
-              text-sm
-              font-semibold
-              text-primary-foreground
-              shadow-sm
-              transition-all
-              duration-200
-              hover:-translate-y-0.5
-              hover:bg-primary
-              hover:text-primary-foreground
-              hover:shadow-md
+              w-full rounded-lg bg-primary
+              py-2.5 text-sm font-semibold
+              text-primary-foreground shadow-sm
+              transition-all duration-200
+              hover:-translate-y-0.5 hover:shadow-md
+              disabled:cursor-not-allowed
+              disabled:opacity-60
             "
           >
-            Login
+            {isLoading ? "Logging in..." : "Login"}
           </button>
 
           {/* REGISTER */}
-
           <p
             className="
-              mt-5
-              text-center
-              text-sm
+              mt-5 text-center text-sm
               text-muted-foreground
             "
           >
@@ -427,16 +356,13 @@ const Login = () => {
             <Link
               to="/register"
               className="
-                font-medium
-                text-[#B94A48]
-                transition-colors
-                hover:underline
+                font-medium text-[#B94A48]
+                transition-colors hover:underline
               "
             >
               Register here
             </Link>
           </p>
-
         </form>
       </div>
     </div>
@@ -444,5 +370,4 @@ const Login = () => {
 };
 
 export default Login;
-
 
