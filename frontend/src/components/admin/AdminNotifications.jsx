@@ -8,6 +8,7 @@ import {
   User,
   FileText,
   Scale,
+  Trash2,
 } from "lucide-react";
 import axiosInstance from "../../axiosInterceptor";
 import { toast } from "sonner";
@@ -17,6 +18,7 @@ const AdminNotifications = () => {
 
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     axiosInstance
@@ -143,6 +145,38 @@ const AdminNotifications = () => {
         );
       });
   };
+
+ 
+  // DELETE NOTIFICATION
+  const deleteNotification = (id) => {
+    setDeletingId(id);
+
+    axiosInstance
+      .delete(`/admin/notifications/${id}`)
+      .then(() => {
+        setNotifications((previous) =>
+          previous.filter(
+            (notification) => notification._id !== id
+          )
+        );
+
+        toast.success("Notification deleted successfully");
+      })
+      .catch((error) => {
+        if (handleUnauthorized(error)) {
+          return;
+        }
+
+        toast.error(
+          error.response?.data?.message ||
+            "Failed to delete notification"
+        );
+      })
+      .finally(() => {
+        setDeletingId(null);
+      });
+  };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -419,22 +453,41 @@ const AdminNotifications = () => {
                         </div>
                       </div>
 
-                      {/* MARK READ */}
-                      {!notification.isRead ? (
+                      {/* NOTIFICATION ACTIONS */}
+                      <div className="flex shrink-0 flex-wrap items-center gap-2 lg:justify-end">
+                        {!notification.isRead ? (
+                          <button
+                            type="button"
+                            onClick={() => markAsRead(notification._id)}
+                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                          >
+                            <Check size={16} />
+                            Mark as Read
+                          </button>
+                        ) : (
+                          <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Check size={16} />
+                            Read
+                          </span>
+                        )}
+
+                        {/* DELETE NOTIFICATION */}
                         <button
                           type="button"
-                          onClick={() => markAsRead(notification._id)}
-                          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                          onClick={() =>
+                            deleteNotification(notification._id)
+                          }
+                          disabled={deletingId === notification._id}
+                          aria-label="Delete notification"
+                          title="Delete notification"
+                          className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-500/30 bg-background px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-50 dark:text-red-400"
                         >
-                          <Check size={16} />
-                          Mark as Read
+                          <Trash2 size={16} />
+                          {deletingId === notification._id
+                            ? "Deleting..."
+                            : "Delete"}
                         </button>
-                      ) : (
-                        <span className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground">
-                          <Check size={16} />
-                          Read
-                        </span>
-                      )}
+                      </div>
                     </div>
                   </div>
                 );

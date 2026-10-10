@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 
 const crimeReportSchema = new mongoose.Schema(
@@ -60,6 +61,12 @@ const crimeReportSchema = new mongoose.Schema(
       enum: ["New", "Acknowledged", "In Progress", "Resolved"],
       default: "New",
       required: true,
+    },
+
+    // Feedback submission tracking
+    feedbackSubmitted: {
+      type: Boolean,
+      default: false,
     },
 
     // Resolution details

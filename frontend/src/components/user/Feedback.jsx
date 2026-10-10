@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import {
   MessageSquare,
@@ -20,6 +21,8 @@ const Feedback = () => {
   const [submitting, setSubmitting] = useState(false);
   const [caseDetails, setCaseDetails] = useState(null);
   const [error, setError] = useState("");
+  const [feedbackAlreadySubmitted, setFeedbackAlreadySubmitted] =
+    useState(false);
 
   // GET CASE DETAILS
   useEffect(() => {
@@ -29,7 +32,14 @@ const Feedback = () => {
 
         setCaseDetails(response.data.case);
 
-        if (response.data.case.currentStatus !== "Resolved") {
+        if (response.data.case.feedbackSubmitted) {
+          setFeedbackAlreadySubmitted(true);
+          setError(
+            "Feedback has already been submitted for this case"
+          );
+        } else if (
+          response.data.case.currentStatus !== "Resolved"
+        ) {
           setError(
             "Feedback can be submitted only for resolved cases"
           );
@@ -64,6 +74,18 @@ const Feedback = () => {
       return;
     }
 
+    if (feedbackAlreadySubmitted) {
+      setError("Feedback has already been submitted for this case");
+      return;
+    }
+
+    if (caseDetails?.currentStatus !== "Resolved") {
+      setError(
+        "Feedback can be submitted only for resolved cases"
+      );
+      return;
+    }
+
     try {
       setSubmitting(true);
 
@@ -74,6 +96,7 @@ const Feedback = () => {
       toast.success(response.data.message);
 
       setFeedbackDetails("");
+      setFeedbackAlreadySubmitted(true);
 
       navigate("/user/cases");
     } catch (error) {
@@ -83,6 +106,12 @@ const Feedback = () => {
 
       setError(message);
       toast.error(message);
+
+      if (
+        message.toLowerCase().includes("already been submitted")
+      ) {
+        setFeedbackAlreadySubmitted(true);
+      }
     } finally {
       setSubmitting(false);
     }
@@ -347,6 +376,7 @@ const Feedback = () => {
 
                 {/* FEEDBACK FORM */}
                 {!error &&
+                  !feedbackAlreadySubmitted &&
                   caseDetails?.currentStatus === "Resolved" && (
                     <form onSubmit={handleSubmit}>
                       {/* FEEDBACK FIELD */}

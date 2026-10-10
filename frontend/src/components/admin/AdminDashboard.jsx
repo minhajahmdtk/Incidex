@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminNavbar from "./AdminNavbar";
+
 import {
   Users,
   FileText,
@@ -33,9 +34,7 @@ import { toast } from "sonner";
 import axios from "axios";
 
 const AdminDashboard = () => {
-  // ==================================================
   // DASHBOARD STATE
-  // ==================================================
 
   const [dashboardData, setDashboardData] = useState({
     totalUsers: 0,
@@ -55,9 +54,7 @@ const AdminDashboard = () => {
   const [activePieIndex, setActivePieIndex] = useState(-1);
   const [error, setError] = useState("");
 
-  // ==================================================
   // GET DASHBOARD DATA
-  // ==================================================
 
   const getDashboardData = () => {
     axios
@@ -69,17 +66,16 @@ const AdminDashboard = () => {
       .then((response) => {
         setDashboardData((previousData) => ({
           ...previousData,
-          totalUsers: response.data.totalUsers || 0,
-          totalCases: response.data.totalCases || 0,
-
+          totalUsers: Number(response.data.totalUsers) || 0,
+          totalCases: Number(response.data.totalCases) || 0,
           casesByStatus: {
-            new: response.data.casesByStatus?.new || 0,
+            new: Number(response.data.casesByStatus?.new) || 0,
             acknowledged:
-              response.data.casesByStatus?.acknowledged || 0,
+              Number(response.data.casesByStatus?.acknowledged) || 0,
             inProgress:
-              response.data.casesByStatus?.inProgress || 0,
+              Number(response.data.casesByStatus?.inProgress) || 0,
             resolved:
-              response.data.casesByStatus?.resolved || 0,
+              Number(response.data.casesByStatus?.resolved) || 0,
           },
         }));
 
@@ -95,9 +91,7 @@ const AdminDashboard = () => {
       });
   };
 
-  // ==================================================
   // GET CATEGORY DATA
-  // ==================================================
 
   const getCategoryData = () => {
     axios
@@ -107,20 +101,18 @@ const AdminDashboard = () => {
         },
       })
       .then((response) => {
-        setCategoryData(response.data.categoryData || []);
+        const data = response.data.categoryData;
+        setCategoryData(Array.isArray(data) ? data : []);
       })
       .catch((error) => {
-        const message =
+        toast.error(
           error.response?.data?.message ||
-          "Failed to load category data";
-
-        toast.error(message);
+            "Failed to load category data"
+        );
       });
   };
 
-  // ==================================================
   // GET MONTHLY DATA
-  // ==================================================
 
   const getMonthlyData = () => {
     axios
@@ -130,20 +122,18 @@ const AdminDashboard = () => {
         },
       })
       .then((response) => {
-        setMonthlyData(response.data.monthlyData || []);
+        const data = response.data.monthlyData;
+        setMonthlyData(Array.isArray(data) ? data : []);
       })
       .catch((error) => {
-        const message =
+        toast.error(
           error.response?.data?.message ||
-          "Failed to load monthly data";
-
-        toast.error(message);
+            "Failed to load monthly data"
+        );
       });
   };
 
-  // ==================================================
   // GET FAKE CASES AND MONEY RECEIVED
-  // ==================================================
 
   const getFakeAndMoneyData = () => {
     axios
@@ -160,8 +150,8 @@ const AdminDashboard = () => {
             : [];
 
         const totalFakeCases = cases.filter(
-  (crimeCase) => crimeCase.isFakeReport === true
-).length;
+          (crimeCase) => crimeCase.isFakeReport === true
+        ).length;
 
         const moneyReceived = cases.reduce((total, crimeCase) => {
           if (crimeCase.fineStatus === "Paid") {
@@ -178,17 +168,14 @@ const AdminDashboard = () => {
         }));
       })
       .catch((error) => {
-        const message =
+        toast.error(
           error.response?.data?.message ||
-          "Failed to load Fake and payment data";
-
-        toast.error(message);
+            "Failed to load fake case and payment data"
+        );
       });
   };
 
-  // ==================================================
   // LOAD DATA
-  // ==================================================
 
   useEffect(() => {
     getDashboardData();
@@ -197,45 +184,46 @@ const AdminDashboard = () => {
     getFakeAndMoneyData();
   }, []);
 
-  // ==================================================
   // CATEGORY CHART DATA
-  // ==================================================
 
   const categoryChartData = categoryData.map((item) => ({
     name: item._id,
-    value: item.count,
+    value: Number(item.count) || 0,
   }));
 
-  // ==================================================
   // MONTHLY CHART DATA
-  // ==================================================
+  // SHOW ALL 12 MONTHS
 
-  const monthlyChartData = monthlyData.map((item) => {
-    const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
+  const monthNames = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  ];
 
-    return {
-      month: monthNames[item._id.month - 1],
-      cases: item.count,
-    };
+  const monthlyCounts = new Map();
+
+  monthlyData.forEach((item) => {
+    const month = Number(item._id?.month);
+    const count = Number(item.count) || 0;
+
+    if (Number.isInteger(month) && month >= 1 && month <= 12) {
+      monthlyCounts.set(
+        month,
+        (monthlyCounts.get(month) || 0) + count
+      );
+    }
   });
 
-  // ==================================================
+  const monthlyChartData = monthNames.map((month, index) => ({
+    month,
+    cases: monthlyCounts.get(index + 1) || 0,
+  }));
+
+  const monthlyTotal = monthlyChartData.reduce(
+    (total, item) => total + item.cases,
+    0
+  );
+
   // CHART COLORS
-  // NO RED / NO GREEN
-  // ==================================================
 
   const chartColors = [
     "#6366F1",
@@ -248,9 +236,7 @@ const AdminDashboard = () => {
     "#8B5CF6",
   ];
 
-  // ==================================================
   // ACTIVE PIE SHAPE
-  // ==================================================
 
   const renderActiveShape = (props) => {
     const {
@@ -290,59 +276,50 @@ const AdminDashboard = () => {
     );
   };
 
-  // ==================================================
-  // STATISTIC CARDS
-  // ==================================================
+  // EIGHT STATISTIC CARDS
 
   const statCards = [
     {
       title: "Total Users",
       value: dashboardData.totalUsers,
       icon: Users,
-      iconClass:
-        "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
+      iconClass: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
     },
     {
       title: "Total Cases",
       value: dashboardData.totalCases,
       icon: FileText,
-      iconClass:
-        "bg-slate-500/10 text-slate-600 dark:text-slate-400",
+      iconClass: "bg-slate-500/10 text-slate-600 dark:text-slate-400",
     },
     {
       title: "New Cases",
       value: dashboardData.casesByStatus.new,
       icon: AlertCircle,
-      iconClass:
-        "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+      iconClass: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
     },
     {
       title: "Acknowledged",
       value: dashboardData.casesByStatus.acknowledged,
       icon: Clock,
-      iconClass:
-        "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+      iconClass: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
     },
     {
       title: "In Progress",
       value: dashboardData.casesByStatus.inProgress,
       icon: Clock,
-      iconClass:
-        "bg-sky-500/10 text-sky-600 dark:text-sky-400",
+      iconClass: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
     },
     {
       title: "Resolved",
       value: dashboardData.casesByStatus.resolved,
       icon: CheckCircle,
-      iconClass:
-        "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
+      iconClass: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
     },
     {
       title: "Total Fake Cases",
       value: dashboardData.totalFakeCases,
       icon: ShieldAlert,
-      iconClass:
-        "bg-rose-500/10 text-rose-600 dark:text-rose-400",
+      iconClass: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
     },
     {
       title: "Money Received",
@@ -352,14 +329,11 @@ const AdminDashboard = () => {
         maximumFractionDigits: 2,
       })}`,
       icon: IndianRupee,
-      iconClass:
-        "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+      iconClass: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
     },
   ];
 
-  // ==================================================
   // MANAGEMENT CARDS
-  // ==================================================
 
   const managementCards = [
     {
@@ -367,24 +341,21 @@ const AdminDashboard = () => {
       description: "View and manage registered users",
       path: "/admin/users",
       icon: Users,
-      iconClass:
-        "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
+      iconClass: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
     },
     {
       title: "Cases",
       description: "View and manage crime cases",
       path: "/admin/cases",
       icon: FileText,
-      iconClass:
-        "bg-slate-500/10 text-slate-600 dark:text-slate-400",
+      iconClass: "bg-slate-500/10 text-slate-600 dark:text-slate-400",
     },
     {
       title: "Feedback",
       description: "View feedback submitted by users",
       path: "/admin/feedback",
       icon: MessageSquare,
-      iconClass:
-        "bg-violet-500/10 text-violet-600 dark:text-violet-400",
+      iconClass: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
     },
   ];
 
@@ -392,29 +363,11 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <AdminNavbar />
 
-      {/* ==================================================
-          MAIN
-      ================================================== */}
-
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* ==================================================
-            PAGE TITLE
-        ================================================== */}
+        {/* PAGE TITLE */}
 
         <div className="mb-8">
-          <h2
-            className="
-              bg-gradient-to-r
-              from-[#B94A48]
-              via-[#7FAF8A]
-              to-[#555C64]
-              bg-clip-text
-              text-2xl
-              font-bold
-              tracking-tight
-              text-transparent
-            "
-          >
+          <h2 className="bg-gradient-to-r from-[#B94A48] via-[#7FAF8A] to-[#555C64] bg-clip-text text-2xl font-bold tracking-tight text-transparent">
             Administrator Dashboard
           </h2>
 
@@ -423,9 +376,7 @@ const AdminDashboard = () => {
           </p>
         </div>
 
-        {/* ==================================================
-            ERROR
-        ================================================== */}
+        {/* ERROR */}
 
         {error && (
           <div className="mb-6 rounded-xl border border-[#B94A48]/30 bg-[#B94A48]/5 p-4 dark:bg-[#D76562]/5">
@@ -435,12 +386,9 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* ==================================================
-            STATISTIC CARDS
-            NO SHADOW
-        ================================================== */}
+        {/* ORGANIZED EIGHT STATISTIC CARDS */}
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
           {statCards.map((card) => {
             const Icon = card.icon;
 
@@ -448,42 +396,29 @@ const AdminDashboard = () => {
               <div
                 key={card.title}
                 className="
-                  group
-                  relative
-                  overflow-hidden
-                  rounded-2xl
-                  border
-                  border-border
-                  bg-white
+                  group relative overflow-hidden rounded-2xl
+                  border border-border bg-white p-5
+                  transition-all duration-300
+                  hover:-translate-y-1 hover:border-muted-foreground/30
                   dark:bg-[#252A32]
-                  p-5
-                  transition-colors
-                  duration-300
-                  hover:border-muted-foreground/30
                 "
               >
-                <div className="relative flex items-center justify-between">
-                  <div>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
                     <p className="text-sm font-medium text-muted-foreground">
                       {card.title}
                     </p>
 
-                    <p className="mt-2 text-3xl font-bold tracking-tight text-foreground">
+                    <p className="mt-2 break-words text-2xl font-bold tracking-tight text-foreground">
                       {card.value}
                     </p>
                   </div>
 
                   <div
                     className={`
-                      flex
-                      h-12
-                      w-12
-                      items-center
-                      justify-center
-                      rounded-xl
-                      ${card.iconClass}
-                      transition-transform
-                      duration-300
+                      flex h-12 w-12 shrink-0 items-center justify-center
+                      rounded-xl ${card.iconClass}
+                      transition-transform duration-300
                       group-hover:scale-105
                     `}
                   >
@@ -495,15 +430,10 @@ const AdminDashboard = () => {
           })}
         </div>
 
-        {/* ==================================================
-            CHARTS
-            NORMAL CARDS - NO 3D
-        ================================================== */}
+        {/* CHARTS */}
 
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {/* ==================================================
-              CRIME CATEGORY PIE CHART
-          ================================================== */}
+          {/* CRIME CATEGORY PIE CHART */}
 
           <div className="rounded-2xl border border-border bg-white p-6 dark:bg-[#252A32]">
             <div className="mb-4">
@@ -536,34 +466,24 @@ const AdminDashboard = () => {
                       outerRadius={100}
                       paddingAngle={3}
                       cornerRadius={6}
-                      label={({ name, value }) =>
-                        `${name}: ${value}`
-                      }
-                      isAnimationActive={true}
+                      label={({ name, value }) => `${name}: ${value}`}
+                      isAnimationActive
                       animationBegin={100}
                       animationDuration={1200}
                       animationEasing="ease-out"
                       activeIndex={activePieIndex}
                       activeShape={renderActiveShape}
-                      onMouseEnter={(_, index) =>
-                        setActivePieIndex(index)
-                      }
+                      onMouseEnter={(_, index) => setActivePieIndex(index)}
                       onMouseLeave={() => setActivePieIndex(-1)}
                     >
-                      {categoryChartData.map(
-                        (entry, index) => (
-                          <Cell
-                            key={`category-${index}`}
-                            fill={
-                              chartColors[
-                                index % chartColors.length
-                              ]
-                            }
-                            stroke="var(--card)"
-                            strokeWidth={3}
-                          />
-                        )
-                      )}
+                      {categoryChartData.map((entry, index) => (
+                        <Cell
+                          key={`category-${index}`}
+                          fill={chartColors[index % chartColors.length]}
+                          stroke="var(--card)"
+                          strokeWidth={3}
+                        />
+                      ))}
                     </Pie>
 
                     <Tooltip
@@ -575,77 +495,81 @@ const AdminDashboard = () => {
                       }}
                     />
 
-                    <Legend
-                      verticalAlign="bottom"
-                      height={40}
-                    />
+                    <Legend verticalAlign="bottom" height={40} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             )}
           </div>
 
-          {/* ==================================================
-              MONTHLY CASES LINE CHART
-          ================================================== */}
+          {/* MONTHLY CASE REPORTS */}
 
           <div className="rounded-2xl border border-border bg-white p-6 dark:bg-[#252A32]">
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold text-foreground">
-                Monthly Case Reports
-              </h3>
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">
+                  Monthly Case Reports
+                </h3>
 
-              <p className="mt-1 text-sm text-muted-foreground">
-                Number of cases reported each month.
-              </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Monthly breakdown of reported crime incidents.
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 px-4 py-2">
+                <p className="text-xs font-medium text-muted-foreground">
+                  Total Cases
+                </p>
+
+                <p className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                  {monthlyTotal}
+                </p>
+              </div>
             </div>
 
-            {monthlyChartData.length === 0 ? (
-              <div className="flex h-80 items-center justify-center">
+            {monthlyData.length === 0 ? (
+              <div className="flex h-72 items-center justify-center rounded-xl border border-dashed border-border">
                 <p className="text-sm text-muted-foreground">
                   No monthly data available.
                 </p>
               </div>
             ) : (
-              <div className="h-80">
+              <div className="h-72 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={monthlyChartData}
-                    margin={{
-                      top: 10,
-                      right: 20,
-                      left: 0,
-                      bottom: 10,
-                    }}
+                    margin={{ top: 15, right: 15, left: -15, bottom: 5 }}
                   >
                     <CartesianGrid
                       strokeDasharray="3 3"
                       stroke="var(--border)"
+                      vertical={false}
                     />
 
                     <XAxis
                       dataKey="month"
-                      stroke="var(--muted-foreground)"
-                      tick={{
-                        fill: "var(--muted-foreground)",
-                      }}
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+                      dy={8}
                     />
 
                     <YAxis
                       allowDecimals={false}
-                      stroke="var(--muted-foreground)"
-                      tick={{
-                        fill: "var(--muted-foreground)",
-                      }}
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+                      width={40}
                     />
 
                     <Tooltip
                       contentStyle={{
                         backgroundColor: "var(--card)",
                         border: "1px solid var(--border)",
-                        borderRadius: "10px",
+                        borderRadius: "12px",
                         color: "var(--foreground)",
                       }}
+                      formatter={(value) => [value, "Cases"]}
                     />
 
                     <Line
@@ -654,17 +578,10 @@ const AdminDashboard = () => {
                       name="Cases"
                       stroke="#6366F1"
                       strokeWidth={3}
-                      dot={{
-                        r: 5,
-                        fill: "#6366F1",
-                      }}
-                      activeDot={{
-                        r: 8,
-                        fill: "#6366F1",
-                      }}
-                      isAnimationActive={true}
-                      animationDuration={1200}
-                      animationEasing="ease-out"
+                      dot={{ r: 4, fill: "#6366F1", strokeWidth: 0 }}
+                      activeDot={{ r: 7, fill: "#6366F1" }}
+                      isAnimationActive
+                      animationDuration={1000}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -673,10 +590,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* ==================================================
-            MANAGEMENT
-            3D EFFECT ONLY HERE
-        ================================================== */}
+        {/* MANAGEMENT CARDS */}
 
         <div className="mt-8">
           <div className="mb-5">
@@ -698,39 +612,19 @@ const AdminDashboard = () => {
                   key={card.title}
                   to={card.path}
                   className="
-                    group
-                    relative
-                    overflow-hidden
-                    rounded-2xl
-                    border
-                    border-border
-                    bg-white
+                    group relative overflow-hidden rounded-2xl
+                    border border-border bg-white p-5 shadow-sm
+                    transition-all duration-300 ease-out
+                    hover:-translate-y-2 hover:scale-[1.015]
+                    hover:border-muted-foreground/30 hover:shadow-xl
                     dark:bg-[#252A32]
-                    p-5
-                    shadow-sm
-                    transition-all
-                    duration-300
-                    ease-out
-                    hover:-translate-y-2
-                    hover:scale-[1.015]
-                    hover:shadow-xl
-                    hover:border-muted-foreground/30
                   "
                 >
-                  {/* 3D BACKGROUND ELEMENT */}
-
                   <div
                     className="
-                      pointer-events-none
-                      absolute
-                      -bottom-10
-                      -right-10
-                      h-28
-                      w-28
-                      rounded-full
-                      bg-muted/30
-                      transition-transform
-                      duration-500
+                      pointer-events-none absolute -bottom-10 -right-10
+                      h-28 w-28 rounded-full bg-muted/30
+                      transition-transform duration-500
                       group-hover:scale-150
                     "
                   />
@@ -738,18 +632,10 @@ const AdminDashboard = () => {
                   <div className="relative flex items-start justify-between">
                     <div
                       className={`
-                        flex
-                        h-12
-                        w-12
-                        items-center
-                        justify-center
-                        rounded-xl
-                        ${card.iconClass}
-                        shadow-sm
-                        transition-all
-                        duration-300
-                        group-hover:scale-110
-                        group-hover:rotate-3
+                        flex h-12 w-12 items-center justify-center
+                        rounded-xl ${card.iconClass} shadow-sm
+                        transition-all duration-300
+                        group-hover:scale-110 group-hover:rotate-3
                       `}
                     >
                       <Icon size={22} />
@@ -758,11 +644,8 @@ const AdminDashboard = () => {
                     <ArrowRight
                       size={19}
                       className="
-                        text-muted-foreground
-                        transition-all
-                        duration-300
-                        group-hover:translate-x-2
-                        group-hover:text-foreground
+                        text-muted-foreground transition-all duration-300
+                        group-hover:translate-x-2 group-hover:text-foreground
                       "
                     />
                   </div>

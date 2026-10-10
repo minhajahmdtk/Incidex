@@ -1,18 +1,15 @@
-const express=require('express');
-const jwt=require('jsonwebtoken');
-const AdminNotification=require('../models/adminNotification');
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const AdminNotification = require('../models/adminNotification');
 
-const router=express.Router();
+const router = express.Router();
 
-
-//VERIFY ADMIN TOKEN
+// VERIFY ADMIN TOKEN
 
 function verifyAdmin(req, res, next) {
-
   const token = req.headers.token;
 
   try {
-
     if (!token) {
       return res.status(401).json({
         message: "Unauthorized request"
@@ -35,21 +32,16 @@ function verifyAdmin(req, res, next) {
     next();
 
   } catch (error) {
-
     return res.status(401).json({
       message: "Invalid or expired token"
     });
-
   }
-
 }
 
-//VIEW ALL ADMIN NOTIFICATIONS
+// VIEW ALL ADMIN NOTIFICATIONS
 
 router.get('/', verifyAdmin, async (req, res) => {
-
   try {
-
     const notifications = await AdminNotification.find()
       .populate('userId', 'name phone')
       .populate('caseId', 'caseId crimeCategory currentStatus')
@@ -60,27 +52,22 @@ router.get('/', verifyAdmin, async (req, res) => {
     });
 
   } catch (error) {
-
     return res.status(500).json({
       message: error.message
     });
-
   }
-
 });
 
-//MARK NOTIFICATION AS READ
+// MARK NOTIFICATION AS READ
 
 router.patch('/read/:id', verifyAdmin, async (req, res) => {
-
   try {
-
     const notification = await AdminNotification.findById(
       req.params.id
     );
 
     if (!notification) {
-      return res.status(400).json({
+      return res.status(404).json({
         message: "Notification not found"
       });
     }
@@ -95,25 +82,19 @@ router.patch('/read/:id', verifyAdmin, async (req, res) => {
     });
 
   } catch (error) {
-
     return res.status(500).json({
       message: error.message
     });
-
   }
-
 });
 
-
-//MARK ALL NOTIFICATIONS AS READ
+// MARK ALL NOTIFICATIONS AS READ
 
 router.patch('/read-all', verifyAdmin, async (req, res) => {
-
   try {
-
     await AdminNotification.updateMany(
       { isRead: false },
-      { isRead: true }
+      { $set: { isRead: true } }
     );
 
     return res.status(200).json({
@@ -121,13 +102,35 @@ router.patch('/read-all', verifyAdmin, async (req, res) => {
     });
 
   } catch (error) {
-
     return res.status(500).json({
       message: error.message
     });
-
   }
+});
 
+// DELETE ONE ADMIN NOTIFICATION
+
+router.delete('/:id', verifyAdmin, async (req, res) => {
+  try {
+    const notification = await AdminNotification.findByIdAndDelete(
+      req.params.id
+    );
+
+    if (!notification) {
+      return res.status(404).json({
+        message: "Notification not found"
+      });
+    }
+
+    return res.status(200).json({
+      message: "Notification deleted successfully"
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message
+    });
+  }
 });
 
 module.exports = router;

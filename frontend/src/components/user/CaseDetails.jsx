@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -10,6 +11,9 @@ import {
   Calendar,
   MessageSquare,
   Download,
+  Gavel,
+  X,
+  CreditCard,
 } from "lucide-react";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { toast } from "sonner";
@@ -28,6 +32,11 @@ const CaseDetails = () => {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [appealDialogOpen, setAppealDialogOpen] = useState(false);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+
+  const dialogRef = useRef(null);
+
   // Get case details and status history
   useEffect(() => {
     const getCaseDetails = async () => {
@@ -35,9 +44,7 @@ const CaseDetails = () => {
         setLoading(true);
         setErrorMessage("");
 
-        const caseResponse = await axiosInstance.get(
-          `/cases/${id}`
-        );
+        const caseResponse = await axiosInstance.get(`/cases/${id}`);
 
         const historyResponse = await axiosInstance.get(
           `/cases/history/${id}`
@@ -59,6 +66,62 @@ const CaseDetails = () => {
 
     getCaseDetails();
   }, [id]);
+
+  // Refresh case details after an appeal or payment update
+  const refreshCaseDetails = async () => {
+    try {
+      const response = await axiosInstance.get(`/cases/${id}`);
+      setCaseData(response.data.case);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to refresh case details"
+      );
+    }
+  };
+
+  // Close appeal dialog
+  const closeAppealDialog = () => {
+    setAppealDialogOpen(false);
+  };
+
+  // Close payment dialog
+  const closePaymentDialog = () => {
+    setPaymentDialogOpen(false);
+  };
+
+  // Prevent background scrolling and close dialogs with Escape
+  useEffect(() => {
+    const isDialogOpen = appealDialogOpen || paymentDialogOpen;
+
+    if (!isDialogOpen) {
+      return undefined;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        closeAppealDialog();
+        closePaymentDialog();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [appealDialogOpen, paymentDialogOpen]);
+
+  // Focus the dialog when opened
+  useEffect(() => {
+    if (appealDialogOpen || paymentDialogOpen) {
+      dialogRef.current?.focus();
+    }
+  }, [appealDialogOpen, paymentDialogOpen]);
 
   // Download final PDF report
   const downloadPdf = async () => {
@@ -265,6 +328,18 @@ const CaseDetails = () => {
     );
   }
 
+  // Appeal button visibility
+  const canSubmitAppeal =
+    caseData.isFakeReport === true &&
+    !["Pending", "Approved", "Rejected", "Upheld"].includes(
+      caseData.appealStatus
+    );
+
+  // Show payment dialogue when the appeal has been rejected
+  const canShowPayment =
+    caseData.isFakeReport === true &&
+    caseData.appealStatus === "Rejected";
+
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <Navbar />
@@ -272,9 +347,7 @@ const CaseDetails = () => {
       <main className="min-h-screen">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 
-          {/* ==================================================
-              HEADER
-          ================================================== */}
+          {/* HEADER */}
 
           <div className="mb-8">
             <button
@@ -345,6 +418,74 @@ const CaseDetails = () => {
 
               <div className="flex flex-wrap items-center gap-3">
 
+                {/* SUBMIT APPEAL */}
+
+                {canSubmitAppeal && (
+                  <button
+                    type="button"
+                    onClick={() => setAppealDialogOpen(true)}
+                    className="
+                      inline-flex
+                      items-center
+                      gap-2
+                      rounded-lg
+                      border
+                      border-[#B94A48]/30
+                      bg-[#B94A48]/5
+                      px-4
+                      py-2.5
+                      text-sm
+                      font-medium
+                      text-[#B94A48]
+                      transition-all
+                      duration-200
+                      hover:-translate-y-0.5
+                      hover:bg-[#B94A48]/10
+                      dark:border-[#D76562]/30
+                      dark:bg-[#D76562]/10
+                      dark:text-[#D76562]
+                      dark:hover:bg-[#D76562]/20
+                    "
+                  >
+                    <Gavel size={17} />
+                    Submit Appeal
+                  </button>
+                )}
+
+                {/* PAY FINE */}
+
+                {canShowPayment && (
+                  <button
+                    type="button"
+                    onClick={() => setPaymentDialogOpen(true)}
+                    className="
+                      inline-flex
+                      items-center
+                      gap-2
+                      rounded-lg
+                      border
+                      border-[#B94A48]/30
+                      bg-[#B94A48]/5
+                      px-4
+                      py-2.5
+                      text-sm
+                      font-medium
+                      text-[#B94A48]
+                      transition-all
+                      duration-200
+                      hover:-translate-y-0.5
+                      hover:bg-[#B94A48]/10
+                      dark:border-[#D76562]/30
+                      dark:bg-[#D76562]/10
+                      dark:text-[#D76562]
+                      dark:hover:bg-[#D76562]/20
+                    "
+                  >
+                    <CreditCard size={17} />
+                    Pay Fine
+                  </button>
+                )}
+
                 {/* DOWNLOAD FINAL REPORT */}
 
                 {caseData.currentStatus === "Resolved" && (
@@ -382,9 +523,7 @@ const CaseDetails = () => {
                   <button
                     type="button"
                     onClick={() =>
-                      navigate(
-                        `/user/feedback/${caseData.caseId}`
-                      )
+                      navigate(`/user/feedback/${caseData.caseId}`)
                     }
                     className="
                       inline-flex
@@ -438,9 +577,7 @@ const CaseDetails = () => {
             </div>
           </div>
 
-          {/* ==================================================
-              CASE INFORMATION
-          ================================================== */}
+          {/* CASE INFORMATION */}
 
           <div
             className="
@@ -570,36 +707,7 @@ const CaseDetails = () => {
             </div>
           </div>
 
-          {/* ==================================================
-              FAKE REPORT FINE & APPEAL
-              SHOW ONLY WHEN ADMIN MARKS THE CASE AS FAKE
-          ================================================== */}
-
-          {caseData.isFakeReport === true && (
-            <div className="mb-6">
-              <FakeReportFine
-                caseItem={caseData}
-                onUpdate={async () => {
-                  try {
-                    const response = await axiosInstance.get(
-                      `/cases/${id}`
-                    );
-
-                    setCaseData(response.data.case);
-                  } catch (error) {
-                    toast.error(
-                      error.response?.data?.message ||
-                        "Failed to refresh case details"
-                    );
-                  }
-                }}
-              />
-            </div>
-          )}
-
-          {/* ==================================================
-              MAP
-          ================================================== */}
+          {/* MAP */}
 
           {caseData.latitude !== null &&
             caseData.latitude !== undefined &&
@@ -654,9 +762,7 @@ const CaseDetails = () => {
               </div>
             )}
 
-          {/* ==================================================
-              STATUS HISTORY
-          ================================================== */}
+          {/* STATUS HISTORY */}
 
           <div
             className="
@@ -716,10 +822,7 @@ const CaseDetails = () => {
               <div className="space-y-5">
                 {history.map((item, index) => (
                   <div
-                    key={
-                      item._id ||
-                      `${item.status}-${index}`
-                    }
+                    key={item._id || `${item.status}-${index}`}
                     className="flex gap-4"
                   >
                     {/* TIMELINE ICON */}
@@ -762,6 +865,250 @@ const CaseDetails = () => {
               </div>
             )}
           </div>
+
+          {/* APPEAL DIALOG */}
+
+          {appealDialogOpen && caseData.isFakeReport === true && (
+            <div
+              className="
+                fixed
+                inset-0
+                z-[99999]
+                flex
+                items-center
+                justify-center
+                bg-black/60
+                p-4
+                backdrop-blur-sm
+              "
+              onClick={(event) => {
+                if (event.target === event.currentTarget) {
+                  closeAppealDialog();
+                }
+              }}
+            >
+              <div
+                ref={dialogRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="appeal-dialog-title"
+                tabIndex={-1}
+                className="
+                  relative
+                  flex
+                  max-h-[85dvh]
+                  w-full
+                  max-w-xl
+                  flex-col
+                  overflow-hidden
+                  rounded-2xl
+                  border
+                  border-border
+                  bg-card
+                  shadow-2xl
+                  outline-none
+                "
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div
+                  className="
+                    flex
+                    shrink-0
+                    items-start
+                    justify-between
+                    gap-4
+                    border-b
+                    border-border
+                    p-5
+                    sm:p-6
+                  "
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Gavel
+                        size={21}
+                        className="text-[#B94A48] dark:text-[#D76562]"
+                      />
+
+                      <h2
+                        id="appeal-dialog-title"
+                        className="text-xl font-semibold text-foreground"
+                      >
+                        Submit Appeal
+                      </h2>
+                    </div>
+
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Case ID: {caseData.caseId}
+                    </p>
+
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Explain why you believe this report was incorrectly
+                      marked as fake.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={closeAppealDialog}
+                    aria-label="Close appeal dialog"
+                    className="
+                      shrink-0
+                      rounded-lg
+                      p-2
+                      text-muted-foreground
+                      transition-colors
+                      hover:bg-muted
+                      hover:text-foreground
+                    "
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <div
+                  className="
+                    min-h-0
+                    flex-1
+                    overflow-y-auto
+                    overscroll-contain
+                    p-5
+                    sm:p-6
+                  "
+                >
+                  <FakeReportFine
+                    caseItem={caseData}
+                    onUpdate={async () => {
+                      await refreshCaseDetails();
+                      closeAppealDialog();
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* PAYMENT DIALOG */}
+
+          {paymentDialogOpen && canShowPayment && (
+            <div
+              className="
+                fixed
+                inset-0
+                z-[99999]
+                flex
+                items-center
+                justify-center
+                bg-black/60
+                p-4
+                backdrop-blur-sm
+              "
+              onClick={(event) => {
+                if (event.target === event.currentTarget) {
+                  closePaymentDialog();
+                }
+              }}
+            >
+              <div
+                ref={dialogRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="payment-dialog-title"
+                tabIndex={-1}
+                className="
+                  relative
+                  flex
+                  max-h-[85dvh]
+                  w-full
+                  max-w-xl
+                  flex-col
+                  overflow-hidden
+                  rounded-2xl
+                  border
+                  border-border
+                  bg-card
+                  shadow-2xl
+                  outline-none
+                "
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div
+                  className="
+                    flex
+                    shrink-0
+                    items-start
+                    justify-between
+                    gap-4
+                    border-b
+                    border-border
+                    p-5
+                    sm:p-6
+                  "
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <CreditCard
+                        size={21}
+                        className="text-[#B94A48] dark:text-[#D76562]"
+                      />
+
+                      <h2
+                        id="payment-dialog-title"
+                        className="text-xl font-semibold text-foreground"
+                      >
+                        Fine Payment
+                      </h2>
+                    </div>
+
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Case ID: {caseData.caseId}
+                    </p>
+
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Your appeal was rejected. Review the fine and payment
+                      options below.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={closePaymentDialog}
+                    aria-label="Close payment dialog"
+                    className="
+                      shrink-0
+                      rounded-lg
+                      p-2
+                      text-muted-foreground
+                      transition-colors
+                      hover:bg-muted
+                      hover:text-foreground
+                    "
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <div
+                  className="
+                    min-h-0
+                    flex-1
+                    overflow-y-auto
+                    overscroll-contain
+                    p-5
+                    sm:p-6
+                  "
+                >
+                  <FakeReportFine
+                    caseItem={caseData}
+                    onUpdate={async () => {
+                      await refreshCaseDetails();
+                      closePaymentDialog();
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>

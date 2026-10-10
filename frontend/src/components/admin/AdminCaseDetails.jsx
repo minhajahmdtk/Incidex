@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
@@ -14,6 +15,10 @@ import {
   Scale,
   Send,
   Clock,
+  X,
+  IndianRupee,
+  ShieldCheck,
+  CreditCard,
 } from "lucide-react";
 import axiosInstance from "../../axiosInterceptor";
 import { toast } from "sonner";
@@ -34,11 +39,14 @@ const AdminCaseDetails = () => {
   const [updating, setUpdating] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
-  // Fake-report fine and appeal state
+  // Fine dialog state
+  const [fineDialogOpen, setFineDialogOpen] = useState(false);
   const [fakeReportReason, setFakeReportReason] = useState("");
   const [fineAmount, setFineAmount] = useState("");
   const [fineUpdating, setFineUpdating] = useState(false);
 
+  // Appeal dialog state
+  const [appealDialogOpen, setAppealDialogOpen] = useState(false);
   const [appealDecision, setAppealDecision] = useState("");
   const [appealUpdating, setAppealUpdating] = useState(false);
 
@@ -46,7 +54,6 @@ const AdminCaseDetails = () => {
   const refreshCaseDetails = async () => {
     const response = await axiosInstance.get(`/admin/cases/${id}`);
     const data = response.data.case || response.data;
-
     setCaseData(data);
     return data;
   };
@@ -257,7 +264,6 @@ const AdminCaseDetails = () => {
     try {
       setFineUpdating(true);
 
-      // Corrected URL to match caseRouter.js
       const response = await axiosInstance.patch(
         `/cases/admin/fake-report/${id}`,
         {
@@ -272,6 +278,8 @@ const AdminCaseDetails = () => {
 
       await refreshCaseDetails();
 
+      // Close the dialog only after recording and refreshing
+      setFineDialogOpen(false);
       setFakeReportReason("");
       setFineAmount("");
     } catch (error) {
@@ -296,7 +304,6 @@ const AdminCaseDetails = () => {
     try {
       setAppealUpdating(true);
 
-      // Corrected URL to match caseRouter.js
       const response = await axiosInstance.patch(
         `/cases/admin/review-appeal/${id}`,
         {
@@ -310,6 +317,8 @@ const AdminCaseDetails = () => {
       );
 
       await refreshCaseDetails();
+
+      setAppealDialogOpen(false);
       setAppealDecision("");
     } catch (error) {
       toast.error(
@@ -342,9 +351,9 @@ const AdminCaseDetails = () => {
 
   const getFineBadgeClass = (status) => {
     if (
+      status === "Paid" ||
       status === "Approved" ||
-      status === "Cancelled" ||
-      status === "Appealed"
+      status === "Cancelled"
     ) {
       return "border-[#7FAF8A]/40 bg-[#7FAF8A]/15 text-[#5F8D6A] dark:text-[#9BC7A4]";
     }
@@ -352,12 +361,29 @@ const AdminCaseDetails = () => {
     if (
       status === "Pending" ||
       status === "Rejected" ||
-      status === "Upheld"
+      status === "Upheld" ||
+      status === "Appealed"
     ) {
       return "border-[#B94A48]/30 bg-[#B94A48]/10 text-[#B94A48] dark:border-[#D76562]/30 dark:bg-[#D76562]/10 dark:text-[#D76562]";
     }
 
     return "border-border bg-muted text-muted-foreground";
+  };
+
+  const formatDate = (date) => {
+    if (!date) return "N/A";
+
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) return "N/A";
+
+    return parsedDate.toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   if (loading) {
@@ -402,6 +428,21 @@ const AdminCaseDetails = () => {
   const canResolve =
     caseData.currentStatus === "In Progress";
 
+  const hasFine = Boolean(caseData.isFakeReport);
+
+  const fineStatus = caseData.fineStatus || "Pending";
+
+  const canReviewAppeal =
+    hasFine && caseData.appealStatus === "Pending";
+
+  const canRecordFine =
+  !hasFine && caseData.currentStatus !== "Resolved";
+
+  const canPayFine =
+    hasFine &&
+    caseData.fineStatus === "Upheld" &&
+    caseData.appealStatus === "Rejected";
+
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
@@ -432,13 +473,26 @@ const AdminCaseDetails = () => {
               </div>
             </div>
 
-            <span
-              className={`inline-flex w-fit rounded-full px-4 py-2 text-sm font-medium ${getStatusClass(
-                caseData.currentStatus
-              )}`}
-            >
-              {caseData.currentStatus}
-            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span
+                className={`inline-flex w-fit rounded-full px-4 py-2 text-sm font-medium ${getStatusClass(
+                  caseData.currentStatus
+                )}`}
+              >
+                {caseData.currentStatus}
+              </span>
+
+              {canRecordFine && (
+                <button
+                  type="button"
+                  onClick={() => setFineDialogOpen(true)}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#B94A48] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#A33F3D] dark:bg-[#D76562] dark:hover:bg-[#C55451]"
+                >
+                  <AlertTriangle size={17} />
+                  Record Fine
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -526,7 +580,7 @@ const AdminCaseDetails = () => {
                 Crime Category
               </p>
               <p className="font-medium text-foreground">
-                {caseData.crimeCategory}
+                {caseData.crimeCategory || "N/A"}
               </p>
             </div>
 
@@ -535,17 +589,9 @@ const AdminCaseDetails = () => {
                 Report Date & Time
               </p>
               <p className="text-foreground">
-                {(caseData.createdAt || caseData.reportDateTime)
-                  ? new Date(
-                      caseData.createdAt || caseData.reportDateTime
-                    ).toLocaleString("en-IN", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
-                  : "N/A"}
+                {formatDate(
+                  caseData.createdAt || caseData.reportDateTime
+                )}
               </p>
             </div>
 
@@ -554,7 +600,9 @@ const AdminCaseDetails = () => {
                 Incident Description
               </p>
               <p className="leading-6 text-foreground">
-                {caseData.description || caseData.incidentDescription || "N/A"}
+                {caseData.description ||
+                  caseData.incidentDescription ||
+                  "N/A"}
               </p>
             </div>
 
@@ -570,7 +618,9 @@ const AdminCaseDetails = () => {
               </div>
 
               <p className="text-foreground">
-                {caseData.location || caseData.incidentLocation || "N/A"}
+                {caseData.location ||
+                  caseData.incidentLocation ||
+                  "N/A"}
               </p>
             </div>
 
@@ -766,39 +816,226 @@ const AdminCaseDetails = () => {
           </section>
         )}
 
-        {/* 6. FAKE REPORT FINE & APPEAL - ALWAYS AT THE END */}
-        <section className="mt-6 rounded-2xl border border-border bg-card transition-colors duration-300">
-          <div className="border-b border-border px-6 py-5">
-            <div className="flex items-center gap-3">
-              <div className="rounded-xl bg-[#B94A48]/10 p-3 text-[#B94A48] dark:bg-[#D76562]/10 dark:text-[#D76562]">
-                <AlertTriangle size={22} />
+        {/* 6. SAVED FINE & APPEAL DETAILS */}
+        {hasFine && (
+          <section className="mt-6 rounded-2xl border border-border bg-card transition-colors duration-300">
+            <div className="flex flex-col gap-4 border-b border-border px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl bg-[#B94A48]/10 p-3 text-[#B94A48] dark:bg-[#D76562]/10 dark:text-[#D76562]">
+                  <AlertTriangle size={22} />
+                </div>
+
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground">
+                    Fake Report Fine & Appeal
+                  </h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Recorded fine, payment, and appeal information.
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  Fake Report Fine & Appeal
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Record a decision and review submitted appeals.
+              {canReviewAppeal && (
+                <button
+                  type="button"
+                  onClick={() => setAppealDialogOpen(true)}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#7FAF8A] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#6F9D79]"
+                >
+                  <Scale size={17} />
+                  Review Appeal
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 gap-5 p-6 md:grid-cols-2">
+              <div className="rounded-xl border border-border bg-background p-5">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <IndianRupee size={17} />
+                  Fine Amount
+                </div>
+
+                <p className="mt-2 text-3xl font-bold text-foreground">
+                  ₹
+                  {Number(caseData.fineAmount || 0).toLocaleString(
+                    "en-IN"
+                  )}
+                </p>
+
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Recorded amount
                 </p>
               </div>
-            </div>
-          </div>
 
-          <div className="space-y-6 p-6">
-            {!caseData.isFakeReport ? (
+              <div className="rounded-xl border border-border bg-background p-5">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  {caseData.fineStatus === "Paid" ? (
+                    <ShieldCheck size={17} />
+                  ) : (
+                    <Clock size={17} />
+                  )}
+                  Fine Payment Status
+                </div>
+
+                <span
+                  className={`mt-3 inline-flex rounded-full border px-3 py-1.5 text-sm font-semibold ${getFineBadgeClass(
+                    fineStatus
+                  )}`}
+                >
+                  {fineStatus}
+                </span>
+
+                {caseData.fineStatus === "Paid" && (
+                  <p className="mt-2 text-xs text-[#5F8D6A] dark:text-[#9BC7A4]">
+                    Payment verified successfully.
+                  </p>
+                )}
+              </div>
+
+              <div className="md:col-span-2">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Administrator's Reason
+                </p>
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">
+                  {caseData.fakeReportReason || "No reason provided."}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-border p-4">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Appeal Status
+                </p>
+
+                <span
+                  className={`mt-2 inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${getFineBadgeClass(
+                    caseData.appealStatus || "Not Appealed"
+                  )}`}
+                >
+                  {caseData.appealStatus || "Not Appealed"}
+                </span>
+
+                <p className="mt-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  User's Appeal Reason
+                </p>
+
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">
+                  {caseData.appealReason || "No appeal submitted yet."}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-border p-4">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Payment Details
+                </p>
+
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Paid At
+                </p>
+                <p className="mt-1 text-sm text-foreground">
+                  {caseData.fineStatus === "Paid"
+                    ? formatDate(caseData.finePaidAt)
+                    : "Not paid"}
+                </p>
+
+                <p className="mt-4 text-sm text-muted-foreground">
+                  Razorpay Payment ID
+                </p>
+                <p className="mt-1 break-all text-sm text-foreground">
+                  {caseData.fineStatus === "Paid"
+                    ? caseData.razorpayPaymentId || "Not available"
+                    : "Not available"}
+                </p>
+              </div>
+
+              {caseData.appealStatus === "Approved" && (
+                <div className="md:col-span-2 rounded-xl border border-[#7FAF8A]/30 bg-[#7FAF8A]/10 p-4">
+                  <p className="flex items-center gap-2 text-sm font-medium text-foreground">
+                    <CheckCircle size={18} />
+                    Appeal approved. The fine should be cancelled.
+                  </p>
+                </div>
+              )}
+
+              {caseData.appealStatus === "Rejected" && (
+                <div className="md:col-span-2 rounded-xl border border-[#B94A48]/30 bg-[#B94A48]/5 p-4 dark:bg-[#D76562]/10">
+                  <p className="text-sm font-medium text-foreground">
+                    Appeal rejected. The fine remains subject to the
+                    backend's upheld status and payment rules.
+                  </p>
+                </div>
+              )}
+
+              {canPayFine && (
+                <div className="md:col-span-2 rounded-xl border border-border bg-background p-4">
+                  <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <CreditCard size={17} />
+                    The fine is upheld following the appeal decision.
+                    Payment must be completed through your existing
+                    user-side Razorpay payment flow.
+                  </p>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* RECORD FINE DIALOG */}
+        {fineDialogOpen && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4 backdrop-blur-sm"
+            onMouseDown={(event) => {
+              if (
+                event.target === event.currentTarget &&
+                !fineUpdating
+              ) {
+                setFineDialogOpen(false);
+              }
+            }}
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="fine-dialog-title"
+              className="my-auto max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-border bg-card shadow-2xl"
+            >
+              <div className="flex items-start justify-between border-b border-border px-6 py-5">
+                <div className="flex items-start gap-3">
+                  <div className="rounded-xl bg-[#B94A48]/10 p-3 text-[#B94A48] dark:bg-[#D76562]/10 dark:text-[#D76562]">
+                    <AlertTriangle size={22} />
+                  </div>
+
+                  <div>
+                    <h2
+                      id="fine-dialog-title"
+                      className="text-lg font-semibold text-foreground"
+                    >
+                      Record Fake Report Fine
+                    </h2>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Case ID: {caseData.caseId}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  aria-label="Close fine dialog"
+                  disabled={fineUpdating}
+                  onClick={() => setFineDialogOpen(false)}
+                  className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
               <form
                 onSubmit={markReportAsFake}
-                className="space-y-4"
+                className="space-y-5 p-6"
               >
-                <div>
-                  <h3 className="font-semibold text-foreground">
-                    Record a fake-report decision
-                  </h3>
-                  <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                    Review the available information before making
-                    a decision. An unverified report alone does not
-                    establish that a report was deliberately false.
+                <div className="rounded-xl border border-[#B94A48]/20 bg-[#B94A48]/5 p-4 dark:bg-[#D76562]/10">
+                  <p className="text-sm leading-6 text-foreground">
+                    Carefully review the evidence and circumstances
+                    before recording a decision. An unverified report
+                    alone does not establish deliberate falsification.
                   </p>
                 </div>
 
@@ -809,19 +1046,24 @@ const AdminCaseDetails = () => {
                   >
                     Reason for the decision
                   </label>
+
                   <textarea
                     id="fakeReportReason"
                     value={fakeReportReason}
                     onChange={(event) =>
                       setFakeReportReason(event.target.value)
                     }
-                    rows={4}
+                    rows={5}
                     minLength={10}
                     maxLength={1000}
                     required
                     placeholder="Explain the grounds for determining that the report was deliberately false..."
                     className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-[#B94A48] focus:ring-1 focus:ring-[#B94A48] dark:focus:border-[#D76562] dark:focus:ring-[#D76562]"
                   />
+
+                  <p className="mt-1 text-right text-xs text-muted-foreground">
+                    {fakeReportReason.length}/1000
+                  </p>
                 </div>
 
                 <div>
@@ -829,8 +1071,9 @@ const AdminCaseDetails = () => {
                     htmlFor="fineAmount"
                     className="mb-2 block text-sm font-medium text-foreground"
                   >
-                    Fine amount (₹)
+                    Fine Amount (₹)
                   </label>
+
                   <input
                     id="fineAmount"
                     type="number"
@@ -846,170 +1089,163 @@ const AdminCaseDetails = () => {
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={fineUpdating}
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#B94A48] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#A33F3D] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#D76562] dark:hover:bg-[#C55451]"
-                >
-                  <AlertTriangle size={17} />
-                  {fineUpdating ? "Saving..." : "Record Fine"}
-                </button>
-              </form>
-            ) : (
-              <div className="rounded-xl border border-[#B94A48]/25 bg-[#B94A48]/5 p-4 dark:bg-[#D76562]/10">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle
-                    size={21}
-                    className="mt-0.5 shrink-0 text-[#B94A48] dark:text-[#D76562]"
-                  />
+                <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-end">
+                  <button
+                    type="button"
+                    disabled={fineUpdating}
+                    onClick={() => setFineDialogOpen(false)}
+                    className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
 
-                  <div className="min-w-0">
-                    <h3 className="font-semibold text-foreground">
-                      Fine recorded
-                    </h3>
-
-                    <p className="mt-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                      Fine amount
-                    </p>
-                    <p className="mt-1 text-2xl font-bold text-foreground">
-                      ₹
-                      {Number(
-                        caseData.fineAmount || 0
-                      ).toLocaleString("en-IN")}
-                    </p>
-
-                    <p className="mt-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                      Fine status
-                    </p>
-                    <span
-                      className={`mt-2 inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${getFineBadgeClass(
-                        caseData.fineStatus
-                      )}`}
-                    >
-                      {caseData.fineStatus || "None"}
-                    </span>
-
-                    <p className="mt-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                      Administrator's reason
-                    </p>
-                    <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">
-                      {caseData.fakeReportReason ||
-                        "No reason provided."}
-                    </p>
-                  </div>
+                  <button
+                    type="submit"
+                    disabled={fineUpdating}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#B94A48] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#A33F3D] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#D76562] dark:hover:bg-[#C55451]"
+                  >
+                    <AlertTriangle size={17} />
+                    {fineUpdating ? "Recording..." : "Record Fine"}
+                  </button>
                 </div>
-              </div>
-            )}
+              </form>
+            </div>
+          </div>
+        )}
 
-            {/* USER APPEAL DETAILS */}
-            {caseData.isFakeReport && (
-              <div className="border-t border-border pt-6">
-                <div className="flex items-center gap-3">
+        {/* APPEAL REVIEW DIALOG */}
+        {appealDialogOpen && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4 backdrop-blur-sm"
+            onMouseDown={(event) => {
+              if (
+                event.target === event.currentTarget &&
+                !appealUpdating
+              ) {
+                setAppealDialogOpen(false);
+              }
+            }}
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="appeal-dialog-title"
+              className="my-auto max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-border bg-card shadow-2xl"
+            >
+              <div className="flex items-start justify-between border-b border-border px-6 py-5">
+                <div className="flex items-start gap-3">
                   <div className="rounded-xl bg-[#7FAF8A]/15 p-3 text-[#5F8D6A] dark:text-[#9BC7A4]">
                     <Scale size={22} />
                   </div>
 
                   <div>
-                    <h3 className="font-semibold text-foreground">
-                      User Appeal
-                    </h3>
+                    <h2
+                      id="appeal-dialog-title"
+                      className="text-lg font-semibold text-foreground"
+                    >
+                      Review User Appeal
+                    </h2>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Review the user's explanation and decide
-                      whether to uphold or cancel the fine.
+                      Case ID: {caseData.caseId}
                     </p>
                   </div>
                 </div>
 
-                <div className="mt-5 rounded-xl border border-border bg-background p-4">
-                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Appeal status
-                  </p>
-                  <span
-                    className={`mt-2 inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${getFineBadgeClass(
-                      caseData.appealStatus
-                    )}`}
-                  >
-                    {caseData.appealStatus || "Not Appealed"}
-                  </span>
+                <button
+                  type="button"
+                  aria-label="Close appeal dialog"
+                  disabled={appealUpdating}
+                  onClick={() => setAppealDialogOpen(false)}
+                  className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
+                >
+                  <X size={20} />
+                </button>
+              </div>
 
-                  <p className="mt-5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    User's appeal reason
+              <form
+                onSubmit={reviewAppeal}
+                className="space-y-5 p-6"
+              >
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Administrator's Reason
                   </p>
                   <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">
-                    {caseData.appealReason ||
-                      "No appeal submitted yet."}
+                    {caseData.fakeReportReason || "No reason provided."}
                   </p>
                 </div>
 
-                {caseData.appealStatus === "Pending" && (
-                  <form
-                    onSubmit={reviewAppeal}
-                    className="mt-5 space-y-4"
+                <div className="rounded-xl border border-border bg-background p-4">
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    User's Appeal Reason
+                  </p>
+                  <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">
+                    {caseData.appealReason || "No appeal reason provided."}
+                  </p>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="appealDecision"
+                    className="mb-2 block text-sm font-medium text-foreground"
                   >
-                    <div>
-                      <label
-                        htmlFor="appealDecision"
-                        className="mb-2 block text-sm font-medium text-foreground"
-                      >
-                        Appeal decision
-                      </label>
+                    Appeal Decision
+                  </label>
 
-                      <select
-                        id="appealDecision"
-                        value={appealDecision}
-                        onChange={(event) =>
-                          setAppealDecision(event.target.value)
-                        }
-                        required
-                        className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-[#B94A48] focus:ring-1 focus:ring-[#B94A48] dark:focus:border-[#D76562] dark:focus:ring-[#D76562]"
-                      >
-                        <option value="">Select decision</option>
-                        <option value="Approved">
-                          Approve appeal — cancel fine
-                        </option>
-                        <option value="Rejected">
-                          Reject appeal — uphold fine
-                        </option>
-                      </select>
-                    </div>
+                  <select
+                    id="appealDecision"
+                    value={appealDecision}
+                    onChange={(event) =>
+                      setAppealDecision(event.target.value)
+                    }
+                    required
+                    className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-[#B94A48] focus:ring-1 focus:ring-[#B94A48] dark:focus:border-[#D76562] dark:focus:ring-[#D76562]"
+                  >
+                    <option value="">Select decision</option>
+                    <option value="Approved">
+                      Approve Appeal — Cancel Fine
+                    </option>
+                    <option value="Rejected">
+                      Reject Appeal — Uphold Fine
+                    </option>
+                  </select>
 
-                    <button
-                      type="submit"
-                      disabled={appealUpdating}
-                      className="inline-flex items-center gap-2 rounded-lg bg-[#7FAF8A] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#6F9D79] disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      {appealUpdating ? (
-                        <Clock size={17} />
-                      ) : (
-                        <Send size={17} />
-                      )}
-                      {appealUpdating
-                        ? "Submitting..."
-                        : "Submit Appeal Decision"}
-                    </button>
-                  </form>
-                )}
+                  <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                    Approving an appeal should cancel the fine.
+                    Rejecting an appeal should uphold it, according
+                    to your backend workflow.
+                  </p>
+                </div>
 
-                {caseData.appealStatus === "Approved" && (
-                  <div className="mt-5 rounded-xl border border-[#7FAF8A]/30 bg-[#7FAF8A]/10 p-4">
-                    <p className="flex items-center gap-2 text-sm font-medium text-foreground">
-                      <CheckCircle size={18} />
-                      Appeal approved. The fine should be cancelled.
-                    </p>
-                  </div>
-                )}
+                <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-end">
+                  <button
+                    type="button"
+                    disabled={appealUpdating}
+                    onClick={() => setAppealDialogOpen(false)}
+                    className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
 
-                {caseData.appealStatus === "Rejected" && (
-                  <div className="mt-5 rounded-xl border border-[#B94A48]/30 bg-[#B94A48]/5 p-4 dark:bg-[#D76562]/10">
-                    <p className="text-sm font-medium text-foreground">
-                      Appeal rejected. The fine remains upheld.
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
+                  <button
+                    type="submit"
+                    disabled={appealUpdating}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#7FAF8A] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#6F9D79] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {appealUpdating ? (
+                      <Clock size={17} />
+                    ) : (
+                      <Send size={17} />
+                    )}
+                    {appealUpdating
+                      ? "Submitting..."
+                      : "Submit Decision"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </section>
+        )}
       </main>
     </div>
   );
