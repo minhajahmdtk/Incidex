@@ -136,7 +136,7 @@ const MyCases = () => {
       item.caseId?.toLowerCase().includes(searchText) ||
       item.crimeCategory?.toLowerCase().includes(searchText) ||
       item.currentStatus?.toLowerCase().includes(searchText) ||
-      item.incidentLocation?.toLowerCase().includes(searchText)
+      item.location?.toLowerCase().includes(searchText)
     );
   });
 
@@ -536,7 +536,7 @@ const MyCases = () => {
                             </p>
 
                             <p className="mt-1 text-sm text-foreground">
-                              {formatDate(item.reportDateTime)}
+                              {formatDate(item.createdAt)}
                             </p>
                           </div>
 
@@ -546,7 +546,7 @@ const MyCases = () => {
                             </p>
 
                             <p className="mt-1 truncate text-sm text-muted-foreground">
-                              {item.incidentLocation}
+                              {item.location }
                             </p>
                           </div>
                         </div>

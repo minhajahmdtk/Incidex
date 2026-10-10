@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminNavbar from "./AdminNavbar";
@@ -9,6 +10,8 @@ import {
   Clock,
   CheckCircle,
   ArrowRight,
+  ShieldAlert,
+  IndianRupee,
 } from "lucide-react";
 
 import {
@@ -37,6 +40,8 @@ const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState({
     totalUsers: 0,
     totalCases: 0,
+    totalFakeCases: 0,
+    moneyReceived: 0,
     casesByStatus: {
       new: 0,
       acknowledged: 0,
@@ -62,7 +67,8 @@ const AdminDashboard = () => {
         },
       })
       .then((response) => {
-        setDashboardData({
+        setDashboardData((previousData) => ({
+          ...previousData,
           totalUsers: response.data.totalUsers || 0,
           totalCases: response.data.totalCases || 0,
 
@@ -75,7 +81,7 @@ const AdminDashboard = () => {
             resolved:
               response.data.casesByStatus?.resolved || 0,
           },
-        });
+        }));
 
         setError("");
       })
@@ -136,6 +142,51 @@ const AdminDashboard = () => {
   };
 
   // ==================================================
+  // GET FAKE CASES AND MONEY RECEIVED
+  // ==================================================
+
+  const getFakeAndMoneyData = () => {
+    axios
+      .get("http://localhost:3000/admin/cases", {
+        headers: {
+          token: localStorage.getItem("loginToken"),
+        },
+      })
+      .then((response) => {
+        const cases = Array.isArray(response.data)
+          ? response.data
+          : Array.isArray(response.data.cases)
+            ? response.data.cases
+            : [];
+
+        const totalFakeCases = cases.filter(
+  (crimeCase) => crimeCase.isFakeReport === true
+).length;
+
+        const moneyReceived = cases.reduce((total, crimeCase) => {
+          if (crimeCase.fineStatus === "Paid") {
+            return total + (Number(crimeCase.fineAmount) || 0);
+          }
+
+          return total;
+        }, 0);
+
+        setDashboardData((previousData) => ({
+          ...previousData,
+          totalFakeCases,
+          moneyReceived,
+        }));
+      })
+      .catch((error) => {
+        const message =
+          error.response?.data?.message ||
+          "Failed to load Fake and payment data";
+
+        toast.error(message);
+      });
+  };
+
+  // ==================================================
   // LOAD DATA
   // ==================================================
 
@@ -143,6 +194,7 @@ const AdminDashboard = () => {
     getDashboardData();
     getCategoryData();
     getMonthlyData();
+    getFakeAndMoneyData();
   }, []);
 
   // ==================================================
@@ -285,6 +337,24 @@ const AdminDashboard = () => {
       iconClass:
         "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
     },
+    {
+      title: "Total Fake Cases",
+      value: dashboardData.totalFakeCases,
+      icon: ShieldAlert,
+      iconClass:
+        "bg-rose-500/10 text-rose-600 dark:text-rose-400",
+    },
+    {
+      title: "Money Received",
+      value: `₹${Number(
+        dashboardData.moneyReceived || 0
+      ).toLocaleString("en-IN", {
+        maximumFractionDigits: 2,
+      })}`,
+      icon: IndianRupee,
+      iconClass:
+        "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    },
   ];
 
   // ==================================================
@@ -366,7 +436,7 @@ const AdminDashboard = () => {
         )}
 
         {/* ==================================================
-            SIX STATISTIC CARDS
+            STATISTIC CARDS
             NO SHADOW
         ================================================== */}
 

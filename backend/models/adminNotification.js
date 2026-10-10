@@ -7,16 +7,24 @@ const adminNotificationSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    message: {
-      type: String,
-      required: true,
-      trim: true,
-    },
 
     caseId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CrimeReport",
       required: true,
+    },
+
+    type: {
+      type: String,
+      enum: ["crime_report", "appeal"],
+      default: "crime_report",
+      required: true,
+    },
+
+    message: {
+      type: String,
+      required: true,
+      trim: true,
     },
 
     isRead: {
@@ -26,8 +34,8 @@ const adminNotificationSchema = new mongoose.Schema(
 
     createdDateTime: {
       type: Date,
-      required: true,
       default: Date.now,
+      required: true,
     },
   },
   {
@@ -35,4 +43,7 @@ const adminNotificationSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("AdminNotification",adminNotificationSchema);
+module.exports = mongoose.model(
+  "AdminNotification",
+  adminNotificationSchema
+);

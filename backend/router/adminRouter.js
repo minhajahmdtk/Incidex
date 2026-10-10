@@ -1,16 +1,17 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const User = require('../models/user');
-const CrimeReport = require('../models/crimeReport');
-const StatusHistory = require('../models/statusHistory');
-const UserNotification = require('../models/userNotification');
-const Feedback = require('../models/userFeedback');
-const PDFDocument = require('pdfkit');
+const express = require("express");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
+const CrimeReport = require("../models/crimeReport");
+const StatusHistory = require("../models/statusHistory");
+const UserNotification = require("../models/userNotification");
+const AdminNotification = require("../models/adminNotification");
+const Feedback = require("../models/userFeedback");
+const PDFDocument = require("pdfkit");
 const transporter = require("../config/email");
 
 const router = express.Router();
 
-//VERIFY ADMIN TOKEN
+// VERIFY ADMIN TOKEN
 
 function verifyAdmin(req, res, next) {
   const token = req.headers.token;
@@ -18,646 +19,567 @@ function verifyAdmin(req, res, next) {
   try {
     if (!token) {
       return res.status(401).json({
-        message: 'Unauthorized request'
+        message: "Unauthorized request",
       });
     }
 
-    const payload = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    );
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
 
     if (payload.role !== "admin") {
-      return res.status(404).json({
-        message: 'Admin access required'
+      return res.status(403).json({
+        message: "Admin access required",
       });
     }
 
     req.admin = payload;
     next();
-
   } catch (error) {
     return res.status(401).json({
-      message: 'Invalid or expired token'
+      message: "Invalid or expired token",
     });
   }
 }
 
+// VIEW ALL USERS
 
-//VIEW ALL USERS
-
-router.get('/users', verifyAdmin, async (req, res) => {
-
+router.get("/users", verifyAdmin, async (req, res) => {
   try {
-
     const users = await User.find()
-      .select('-password')
+      .select("-password")
       .sort({ createdAt: -1 });
 
     return res.status(200).json({
-      users: users
+      users,
     });
-
   } catch (error) {
-
     return res.status(500).json({
-      message: error.message
+      message: error.message,
     });
-
   }
-
 });
 
+// VIEW SINGLE USER
 
-//VIEW SINGLE USER
-
-router.get('/users/:id', verifyAdmin, async (req, res) => {
-
+router.get("/users/:id", verifyAdmin, async (req, res) => {
   try {
-
-    const user = await User.findById(req.params.id)
-      .select("-password");
+    const user = await User.findById(req.params.id).select("-password");
 
     if (!user) {
       return res.status(404).json({
-        message: "User not found"
+        message: "User not found",
       });
     }
 
     return res.status(200).json({
-      user: user
+      user,
     });
-
   } catch (error) {
-
     return res.status(500).json({
-      message: error.message
+      message: error.message,
     });
-
   }
-
 });
 
+// VIEW ALL CRIME CASES
 
-//VIEW ALL CRIME CASES
-
-router.get('/cases', verifyAdmin, async (req, res) => {
-
+router.get("/cases", verifyAdmin, async (req, res) => {
   try {
-
     const cases = await CrimeReport.find()
-      .populate('userId', 'name phone')
+      .populate("userId", "name phone")
       .sort({ reportDateTime: -1 });
 
     return res.status(200).json({
-      cases: cases
+      cases,
     });
-
   } catch (error) {
-
-    return res.status(400).json({
-      message: error.message
+    return res.status(500).json({
+      message: error.message,
     });
-
   }
-
 });
 
+// VIEW SINGLE CASE
 
-//VIEW SINGLE CASE
-
-router.get('/cases/:id', verifyAdmin, async (req, res) => {
-
+router.get("/cases/:id", verifyAdmin, async (req, res) => {
   try {
+    const report = await CrimeReport.findOne({
+      caseId: req.params.id,
+    }).populate("userId", "name email phone");
 
-    const Report = await CrimeReport.findOne({
-      caseId: req.params.id
-    }).populate(
-      'userId',
-      'name email phone'
-    );
-
-    if (!Report) {
-      return res.status(400).json({
-        message: 'Case not found'
+    if (!report) {
+      return res.status(404).json({
+        message: "Case not found",
       });
     }
 
     return res.status(200).json({
-      case: Report
+      case: report,
     });
-
   } catch (error) {
-
     return res.status(500).json({
-      message: error.message
+      message: error.message,
     });
-
   }
-
 });
 
+// UPDATE CASE STATUS
 
-//UPDATE CASE STATUS
-
-router.patch('/cases/status/:id', verifyAdmin, async (req, res) => {
-
+router.patch("/cases/status/:id", verifyAdmin, async (req, res) => {
   try {
-
     const { status } = req.body;
 
-    if (!status || status.trim() === "") {
+    if (typeof status !== "string" || status.trim() === "") {
       return res.status(400).json({
-        message: 'Status is required'
+        message: "Status is required",
       });
     }
 
-    const validStatuses = [
-      'Acknowledged',
-      'In Progress'
-    ];
+    const validStatuses = ["Acknowledged", "In Progress"];
 
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
-        message: 'Invalid status'
+        message: "Invalid status",
       });
     }
 
-    const Report = await CrimeReport.findOne({
-      caseId: req.params.id
+    const report = await CrimeReport.findOne({
+      caseId: req.params.id,
     });
 
-    if (!Report) {
+    if (!report) {
       return res.status(404).json({
-        message: 'Case not found'
+        message: "Case not found",
       });
     }
 
-    const currentStatus = Report.currentStatus;
+    const currentStatus = report.currentStatus;
 
-    if (currentStatus === 'Resolved') {
+    if (currentStatus === "Resolved") {
       return res.status(400).json({
-        message: 'Resolved cases cannot be updated'
+        message: "Resolved cases cannot be updated",
+      });
+    }
+
+    if (currentStatus === "New" && status !== "Acknowledged") {
+      return res.status(400).json({
+        message: "New case can only be changed to Acknowledged",
       });
     }
 
     if (
-      currentStatus === 'New' &&
-      status !== 'Acknowledged'
+      currentStatus === "Acknowledged" &&
+      status !== "In Progress"
     ) {
       return res.status(400).json({
-        message: 'New case can only be changed to Acknowledged'
+        message: "Acknowledged case can only be changed to In Progress",
       });
     }
 
-    if (
-      currentStatus === 'Acknowledged' &&
-      status !== 'In Progress'
-    ) {
-      return res.status(400).json({
-        message: 'Acknowledged case can only be changed to In Progress'
-      });
-    }
+    report.currentStatus = status;
 
-    Report.currentStatus = status;
-
-    await Report.save();
+    await report.save();
 
     await StatusHistory.create({
-      caseId: Report._id,
-      status: status,
-      updatedDateTime: new Date()
+      caseId: report._id,
+      status,
+      updatedDateTime: new Date(),
     });
 
-    //CREATE IN-SITE USER NOTIFICATION
+    // CREATE USER NOTIFICATION
 
     await UserNotification.create({
-      userId: Report.userId,
-      caseId: Report._id,
-      message: `Your case ${Report.caseId} status has been updated to ${status}.`,
+      userId: report.userId,
+      caseId: report._id,
+      message: `Your case ${report.caseId} status has been updated to ${status}.`,
       isRead: false,
-      createdDateTime: new Date()
+      createdDateTime: new Date(),
     });
 
-    //SEND EMAIL NOTIFICATION
+    // SEND EMAIL NOTIFICATION
 
     try {
-
-      const user = await User.findById(Report.userId);
+      const user = await User.findById(report.userId);
 
       if (user && user.email) {
-
         await transporter.sendMail({
           from: `"INCIDEX" <${process.env.EMAIL_USER}>`,
           to: user.email,
-          subject: `INCIDEX Case ${Report.caseId} Status Update`,
+          subject: `INCIDEX Case ${report.caseId} Status Update`,
           text: `Hello ${user.name},
 
-Your INCIDEX case ${Report.caseId} status has been updated.
+Your INCIDEX case ${report.caseId} status has been updated.
 
 Current Status: ${status}
 
 Please log in to INCIDEX to view your case details.
 
 Regards,
-INCIDEX Team`
+INCIDEX Team`,
         });
 
-        console.log(
-          `Email notification sent to ${user.email}`
-        );
-
+        console.log(`Email notification sent to ${user.email}`);
       }
-
     } catch (emailError) {
-
       console.error(
         "Email notification failed:",
         emailError.message
       );
-
     }
 
     return res.status(200).json({
-      message: 'Case status updated successfully',
-      case: Report
+      message: "Case status updated successfully",
+      case: report,
     });
-
   } catch (error) {
-
     return res.status(500).json({
-      message: error.message
+      message: error.message,
     });
-
   }
-
 });
 
+// RESOLVE CASE
 
-//RESOLVE CASE
-
-router.patch('/cases/resolve/:id', verifyAdmin, async (req, res) => {
-
+router.patch("/cases/resolve/:id", verifyAdmin, async (req, res) => {
   try {
-
     const {
       finalDetails,
       actionTaken,
-      resolutionDetails
+      resolutionDetails,
     } = req.body;
 
-    if (!finalDetails || finalDetails.trim() === "") {
+    if (
+      typeof finalDetails !== "string" ||
+      finalDetails.trim() === ""
+    ) {
       return res.status(400).json({
-        message: "Final details are required"
+        message: "Final details are required",
       });
     }
 
-    if (!actionTaken || actionTaken.trim() === "") {
+    if (
+      typeof actionTaken !== "string" ||
+      actionTaken.trim() === ""
+    ) {
       return res.status(400).json({
-        message: "Action taken is required"
+        message: "Action taken is required",
       });
     }
 
-    if (!resolutionDetails || resolutionDetails.trim() === "") {
+    if (
+      typeof resolutionDetails !== "string" ||
+      resolutionDetails.trim() === ""
+    ) {
       return res.status(400).json({
-        message: "Resolution details are required"
+        message: "Resolution details are required",
       });
     }
 
-    const Report = await CrimeReport.findOne({
-      caseId: req.params.id
+    const report = await CrimeReport.findOne({
+      caseId: req.params.id,
     });
 
-    if (!Report) {
+    if (!report) {
       return res.status(404).json({
-        message: "Case not found"
+        message: "Case not found",
       });
     }
 
-    if (Report.currentStatus !== 'In Progress') {
+    if (report.currentStatus !== "In Progress") {
       return res.status(400).json({
-        message: 'Only In Progress cases can be resolved'
+        message: "Only In Progress cases can be resolved",
       });
     }
 
-    Report.currentStatus = 'Resolved';
-    Report.finalDetails = finalDetails.trim();
-    Report.actionTaken = actionTaken.trim();
-    Report.resolutionDetails = resolutionDetails.trim();
+    report.currentStatus = "Resolved";
+    report.finalDetails = finalDetails.trim();
+    report.actionTaken = actionTaken.trim();
+    report.resolutionDetails = resolutionDetails.trim();
 
-    await Report.save();
+    await report.save();
 
     await StatusHistory.create({
-      caseId: Report._id,
+      caseId: report._id,
       status: "Resolved",
-      updatedDateTime: new Date()
+      updatedDateTime: new Date(),
     });
 
-    //CREATE IN-SITE USER NOTIFICATION
+    // CREATE USER NOTIFICATION
 
     await UserNotification.create({
-      userId: Report.userId,
-      caseId: Report._id,
-      message: `Your case ${Report.caseId} has been resolved.`,
+      userId: report.userId,
+      caseId: report._id,
+      message: `Your case ${report.caseId} has been resolved.`,
       isRead: false,
-      createdDateTime: new Date()
+      createdDateTime: new Date(),
     });
 
-    //SEND RESOLUTION EMAIL
+    // SEND RESOLUTION EMAIL
 
     try {
-
-      const user = await User.findById(Report.userId);
+      const user = await User.findById(report.userId);
 
       if (user && user.email) {
-
         await transporter.sendMail({
           from: `"INCIDEX" <${process.env.EMAIL_USER}>`,
           to: user.email,
-          subject: `INCIDEX Case ${Report.caseId} Resolved`,
+          subject: `INCIDEX Case ${report.caseId} Resolved`,
           text: `Hello ${user.name},
 
-Your INCIDEX case ${Report.caseId} has been resolved.
+Your INCIDEX case ${report.caseId} has been resolved.
 
-Case ID: ${Report.caseId}
+Case ID: ${report.caseId}
 Status: Resolved
 
 Final Details:
-${Report.finalDetails}
+${report.finalDetails}
 
 Action Taken:
-${Report.actionTaken}
+${report.actionTaken}
 
 Resolution Details:
-${Report.resolutionDetails}
+${report.resolutionDetails}
 
 Please log in to INCIDEX to view the complete case details.
 
 Regards,
-INCIDEX Team`
+INCIDEX Team`,
         });
 
-        console.log(
-          `Resolution email sent to ${user.email}`
-        );
-
+        console.log(`Resolution email sent to ${user.email}`);
       }
-
     } catch (emailError) {
-
       console.error(
         "Resolution email failed:",
         emailError.message
       );
-
     }
 
     return res.status(200).json({
-      message: 'Case resolved successfully',
-      case: Report
+      message: "Case resolved successfully",
+      case: report,
     });
-
   } catch (error) {
-
     return res.status(500).json({
-      message: error.message
+      message: error.message,
     });
-
   }
-
 });
 
+// DOWNLOAD ADMIN FINAL CASE REPORT AS PDF
 
-//DOWNLOAD FINAL CASE REPORT
-
-router.get('/cases/pdf/:id', verifyAdmin, async (req, res) => {
-
+router.get("/cases/pdf/:id", verifyAdmin, async (req, res) => {
   try {
+    const report = await CrimeReport.findOne({
+      caseId: req.params.id,
+    }).populate("userId", "name email phone");
 
-    const Report = await CrimeReport.findOne({
-      caseId: req.params.id
-    }).populate(
-      'userId',
-      'name email phone'
-    );
-
-    if (!Report) {
+    if (!report) {
       return res.status(404).json({
-        message: 'Case not found'
+        message: "Case not found",
       });
     }
 
-    if (Report.currentStatus !== 'Resolved') {
+    if (report.currentStatus !== "Resolved") {
       return res.status(400).json({
-        message: 'Final report is available only for resolved cases'
+        message: "Final report is available only for resolved cases",
       });
     }
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=${report.caseId}-final-report.pdf`
+    );
 
     const doc = new PDFDocument();
-
-    res.setHeader(
-      'Content-Type',
-      'application/pdf'
-    );
-
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename=${Report.caseId}-final-report.pdf`
-    );
-
     doc.pipe(res);
 
-    // TITLE
-
-    doc
-      .fontSize(20)
-      .text('INCIDEX', {
-        align: 'center'
-      });
-
-    doc.moveDown();
-
-    doc
-      .fontSize(16)
-      .text('Crime Incident Final Report', {
-        align: 'center'
-      });
-
-    doc.moveDown(2);
-
-    // CASE INFORMATION
-
-    doc.fontSize(12);
-
-    doc.text(`Case ID: ${Report.caseId}`);
-
-    doc.text(
-      `Crime Category: ${Report.crimeCategory}`
-    );
-
-    doc.text(
-      `Status: ${Report.currentStatus}`
-    );
-
-    doc.text(
-      `Report Date & Time: ${Report.reportDateTime
-        ? new Date(
-          Report.reportDateTime
-        ).toLocaleString()
-        : 'N/A'
-      }`
-    );
-
-    doc.moveDown();
-
-    // INCIDENT LOCATION
-
-    doc.text('Incident Location:');
-
-    doc.text(
-      Report.incidentLocation || 'N/A'
-    );
-
-    doc.moveDown();
-
-    // INCIDENT DESCRIPTION
-
-    doc.text('Incident Description:');
-
-    doc.moveDown(0.5);
-
-    doc.text(
-      Report.incidentDescription || 'N/A'
-    );
-
-    doc.moveDown();
-
-    // USER INFORMATION
-
-    doc.text('Reporting User:');
-
-    doc.moveDown(0.5);
-
-    doc.text(
-      `Name: ${Report.userId?.name || 'N/A'
-      }`
-    );
-
-    doc.text(
-      `Email: ${Report.userId?.email || 'N/A'
-      }`
-    );
-
-    doc.text(
-      `Phone: ${Report.userId?.phone || 'N/A'
-      }`
-    );
-
-    doc.moveDown();
-
-    // RESOLUTION INFORMATION
-
-    doc.text('Resolution Information:');
-
-    doc.moveDown(0.5);
-
-    doc.text(
-      `Final Details: ${Report.finalDetails || 'N/A'
-      }`
-    );
-
-    doc.moveDown();
-
-    doc.text(
-      `Action Taken: ${Report.actionTaken || 'N/A'
-      }`
-    );
-
-    doc.moveDown();
-
-    doc.text(
-      `Resolution Details: ${Report.resolutionDetails || 'N/A'
-      }`
-    );
-
-    doc.moveDown(2);
-
-    doc.text(
-      `Generated On: ${new Date().toLocaleString()}`
-    );
-
-    doc.end();
-
-  } catch (error) {
-
-    return res.status(500).json({
-      message: error.message
+    doc.fontSize(20).text("INCIDEX", {
+      align: "center",
     });
 
-  }
+    doc.moveDown();
 
+    doc.fontSize(16).text("Crime Incident Final Report", {
+      align: "center",
+    });
+
+    doc.moveDown(2);
+    doc.fontSize(12);
+
+    doc.text(`Case ID: ${report.caseId}`);
+    doc.text(`Crime Category: ${report.crimeCategory}`);
+    doc.text(`Status: ${report.currentStatus}`);
+
+    doc.text(
+      `Report Date & Time: ${
+        report.reportDateTime
+          ? new Date(report.reportDateTime).toLocaleString()
+          : "N/A"
+      }`
+    );
+
+    doc.moveDown();
+    doc.text("Incident Location:");
+    doc.text(report.incidentLocation || "N/A");
+
+    doc.moveDown();
+    doc.text("Incident Description:");
+    doc.moveDown(0.5);
+    doc.text(report.incidentDescription || "N/A");
+
+    doc.moveDown();
+    doc.text("Reporting User:");
+    doc.moveDown(0.5);
+
+    doc.text(`Name: ${report.userId?.name || "N/A"}`);
+    doc.text(`Email: ${report.userId?.email || "N/A"}`);
+    doc.text(`Phone: ${report.userId?.phone || "N/A"}`);
+
+    doc.moveDown();
+    doc.text("Resolution Information:");
+    doc.moveDown(0.5);
+
+    doc.text(`Final Details: ${report.finalDetails || "N/A"}`);
+    doc.moveDown();
+
+    doc.text(`Action Taken: ${report.actionTaken || "N/A"}`);
+    doc.moveDown();
+
+    doc.text(
+      `Resolution Details: ${report.resolutionDetails || "N/A"}`
+    );
+
+    doc.moveDown(2);
+    doc.text(`Generated On: ${new Date().toLocaleString()}`);
+
+    doc.end();
+  } catch (error) {
+    if (!res.headersSent) {
+      return res.status(500).json({
+        message: error.message,
+      });
+    }
+  }
 });
 
+// VIEW ALL USER FEEDBACK
 
-//VIEW ALL USER FEEDBACK
-
-router.get('/feedback', verifyAdmin, async (req, res) => {
-
+router.get("/feedback", verifyAdmin, async (req, res) => {
   try {
-
     const feedback = await Feedback.find()
-      .populate('userId', 'name email phone')
-      .populate('caseId', 'caseId crimeCategory currentStatus')
+      .populate("userId", "name email phone")
+      .populate("caseId", "caseId crimeCategory currentStatus")
       .sort({ submittedDateTime: -1 });
 
     return res.status(200).json({
-      feedback: feedback
+      feedback,
     });
-
   } catch (error) {
-
     return res.status(500).json({
-      message: error.message
+      message: error.message,
     });
-
   }
-
 });
 
+// DELETE USER FEEDBACK
 
-//DELETE USER FEEDBACK
-
-router.delete('/feedback/:id', verifyAdmin, async (req, res) => {
-
+router.delete("/feedback/:id", verifyAdmin, async (req, res) => {
   try {
-
-    const feedback = await Feedback.findById(
-      req.params.id
-    );
+    const feedback = await Feedback.findById(req.params.id);
 
     if (!feedback) {
       return res.status(404).json({
-        message: "Feedback not found"
+        message: "Feedback not found",
       });
     }
 
-    await Feedback.findByIdAndDelete(
-      req.params.id
-    );
+    await Feedback.findByIdAndDelete(req.params.id);
 
     return res.status(200).json({
-      message: "Feedback deleted successfully"
+      message: "Feedback deleted successfully",
     });
-
   } catch (error) {
-
     return res.status(500).json({
-      message: error.message
+      message: error.message,
     });
-
   }
-
 });
 
+// VIEW ALL ADMIN NOTIFICATIONS
+
+router.get("/notifications", verifyAdmin, async (req, res) => {
+  try {
+    const notifications = await AdminNotification.find()
+      .populate("userId", "name email phone")
+      .populate(
+        "caseId",
+        "caseId crimeCategory currentStatus isFakeReport fineStatus appealStatus appealReason"
+      )
+      .sort({ createdDateTime: -1 });
+
+    return res.status(200).json({
+      notifications,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
+// MARK ONE ADMIN NOTIFICATION AS READ
+
+router.patch(
+  "/notifications/read/:id",
+  verifyAdmin,
+  async (req, res) => {
+    try {
+      const notification = await AdminNotification.findByIdAndUpdate(
+        req.params.id,
+        { isRead: true },
+        { new: true, runValidators: true }
+      );
+
+      if (!notification) {
+        return res.status(404).json({
+          message: "Notification not found",
+        });
+      }
+
+      return res.status(200).json({
+        message: "Notification marked as read",
+        notification,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message,
+      });
+    }
+  }
+);
+
+// MARK ALL ADMIN NOTIFICATIONS AS READ
+
+router.patch(
+  "/notifications/read-all",
+  verifyAdmin,
+  async (req, res) => {
+    try {
+      await AdminNotification.updateMany(
+        { isRead: false },
+        { $set: { isRead: true } }
+      );
+
+      return res.status(200).json({
+        message: "All notifications marked as read",
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message,
+      });
+    }
+  }
+);
 
 module.exports = router;

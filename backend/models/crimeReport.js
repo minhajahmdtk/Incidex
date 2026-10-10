@@ -28,14 +28,18 @@ const crimeReportSchema = new mongoose.Schema(
         "Accident",
         "Other",
       ],
+      trim: true,
     },
 
-    incidentDescription: {
+    description: {
       type: String,
       required: true,
+      minlength: 5,
+      maxlength: 500,
+      trim: true,
     },
 
-    incidentLocation: {
+    location: {
       type: String,
       required: true,
       trim: true,
@@ -43,52 +47,107 @@ const crimeReportSchema = new mongoose.Schema(
 
     latitude: {
       type: Number,
-      min: -90,
-      max: 90,
+      default: null,
     },
 
     longitude: {
       type: Number,
-      min: -180,
-      max: 180,
-    },
-
-    reportDateTime: {
-      type: Date,
-      required: true,
-      default: Date.now,
+      default: null,
     },
 
     currentStatus: {
       type: String,
-      required: true,
-      enum: [
-        "New",
-        "Acknowledged",
-        "In Progress",
-        "Resolved",
-      ],
+      enum: ["New", "Acknowledged", "In Progress", "Resolved"],
       default: "New",
+      required: true,
     },
 
+    // Resolution details
     finalDetails: {
       type: String,
       default: "",
+      trim: true,
     },
 
     actionTaken: {
       type: String,
       default: "",
+      trim: true,
     },
 
     resolutionDetails: {
       type: String,
       default: "",
+      trim: true,
     },
 
-    feedbackSubmitted: {
+    // Fake-report and fine details
+    isFakeReport: {
       type: Boolean,
       default: false,
+    },
+
+    fakeReportReason: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    fineAmount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    fineStatus: {
+      type: String,
+      enum: [
+        "Pending",
+        "Appealed",
+        "Upheld",
+        "Paid",
+        "Cancelled",
+      ],
+      default: "Pending",
+    },
+
+    // Appeal details
+    appealReason: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    appealStatus: {
+      type: String,
+      enum: [
+        "Not Appealed",
+        "Pending",
+        "Approved",
+        "Rejected",
+      ],
+      default: "Not Appealed",
+    },
+
+    appealReviewedAt: {
+      type: Date,
+      default: null,
+    },
+
+    // Razorpay payment tracking
+    razorpayOrderId: {
+      type: String,
+      default: null,
+    },
+
+    razorpayPaymentId: {
+      type: String,
+      default: null,
+    },
+
+    finePaidAt: {
+      type: Date,
+      default: null,
     },
   },
   {

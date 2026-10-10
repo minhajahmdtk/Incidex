@@ -592,7 +592,7 @@ const Dashboard = () => {
 
                         <td className="max-w-xs px-5 py-4">
                           <span className="block truncate text-sm text-muted-foreground">
-                            {item.incidentLocation}
+                            {item.location}
                           </span>
                         </td>
 

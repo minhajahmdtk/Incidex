@@ -198,9 +198,6 @@ const Login = () => {
             Login to your INCIDEX account.
           </p>
 
-          <p className="mt-1 text-xs text-muted-foreground">
-            Users and administrators can log in here.
-          </p>
         </div>
 
         {/* LOGIN FORM */}

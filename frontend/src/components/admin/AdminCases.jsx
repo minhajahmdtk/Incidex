@@ -6,6 +6,9 @@ import {
   Eye,
   Search,
   X,
+  ShieldAlert,
+  CircleCheck,
+  Clock,
 } from "lucide-react";
 import axiosInstance from "../../axiosInterceptor";
 import { toast } from "sonner";
@@ -34,7 +37,6 @@ const AdminCases = () => {
           localStorage.removeItem("userInfo");
 
           toast.error("Session expired. Please login again.");
-
           navigate("/admin/login");
           return;
         }
@@ -75,25 +77,19 @@ const AdminCases = () => {
       !search ||
       item.caseId?.toLowerCase().includes(search) ||
       item.crimeCategory?.toLowerCase().includes(search) ||
-      item.incidentLocation?.toLowerCase().includes(search) ||
+      item.location?.toLowerCase().includes(search) ||
       item.currentStatus?.toLowerCase().includes(search) ||
       item.userId?.name?.toLowerCase().includes(search) ||
       item.userId?.email?.toLowerCase().includes(search) ||
       item.userId?.phone?.toLowerCase().includes(search);
 
     const matchesCategory =
-      !searchCategory ||
-      item.crimeCategory === searchCategory;
+      !searchCategory || item.crimeCategory === searchCategory;
 
     const matchesStatus =
-      !searchStatus ||
-      item.currentStatus === searchStatus;
+      !searchStatus || item.currentStatus === searchStatus;
 
-    return (
-      matchesSearch &&
-      matchesCategory &&
-      matchesStatus
-    );
+    return matchesSearch && matchesCategory && matchesStatus;
   });
 
   const clearSearch = () => {
@@ -105,64 +101,24 @@ const AdminCases = () => {
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-
         {/* HEADER */}
         <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-
           <div>
             <Link
               to="/admin/dashboard"
-              className="
-                mb-4
-                inline-flex
-                items-center
-                gap-2
-                text-sm
-                font-medium
-                text-muted-foreground
-                transition-colors
-                duration-200
-                hover:text-[#B94A48]
-              "
+              className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-[#B94A48]"
             >
               <ArrowLeft size={17} />
               Back to Dashboard
             </Link>
 
             <div className="flex items-center gap-3">
-
-              {/* HEADER ICON */}
-              <div
-                className="
-                  flex
-                  h-12
-                  w-12
-                  items-center
-                  justify-center
-                  rounded-xl
-                  bg-[#B94A48]/10
-                  text-[#B94A48]
-                  dark:bg-[#D76562]/10
-                  dark:text-[#D76562]
-                "
-              >
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#B94A48]/10 text-[#B94A48] dark:bg-[#D76562]/10 dark:text-[#D76562]">
                 <FileText size={23} />
               </div>
 
               <div>
-                <h1
-                  className="
-                    bg-gradient-to-r
-                    from-[#B94A48]
-                    via-[#7FAF8A]
-                    to-[#555C64]
-                    bg-clip-text
-                    text-2xl
-                    font-bold
-                    tracking-tight
-                    text-transparent
-                  "
-                >
+                <h1 className="bg-gradient-to-r from-[#B94A48] via-[#7FAF8A] to-[#555C64] bg-clip-text text-2xl font-bold tracking-tight text-transparent">
                   Cases
                 </h1>
 
@@ -170,23 +126,11 @@ const AdminCases = () => {
                   View and manage reported crime cases
                 </p>
               </div>
-
             </div>
           </div>
 
           {/* TOTAL CASES */}
-          <div
-            className="
-              rounded-xl
-              border
-              border-border
-              bg-card
-              px-5
-              py-4
-              transition-colors
-              duration-300
-            "
-          >
+          <div className="rounded-xl border border-border bg-card px-5 py-4 transition-colors duration-300">
             <p className="text-xs font-medium text-muted-foreground">
               Total Cases
             </p>
@@ -195,27 +139,13 @@ const AdminCases = () => {
               {cases.length}
             </p>
           </div>
-
         </div>
 
         {/* CASES CARD */}
-        <div
-          className="
-            overflow-hidden
-            rounded-2xl
-            border
-            border-border
-            bg-card
-            transition-colors
-            duration-300
-          "
-        >
-
+        <div className="overflow-hidden rounded-2xl border border-border bg-card transition-colors duration-300">
           {/* HEADER + SEARCH */}
           <div className="border-b border-border px-6 py-5">
-
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-
               <div>
                 <h2 className="text-lg font-semibold text-foreground">
                   Reported Cases
@@ -228,211 +158,71 @@ const AdminCases = () => {
 
               {/* SEARCH BOX */}
               <div className="relative w-full lg:w-96">
-
                 <Search
                   size={18}
-                  className="
-                    absolute
-                    left-3
-                    top-1/2
-                    -translate-y-1/2
-                    text-muted-foreground
-                  "
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
                 />
 
                 <input
                   type="text"
                   value={searchText}
-                  onChange={(event) =>
-                    setSearchText(event.target.value)
-                  }
+                  onChange={(event) => setSearchText(event.target.value)}
                   placeholder="Search case, user, phone, location..."
-                  className="
-                    w-full
-                    rounded-lg
-                    border
-                    border-input
-                    bg-background
-                    py-2.5
-                    pl-10
-                    pr-10
-                    text-sm
-                    text-foreground
-                    outline-none
-                    transition-colors
-                    placeholder:text-muted-foreground
-                    focus:border-[#B94A48]
-                    focus:ring-1
-                    focus:ring-[#B94A48]
-                    dark:focus:border-[#D76562]
-                    dark:focus:ring-[#D76562]
-                  "
+                  className="w-full rounded-lg border border-input bg-background py-2.5 pl-10 pr-10 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-[#B94A48] focus:ring-1 focus:ring-[#B94A48] dark:focus:border-[#D76562] dark:focus:ring-[#D76562]"
                 />
 
                 {searchText && (
                   <button
                     type="button"
                     onClick={() => setSearchText("")}
-                    className="
-                      absolute
-                      right-3
-                      top-1/2
-                      -translate-y-1/2
-                      text-muted-foreground
-                      transition-colors
-                      hover:text-[#B94A48]
-                    "
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-[#B94A48]"
                   >
                     <X size={17} />
                   </button>
                 )}
-
               </div>
-
             </div>
 
             {/* FILTERS */}
             <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-
-              {/* CATEGORY */}
               <select
                 value={searchCategory}
-                onChange={(event) =>
-                  setSearchCategory(event.target.value)
-                }
-                className="
-                  w-full
-                  rounded-lg
-                  border
-                  border-input
-                  bg-background
-                  px-3
-                  py-2.5
-                  text-sm
-                  text-foreground
-                  outline-none
-                  transition-colors
-                  sm:w-56
-                  focus:border-[#B94A48]
-                  focus:ring-1
-                  focus:ring-[#B94A48]
-                  dark:focus:border-[#D76562]
-                  dark:focus:ring-[#D76562]
-                "
+                onChange={(event) => setSearchCategory(event.target.value)}
+                className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm text-foreground outline-none transition-colors sm:w-56 focus:border-[#B94A48] focus:ring-1 focus:ring-[#B94A48] dark:focus:border-[#D76562] dark:focus:ring-[#D76562]"
               >
-                <option value="">
-                  All Categories
-                </option>
-
-                <option value="Theft">
-                  Theft
-                </option>
-
-                <option value="Fraud">
-                  Fraud
-                </option>
-
-                <option value="Cybercrime">
-                  Cybercrime
-                </option>
-
-                <option value="Assault">
-                  Assault
-                </option>
-
-                <option value="Vandalism">
-                  Vandalism
-                </option>
-
-                <option value="Missing Person">
-                  Missing Person
-                </option>
-
-                <option value="Accident">
-                  Accident
-                </option>
-
-                <option value="Other">
-                  Other
-                </option>
+                <option value="">All Categories</option>
+                <option value="Theft">Theft</option>
+                <option value="Fraud">Fraud</option>
+                <option value="Cybercrime">Cybercrime</option>
+                <option value="Assault">Assault</option>
+                <option value="Vandalism">Vandalism</option>
+                <option value="Missing Person">Missing Person</option>
+                <option value="Accident">Accident</option>
+                <option value="Other">Other</option>
               </select>
 
-              {/* STATUS */}
               <select
                 value={searchStatus}
-                onChange={(event) =>
-                  setSearchStatus(event.target.value)
-                }
-                className="
-                  w-full
-                  rounded-lg
-                  border
-                  border-input
-                  bg-background
-                  px-3
-                  py-2.5
-                  text-sm
-                  text-foreground
-                  outline-none
-                  transition-colors
-                  sm:w-56
-                  focus:border-[#B94A48]
-                  focus:ring-1
-                  focus:ring-[#B94A48]
-                  dark:focus:border-[#D76562]
-                  dark:focus:ring-[#D76562]
-                "
+                onChange={(event) => setSearchStatus(event.target.value)}
+                className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm text-foreground outline-none transition-colors sm:w-56 focus:border-[#B94A48] focus:ring-1 focus:ring-[#B94A48] dark:focus:border-[#D76562] dark:focus:ring-[#D76562]"
               >
-                <option value="">
-                  All Statuses
-                </option>
-
-                <option value="New">
-                  New
-                </option>
-
-                <option value="Acknowledged">
-                  Acknowledged
-                </option>
-
-                <option value="In Progress">
-                  In Progress
-                </option>
-
-                <option value="Resolved">
-                  Resolved
-                </option>
+                <option value="">All Statuses</option>
+                <option value="New">New</option>
+                <option value="Acknowledged">Acknowledged</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
               </select>
 
-              {/* CLEAR FILTERS */}
-              {(searchText ||
-                searchCategory ||
-                searchStatus) && (
+              {(searchText || searchCategory || searchStatus) && (
                 <button
                   type="button"
                   onClick={clearSearch}
-                  className="
-                    inline-flex
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-lg
-                    border
-                    border-border
-                    px-4
-                    py-2.5
-                    text-sm
-                    text-muted-foreground
-                    transition-colors
-                    hover:bg-muted
-                    hover:text-foreground
-                  "
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   <X size={16} />
                   Clear
                 </button>
               )}
-
             </div>
 
             {/* RESULT COUNT */}
@@ -449,55 +239,24 @@ const AdminCases = () => {
                 cases
               </p>
             </div>
-
           </div>
 
           {/* LOADING */}
           {loading ? (
             <div className="flex min-h-[300px] items-center justify-center p-10">
               <div className="text-center">
-
-                <div
-                  className="
-                    mx-auto
-                    mb-4
-                    h-8
-                    w-8
-                    animate-spin
-                    rounded-full
-                    border-2
-                    border-border
-                    border-t-[#B94A48]
-                    dark:border-t-[#D76562]
-                  "
-                />
+                <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-border border-t-[#B94A48] dark:border-t-[#D76562]" />
 
                 <p className="text-sm text-muted-foreground">
                   Loading cases...
                 </p>
-
               </div>
             </div>
           ) : filteredCases.length === 0 ? (
-
             /* NO RESULTS */
             <div className="flex min-h-[300px] items-center justify-center p-10">
               <div className="text-center">
-
-                <div
-                  className="
-                    mx-auto
-                    mb-4
-                    flex
-                    h-14
-                    w-14
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-muted
-                    text-muted-foreground
-                  "
-                >
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted text-muted-foreground">
                   <Search size={25} />
                 </div>
 
@@ -505,149 +264,78 @@ const AdminCases = () => {
                   No matching cases found.
                 </p>
 
-                {(searchText ||
-                  searchCategory ||
-                  searchStatus) && (
+                {(searchText || searchCategory || searchStatus) && (
                   <button
                     type="button"
                     onClick={clearSearch}
-                    className="
-                      mt-3
-                      text-sm
-                      font-medium
-                      text-[#B94A48]
-                      transition-colors
-                      hover:text-[#A33F3D]
-                      hover:underline
-                      dark:text-[#D76562]
-                      dark:hover:text-[#E17A77]
-                    "
+                    className="mt-3 text-sm font-medium text-[#B94A48] transition-colors hover:text-[#A33F3D] hover:underline dark:text-[#D76562] dark:hover:text-[#E17A77]"
                   >
                     Clear search and filters
                   </button>
                 )}
-
               </div>
             </div>
-
           ) : (
-
             /* CASES TABLE */
             <div className="overflow-x-auto">
-
-              <table className="w-full min-w-[1000px]">
-
+              <table className="w-full min-w-[1150px]">
                 <thead>
                   <tr className="border-b border-border bg-muted/40">
-
-                    <th
-                      className="
-                        px-6
-                        py-4
-                        text-left
-                        text-sm
-                        font-semibold
-                        text-foreground
-                      "
-                    >
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
                       Case ID
                     </th>
 
-                    <th
-                      className="
-                        px-6
-                        py-4
-                        text-left
-                        text-sm
-                        font-semibold
-                        text-foreground
-                      "
-                    >
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
                       Category
                     </th>
 
-                    <th
-                      className="
-                        px-6
-                        py-4
-                        text-left
-                        text-sm
-                        font-semibold
-                        text-foreground
-                      "
-                    >
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
                       User
                     </th>
 
-                    <th
-                      className="
-                        px-6
-                        py-4
-                        text-left
-                        text-sm
-                        font-semibold
-                        text-foreground
-                      "
-                    >
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
                       Location
                     </th>
 
-                    <th
-                      className="
-                        px-6
-                        py-4
-                        text-left
-                        text-sm
-                        font-semibold
-                        text-foreground
-                      "
-                    >
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
                       Reported
                     </th>
 
-                    <th
-                      className="
-                        px-6
-                        py-4
-                        text-left
-                        text-sm
-                        font-semibold
-                        text-foreground
-                      "
-                    >
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
                       Status
                     </th>
 
-                    <th
-                      className="
-                        px-6
-                        py-4
-                        text-left
-                        text-sm
-                        font-semibold
-                        text-foreground
-                      "
-                    >
-                      Action
+                    {/* FAKE REPORT SYMBOL */}
+                    <th className="px-4 py-4 text-center text-sm font-semibold text-foreground">
+                      <ShieldAlert
+                        size={18}
+                        className="mx-auto text-[#B94A48]"
+                        title="Fake report indicator"
+                      />
                     </th>
 
+                    {/* PAYMENT STATUS SYMBOL */}
+                    <th className="px-4 py-4 text-center text-sm font-semibold text-foreground">
+                      <CircleCheck
+                        size={18}
+                        className="mx-auto text-emerald-600"
+                        title="Payment status"
+                      />
+                    </th>
+
+                    {/* ACTION */}
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
+                      Action
+                    </th>
                   </tr>
                 </thead>
 
                 <tbody>
                   {filteredCases.map((item) => (
-
                     <tr
                       key={item._id}
-                      className="
-                        border-b
-                        border-border
-                        transition-colors
-                        duration-200
-                        hover:bg-muted/40
-                      "
+                      className="border-b border-border transition-colors duration-200 hover:bg-muted/40"
                     >
-
                       {/* CASE ID */}
                       <td className="px-6 py-4">
                         <p className="font-semibold text-foreground">
@@ -682,16 +370,16 @@ const AdminCases = () => {
                       {/* LOCATION */}
                       <td className="px-6 py-4">
                         <p className="max-w-xs text-sm text-muted-foreground">
-                          {item.incidentLocation || "N/A"}
+                          {item.location || "N/A"}
                         </p>
                       </td>
 
                       {/* REPORT DATE */}
                       <td className="px-6 py-4">
                         <p className="text-sm text-muted-foreground">
-                          {item.reportDateTime
+                          {item.createdAt || item.reportDateTime
                             ? new Date(
-                                item.reportDateTime
+                                item.createdAt || item.reportDateTime
                               ).toLocaleDateString()
                             : "N/A"}
                         </p>
@@ -708,43 +396,57 @@ const AdminCases = () => {
                         </span>
                       </td>
 
+                      {/* FAKE REPORT SYMBOL */}
+                      <td className="px-4 py-4 text-center">
+                        {item.isFakeReport === true && (
+                          <ShieldAlert
+                            size={18}
+                            className="mx-auto text-[#B94A48] dark:text-[#D76562]"
+                            title="Flagged as fake report"
+                            aria-label="Flagged as fake report"
+                          />
+                        )}
+                      </td>
+
+
+                     {/* PAYMENT STATUS SYMBOL */}
+<td className="px-4 py-4 text-center">
+  {item.isFakeReport === true &&
+  item.fineStatus === "Paid" ? (
+    <CircleCheck
+      size={18}
+      className="mx-auto text-emerald-600 dark:text-emerald-400"
+      title="Fine paid"
+      aria-label="Fine paid"
+    />
+  ) : item.isFakeReport === true &&
+    item.fineStatus === "Pending" ? (
+    <Clock
+      size={18}
+      className="mx-auto text-amber-600 dark:text-amber-400"
+      title="Payment pending"
+      aria-label="Payment pending"
+    />
+  ) : null}
+</td>
+
                       {/* ACTION */}
                       <td className="px-6 py-4">
                         <Link
                           to={`/admin/cases/${item.caseId}`}
-                          className="
-                            inline-flex
-                            items-center
-                            gap-2
-                            rounded-lg
-                            bg-[#B94A48]
-                            px-3
-                            py-2
-                            text-sm
-                            text-white
-                            transition-colors
-                            hover:bg-[#A33F3D]
-                            dark:bg-[#D76562]
-                            dark:hover:bg-[#C55451]
-                          "
+                          className="inline-flex items-center gap-2 rounded-lg bg-[#B94A48] px-3 py-2 text-sm text-white transition-colors hover:bg-[#A33F3D] dark:bg-[#D76562] dark:hover:bg-[#C55451]"
                         >
                           <Eye size={16} />
                           View
                         </Link>
                       </td>
-
                     </tr>
-
                   ))}
                 </tbody>
-
               </table>
-
             </div>
           )}
-
         </div>
-
       </main>
     </div>
   );

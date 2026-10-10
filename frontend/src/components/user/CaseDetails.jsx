@@ -15,6 +15,7 @@ import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { toast } from "sonner";
 
 import Navbar from "./Navbar";
+import FakeReportFine from "./FakeReportFine";
 import axiosInstance from "../../axiosInterceptor";
 
 const CaseDetails = () => {
@@ -427,9 +428,7 @@ const CaseDetails = () => {
                     py-2
                     text-sm
                     font-medium
-                    ${getStatusStyle(
-                      caseData.currentStatus
-                    )}
+                    ${getStatusStyle(caseData.currentStatus)}
                   `}
                 >
                   {getStatusIcon(caseData.currentStatus)}
@@ -524,7 +523,7 @@ const CaseDetails = () => {
                     className="text-muted-foreground"
                   />
 
-                  {formatDate(caseData.reportDateTime)}
+                  {formatDate(caseData.createdAt)}
                 </div>
               </div>
 
@@ -541,9 +540,7 @@ const CaseDetails = () => {
                     className="mt-0.5 shrink-0 text-muted-foreground"
                   />
 
-                  <span>
-                    {caseData.incidentLocation}
-                  </span>
+                  <span>{caseData.location}</span>
                 </div>
               </div>
 
@@ -567,11 +564,38 @@ const CaseDetails = () => {
                     text-foreground
                   "
                 >
-                  {caseData.incidentDescription}
+                  {caseData.description}
                 </p>
               </div>
             </div>
           </div>
+
+          {/* ==================================================
+              FAKE REPORT FINE & APPEAL
+              SHOW ONLY WHEN ADMIN MARKS THE CASE AS FAKE
+          ================================================== */}
+
+          {caseData.isFakeReport === true && (
+            <div className="mb-6">
+              <FakeReportFine
+                caseItem={caseData}
+                onUpdate={async () => {
+                  try {
+                    const response = await axiosInstance.get(
+                      `/cases/${id}`
+                    );
+
+                    setCaseData(response.data.case);
+                  } catch (error) {
+                    toast.error(
+                      error.response?.data?.message ||
+                        "Failed to refresh case details"
+                    );
+                  }
+                }}
+              />
+            </div>
+          )}
 
           {/* ==================================================
               MAP
