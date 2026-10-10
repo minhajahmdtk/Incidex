@@ -2,9 +2,10 @@ const express = require("express");
 const cors = require("cors");
 
 const server = express();
-const port = 3000;
 
 require("dotenv").config();
+
+const port = process.env.PORT || 3000;
 
 const db = require("./config/db");
 db();
@@ -44,7 +45,6 @@ const userFeedbackRouter = require("./router/userFeedbackRouter");
 server.use(cors());
 server.use(express.json());
 
-
 //-------------------
 // Mount Routes
 //-------------------
@@ -79,7 +79,6 @@ server.use("/user-notifications", userNotificationRouter);
 
 server.use("/feedback", userFeedbackRouter);
 
-
-server.listen(port, () => {
+server.listen(port, "0.0.0.0", () => {
   console.log(`Server listening on port ${port}`);
 });
