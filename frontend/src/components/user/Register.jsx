@@ -41,7 +41,7 @@ const handleSubmit = (e) => {
   }
 
     axios
-      .post(`${import.meta.env.VITE_URL}/user/register`, form)
+      .post(`${import.meta.env.VITE_API_URL}/user/register`, form)
       .then((response) => {
         toast.success("Account created successfully!");
 
