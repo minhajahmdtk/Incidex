@@ -31,7 +31,7 @@ import {
 } from "recharts";
 
 import { toast } from "sonner";
-import axios from "axios";
+import axiosInstance from "../../axiosInterceptor";
 
 const AdminDashboard = () => {
 
@@ -56,8 +56,8 @@ const AdminDashboard = () => {
   // GET DASHBOARD DATA
 
   const getDashboardData = () => {
-    axios
-      .get("http://localhost:3000/admin/dashboard", {
+    axiosInstance
+      .get("/admin/dashboard", {
         headers: {
           token: localStorage.getItem("loginToken"),
         },
@@ -93,8 +93,8 @@ const AdminDashboard = () => {
   // GET CATEGORY DATA
 
   const getCategoryData = () => {
-    axios
-      .get("http://localhost:3000/admin/dashboard/category", {
+    axiosInstance
+      .get("/admin/dashboard/category", {
         headers: {
           token: localStorage.getItem("loginToken"),
         },
@@ -114,8 +114,8 @@ const AdminDashboard = () => {
   // GET MONTHLY DATA
 
   const getMonthlyData = () => {
-    axios
-      .get("http://localhost:3000/admin/dashboard/monthly", {
+    axiosInstance
+      .get("/admin/dashboard/monthly", {
         headers: {
           token: localStorage.getItem("loginToken"),
         },
@@ -135,8 +135,8 @@ const AdminDashboard = () => {
   // GET FAKE CASES AND MONEY RECEIVED
 
   const getFakeAndMoneyData = () => {
-    axios
-      .get("http://localhost:3000/admin/cases", {
+    axiosInstance
+      .get("/admin/cases", {
         headers: {
           token: localStorage.getItem("loginToken"),
         },
