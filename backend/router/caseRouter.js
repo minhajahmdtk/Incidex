@@ -26,14 +26,14 @@ async function sendCaseEmailSafely(userId, subject, text) {
     }
 
     if (typeof emailService === "function") {
-      // Supports a config exporting sendEmail({ to, subject, text })
+     
       await emailService({
         to: user.email,
         subject,
         text,
       });
     } else if (emailService && typeof emailService.sendMail === "function") {
-      // Supports a config exporting a Nodemailer transporter
+     
       await emailService.sendMail({
         from: process.env.EMAIL_USER,
         to: user.email,
@@ -48,7 +48,7 @@ async function sendCaseEmailSafely(userId, subject, text) {
 
     console.log(`INCIDEX email sent successfully to ${user.email}`);
   } catch (error) {
-    // Do not undo a successful case/payment update if email delivery fails.
+    
     console.error("INCIDEX email sending failed:", error.message);
   }
 }
