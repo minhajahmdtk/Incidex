@@ -39,18 +39,17 @@ const AdminCaseDetails = () => {
   const [updating, setUpdating] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
-  // Fine dialog state
+
   const [fineDialogOpen, setFineDialogOpen] = useState(false);
   const [fakeReportReason, setFakeReportReason] = useState("");
   const [fineAmount, setFineAmount] = useState("");
   const [fineUpdating, setFineUpdating] = useState(false);
 
-  // Appeal dialog state
+
   const [appealDialogOpen, setAppealDialogOpen] = useState(false);
   const [appealDecision, setAppealDecision] = useState("");
   const [appealUpdating, setAppealUpdating] = useState(false);
 
-  // Refresh case data after fine or appeal actions
   const refreshCaseDetails = async () => {
     const response = await axiosInstance.get(`/admin/cases/${id}`);
     const data = response.data.case || response.data;
@@ -93,7 +92,7 @@ const AdminCaseDetails = () => {
 
         toast.error(
           error.response?.data?.message ||
-            "Failed to load case details"
+          "Failed to load case details"
         );
 
         setLoading(false);
@@ -104,7 +103,6 @@ const AdminCaseDetails = () => {
     };
   }, [id, navigate]);
 
-  // Update case status
   const updateStatus = () => {
     if (!newStatus) {
       toast.error("Please select a status");
@@ -120,7 +118,7 @@ const AdminCaseDetails = () => {
       .then((response) => {
         toast.success(
           response.data.message ||
-            "Case status updated successfully"
+          "Case status updated successfully"
         );
 
         setCaseData((prev) => ({
@@ -137,7 +135,7 @@ const AdminCaseDetails = () => {
       .catch((error) => {
         toast.error(
           error.response?.data?.message ||
-            "Failed to update case status"
+          "Failed to update case status"
         );
       })
       .finally(() => {
@@ -145,7 +143,6 @@ const AdminCaseDetails = () => {
       });
   };
 
-  // Resolve case
   const resolveCase = () => {
     if (!finalDetails.trim()) {
       toast.error("Final details are required");
@@ -173,7 +170,7 @@ const AdminCaseDetails = () => {
       .then((response) => {
         toast.success(
           response.data.message ||
-            "Case resolved successfully"
+          "Case resolved successfully"
         );
 
         setCaseData((prev) => ({
@@ -192,7 +189,7 @@ const AdminCaseDetails = () => {
       .catch((error) => {
         toast.error(
           error.response?.data?.message ||
-            "Failed to resolve case"
+          "Failed to resolve case"
         );
       })
       .finally(() => {
@@ -200,7 +197,7 @@ const AdminCaseDetails = () => {
       });
   };
 
-  // Download final case report
+
   const downloadFinalReport = () => {
     setDownloading(true);
 
@@ -230,7 +227,7 @@ const AdminCaseDetails = () => {
       .catch((error) => {
         toast.error(
           error.response?.data?.message ||
-            "Failed to download final report"
+          "Failed to download final report"
         );
       })
       .finally(() => {
@@ -238,7 +235,6 @@ const AdminCaseDetails = () => {
       });
   };
 
-  // Record a fake-report decision and fine
   const markReportAsFake = async (event) => {
     event.preventDefault();
 
@@ -278,21 +274,21 @@ const AdminCaseDetails = () => {
 
       await refreshCaseDetails();
 
-      // Close the dialog only after recording and refreshing
+
       setFineDialogOpen(false);
       setFakeReportReason("");
       setFineAmount("");
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          "Failed to record the fine."
+        "Failed to record the fine."
       );
     } finally {
       setFineUpdating(false);
     }
   };
 
-  // Review the user's appeal
+
   const reviewAppeal = async (event) => {
     event.preventDefault();
 
@@ -313,7 +309,7 @@ const AdminCaseDetails = () => {
 
       toast.success(
         response.data.message ||
-          "Appeal reviewed successfully."
+        "Appeal reviewed successfully."
       );
 
       await refreshCaseDetails();
@@ -323,7 +319,7 @@ const AdminCaseDetails = () => {
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          "Failed to review the appeal."
+        "Failed to review the appeal."
       );
     } finally {
       setAppealUpdating(false);
@@ -436,7 +432,7 @@ const AdminCaseDetails = () => {
     hasFine && caseData.appealStatus === "Pending";
 
   const canRecordFine =
-  !hasFine && caseData.currentStatus !== "Resolved";
+    !hasFine && caseData.currentStatus !== "Resolved";
 
   const canPayFine =
     hasFine &&

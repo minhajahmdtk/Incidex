@@ -1,11 +1,11 @@
-const express=require('express');
-const router=express.Router();
-const User=require('../models/user');
-const jwt=require('jsonwebtoken');
+const express = require('express');
+const router = express.Router();
+const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
 
-function verifyToken(req,res,next){
-  const token=req.headers.token;
+function verifyToken(req, res, next) {
+  const token = req.headers.token;
 
   try {
     if (!token) {
@@ -53,14 +53,14 @@ router.get("/profile", verifyToken, async (req, res) => {
 
 //UPDATE USER PROFILE
 
-router.put('/update',verifyToken,async(req,res)=>{
-  try{
-    const{
+router.put('/update', verifyToken, async (req, res) => {
+  try {
+    const {
       name,
       email,
       phone
-    }=req.body
-     if (!name || name.trim() === "") {
+    } = req.body
+    if (!name || name.trim() === "") {
       return res.status(400).json({
         message: "Name is required",
       });
@@ -114,7 +114,7 @@ router.put('/update',verifyToken,async(req,res)=>{
 
     //check email already exit
 
-     const emailExist = await User.findOne({
+    const emailExist = await User.findOne({
       email: email.toLowerCase().trim(),
       _id: { $ne: req.user.id },
     });
@@ -124,7 +124,7 @@ router.put('/update',verifyToken,async(req,res)=>{
         message: "Email already exists",
       });
     }
-        // Check phone already exists
+    // Check phone already exists
 
     const phoneExist = await User.findOne({
       phone: phone.trim(),
@@ -137,7 +137,7 @@ router.put('/update',verifyToken,async(req,res)=>{
       });
     }
 
-     // Update user
+    // Update user
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user.id,
@@ -158,7 +158,7 @@ router.put('/update',verifyToken,async(req,res)=>{
         message: "User not found",
       });
     }
-  res.status(200).json({
+    res.status(200).json({
       message: "Profile updated successfully",
       user: updatedUser,
     });

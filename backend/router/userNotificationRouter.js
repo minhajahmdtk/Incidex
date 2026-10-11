@@ -1,7 +1,7 @@
-const express=require('express');
-const jwt=require('jsonwebtoken');
-const UserNotification=require('../models/userNotification');
-const router=express.Router();
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const UserNotification = require('../models/userNotification');
+const router = express.Router();
 
 
 function verifyToken(req, res, next) {

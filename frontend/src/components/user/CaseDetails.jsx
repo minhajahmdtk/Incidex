@@ -75,22 +75,22 @@ const CaseDetails = () => {
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          "Failed to refresh case details"
+        "Failed to refresh case details"
       );
     }
   };
 
-  // Close appeal dialog
+
   const closeAppealDialog = () => {
     setAppealDialogOpen(false);
   };
 
-  // Close payment dialog
+
   const closePaymentDialog = () => {
     setPaymentDialogOpen(false);
   };
 
-  // Prevent background scrolling and close dialogs with Escape
+
   useEffect(() => {
     const isDialogOpen = appealDialogOpen || paymentDialogOpen;
 
@@ -116,14 +116,14 @@ const CaseDetails = () => {
     };
   }, [appealDialogOpen, paymentDialogOpen]);
 
-  // Focus the dialog when opened
+
   useEffect(() => {
     if (appealDialogOpen || paymentDialogOpen) {
       dialogRef.current?.focus();
     }
   }, [appealDialogOpen, paymentDialogOpen]);
 
-  // Download final PDF report
+
   const downloadPdf = async () => {
     try {
       const response = await axiosInstance.get(
@@ -160,7 +160,7 @@ const CaseDetails = () => {
     }
   };
 
-  // Status badge style
+
   const getStatusStyle = (status) => {
     switch (status) {
       case "New":
@@ -209,7 +209,7 @@ const CaseDetails = () => {
     }
   };
 
-  // Status icon
+
   const getStatusIcon = (status) => {
     switch (status) {
       case "Resolved":
@@ -226,7 +226,7 @@ const CaseDetails = () => {
     }
   };
 
-  // Format date
+
   const formatDate = (date) => {
     if (!date) {
       return "Not available";
@@ -241,7 +241,7 @@ const CaseDetails = () => {
     });
   };
 
-  // Loading
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -275,7 +275,6 @@ const CaseDetails = () => {
     );
   }
 
-  // Error
   if (errorMessage || !caseData) {
     return (
       <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -328,14 +327,13 @@ const CaseDetails = () => {
     );
   }
 
-  // Appeal button visibility
   const canSubmitAppeal =
     caseData.isFakeReport === true &&
     !["Pending", "Approved", "Rejected", "Upheld"].includes(
       caseData.appealStatus
     );
 
-  // Show payment dialogue when the appeal has been rejected
+
   const canShowPayment =
     caseData.isFakeReport === true &&
     caseData.appealStatus === "Rejected";

@@ -69,7 +69,7 @@ const AdminCases = () => {
     return "bg-muted text-muted-foreground";
   };
 
-  // Search and filter cases
+
   const filteredCases = cases.filter((item) => {
     const search = searchText.trim().toLowerCase();
 
@@ -143,7 +143,7 @@ const AdminCases = () => {
 
         {/* CASES CARD */}
         <div className="overflow-hidden rounded-2xl border border-border bg-card transition-colors duration-300">
-          {/* HEADER + SEARCH */}
+
           <div className="border-b border-border px-6 py-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
@@ -379,8 +379,8 @@ const AdminCases = () => {
                         <p className="text-sm text-muted-foreground">
                           {item.createdAt || item.reportDateTime
                             ? new Date(
-                                item.createdAt || item.reportDateTime
-                              ).toLocaleDateString()
+                              item.createdAt || item.reportDateTime
+                            ).toLocaleDateString()
                             : "N/A"}
                         </p>
                       </td>
@@ -409,26 +409,26 @@ const AdminCases = () => {
                       </td>
 
 
-                     {/* PAYMENT STATUS SYMBOL */}
-<td className="px-4 py-4 text-center">
-  {item.isFakeReport === true &&
-  item.fineStatus === "Paid" ? (
-    <CircleCheck
-      size={18}
-      className="mx-auto text-emerald-600 dark:text-emerald-400"
-      title="Fine paid"
-      aria-label="Fine paid"
-    />
-  ) : item.isFakeReport === true &&
-    item.fineStatus === "Pending" ? (
-    <Clock
-      size={18}
-      className="mx-auto text-amber-600 dark:text-amber-400"
-      title="Payment pending"
-      aria-label="Payment pending"
-    />
-  ) : null}
-</td>
+
+                      <td className="px-4 py-4 text-center">
+                        {item.isFakeReport === true &&
+                          item.fineStatus === "Paid" ? (
+                          <CircleCheck
+                            size={18}
+                            className="mx-auto text-emerald-600 dark:text-emerald-400"
+                            title="Fine paid"
+                            aria-label="Fine paid"
+                          />
+                        ) : item.isFakeReport === true &&
+                          item.fineStatus === "Pending" ? (
+                          <Clock
+                            size={18}
+                            className="mx-auto text-amber-600 dark:text-amber-400"
+                            title="Payment pending"
+                            aria-label="Payment pending"
+                          />
+                        ) : null}
+                      </td>
 
                       {/* ACTION */}
                       <td className="px-6 py-4">

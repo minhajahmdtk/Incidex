@@ -25,9 +25,6 @@ const AdminFeedback = () => {
   const [deletingId, setDeletingId] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  // ==================================================
-  // GET FEEDBACK
-  // ==================================================
 
   useEffect(() => {
     axiosInstance
@@ -35,8 +32,8 @@ const AdminFeedback = () => {
       .then((response) => {
         setFeedback(
           response.data.feedback ||
-            response.data ||
-            []
+          response.data ||
+          []
         );
 
         setLoading(false);
@@ -57,24 +54,18 @@ const AdminFeedback = () => {
 
         toast.error(
           error.response?.data?.message ||
-            "Failed to load feedback"
+          "Failed to load feedback"
         );
 
         setLoading(false);
       });
   }, [navigate]);
 
-  // ==================================================
-  // OPEN DELETE CONFIRMATION
-  // ==================================================
 
   const openDeleteConfirmation = () => {
     setShowDeleteConfirm(true);
   };
 
-  // ==================================================
-  // CLOSE DELETE CONFIRMATION
-  // ==================================================
 
   const closeDeleteConfirmation = () => {
     if (deletingId) {
@@ -84,9 +75,6 @@ const AdminFeedback = () => {
     setShowDeleteConfirm(false);
   };
 
-  // ==================================================
-  // DELETE FEEDBACK
-  // ==================================================
 
   const deleteFeedback = () => {
     if (!selectedFeedback?._id) {
@@ -109,7 +97,7 @@ const AdminFeedback = () => {
 
         toast.success(
           response.data.message ||
-            "Feedback deleted successfully"
+          "Feedback deleted successfully"
         );
       })
       .catch((error) => {
@@ -128,7 +116,7 @@ const AdminFeedback = () => {
 
         toast.error(
           error.response?.data?.message ||
-            "Failed to delete feedback"
+          "Failed to delete feedback"
         );
       })
       .finally(() => {
@@ -139,15 +127,8 @@ const AdminFeedback = () => {
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
 
-      {/* ==================================================
-          MAIN
-      ================================================== */}
-
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 
-        {/* ==================================================
-            PAGE HEADER
-        ================================================== */}
 
         <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
 
@@ -219,10 +200,6 @@ const AdminFeedback = () => {
 
           </div>
 
-          {/* ==================================================
-              TOTAL FEEDBACK
-          ================================================== */}
-
           <div
             className="
               rounded-xl
@@ -246,9 +223,6 @@ const AdminFeedback = () => {
 
         </div>
 
-        {/* ==================================================
-            FEEDBACK CARD
-        ================================================== */}
 
         <div
           className="
@@ -262,7 +236,7 @@ const AdminFeedback = () => {
           "
         >
 
-          {/* Card Header */}
+
 
           <div className="border-b border-border px-6 py-5">
 
@@ -276,9 +250,6 @@ const AdminFeedback = () => {
 
           </div>
 
-          {/* ==================================================
-              LOADING
-          ================================================== */}
 
           {loading ? (
 
@@ -310,9 +281,6 @@ const AdminFeedback = () => {
 
           ) : feedback.length === 0 ? (
 
-            /* ==================================================
-                EMPTY STATE
-            ================================================== */
 
             <div className="flex min-h-[300px] items-center justify-center p-10">
 
@@ -349,9 +317,7 @@ const AdminFeedback = () => {
 
           ) : (
 
-            /* ==================================================
-                FEEDBACK TABLE
-            ================================================== */
+
 
             <div className="overflow-x-auto">
 
@@ -432,8 +398,6 @@ const AdminFeedback = () => {
                       "
                     >
 
-                      {/* USER NAME */}
-
                       <td className="px-6 py-4">
 
                         <div className="flex items-center gap-3">
@@ -464,7 +428,6 @@ const AdminFeedback = () => {
 
                       </td>
 
-                      {/* PHONE */}
 
                       <td className="px-6 py-4">
 
@@ -478,7 +441,7 @@ const AdminFeedback = () => {
 
                       </td>
 
-                      {/* CASE ID */}
+
 
                       <td className="px-6 py-4">
 
@@ -497,7 +460,7 @@ const AdminFeedback = () => {
 
                       </td>
 
-                      {/* VIEW */}
+
 
                       <td className="px-6 py-4">
 
@@ -546,9 +509,7 @@ const AdminFeedback = () => {
 
       </main>
 
-      {/* ==================================================
-          VIEW FEEDBACK MODAL
-      ================================================== */}
+
 
       {selectedFeedback && (
 
@@ -580,7 +541,7 @@ const AdminFeedback = () => {
             "
           >
 
-            {/* MODAL HEADER */}
+
 
             <div
               className="
@@ -627,11 +588,10 @@ const AdminFeedback = () => {
 
             </div>
 
-            {/* MODAL BODY */}
 
             <div className="space-y-6 p-6">
 
-              {/* USER INFORMATION */}
+
 
               <div
                 className="
@@ -719,7 +679,6 @@ const AdminFeedback = () => {
 
               </div>
 
-              {/* CASE INFORMATION */}
 
               <div>
 
@@ -759,7 +718,6 @@ const AdminFeedback = () => {
 
               </div>
 
-              {/* FEEDBACK */}
 
               <div>
 
@@ -786,7 +744,7 @@ const AdminFeedback = () => {
 
               </div>
 
-              {/* SUBMITTED DATE */}
+
 
               <div>
 
@@ -797,14 +755,14 @@ const AdminFeedback = () => {
                 <p className="text-sm text-foreground">
                   {selectedFeedback.submittedDateTime
                     ? new Date(
-                        selectedFeedback.submittedDateTime
-                      ).toLocaleString("en-IN", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
+                      selectedFeedback.submittedDateTime
+                    ).toLocaleString("en-IN", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
                     : "N/A"}
                 </p>
 
@@ -812,7 +770,7 @@ const AdminFeedback = () => {
 
             </div>
 
-            {/* MODAL FOOTER */}
+
 
             <div
               className="
@@ -891,9 +849,7 @@ const AdminFeedback = () => {
 
       )}
 
-      {/* ==================================================
-          DELETE CONFIRMATION MODAL
-      ================================================== */}
+
 
       {showDeleteConfirm && selectedFeedback && (
 

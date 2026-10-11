@@ -41,7 +41,7 @@ const AdminNotifications = () => {
 
         toast.error(
           error.response?.data?.message ||
-            "Failed to load notifications"
+          "Failed to load notifications"
         );
       })
       .finally(() => {
@@ -112,7 +112,7 @@ const AdminNotifications = () => {
 
         toast.error(
           error.response?.data?.message ||
-            "Failed to mark notification as read"
+          "Failed to mark notification as read"
         );
       });
   };
@@ -141,13 +141,12 @@ const AdminNotifications = () => {
 
         toast.error(
           error.response?.data?.message ||
-            "Failed to mark notifications as read"
+          "Failed to mark notifications as read"
         );
       });
   };
 
- 
-  // DELETE NOTIFICATION
+
   const deleteNotification = (id) => {
     setDeletingId(id);
 
@@ -169,7 +168,7 @@ const AdminNotifications = () => {
 
         toast.error(
           error.response?.data?.message ||
-            "Failed to delete notification"
+          "Failed to delete notification"
         );
       })
       .finally(() => {
@@ -181,7 +180,7 @@ const AdminNotifications = () => {
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* HEADER */}
+
         <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <Link
@@ -209,7 +208,6 @@ const AdminNotifications = () => {
             </div>
           </div>
 
-          {/* HEADER ACTIONS */}
           <div className="flex items-center gap-3">
             <div className="rounded-xl border border-border bg-card px-5 py-3">
               <p className="text-xs text-muted-foreground">
@@ -233,7 +231,7 @@ const AdminNotifications = () => {
           </div>
         </div>
 
-        {/* NOTIFICATIONS CARD */}
+
         <div className="overflow-hidden rounded-2xl border border-border bg-card transition-colors duration-300">
           <div className="border-b border-border px-6 py-5">
             <h2 className="text-lg font-semibold text-foreground">
@@ -245,7 +243,6 @@ const AdminNotifications = () => {
             </p>
           </div>
 
-          {/* LOADING */}
           {loading ? (
             <div className="p-12 text-center">
               <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-border border-t-[#B94A48] dark:border-t-[#D76562]" />
@@ -255,7 +252,7 @@ const AdminNotifications = () => {
               </p>
             </div>
           ) : notifications.length === 0 ? (
-            /* EMPTY STATE */
+
             <div className="p-12 text-center">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted text-muted-foreground">
                 <Bell size={30} />
@@ -274,27 +271,25 @@ const AdminNotifications = () => {
                 return (
                   <div
                     key={notification._id}
-                    className={`border-b border-border p-6 transition-colors last:border-b-0 ${
-                      !notification.isRead
+                    className={`border-b border-border p-6 transition-colors last:border-b-0 ${!notification.isRead
                         ? "bg-[#B94A48]/5 dark:bg-[#D76562]/5"
                         : "bg-card"
-                    }`}
+                      }`}
                   >
                     <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-                      {/* NOTIFICATION DETAILS */}
+
                       <div className="flex min-w-0 gap-4">
                         <div
-                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${
-                            notification.isRead
+                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${notification.isRead
                               ? "bg-muted text-muted-foreground"
                               : "bg-[#B94A48]/10 text-[#B94A48] dark:bg-[#D76562]/10 dark:text-[#D76562]"
-                          }`}
+                            }`}
                         >
                           <NotificationIcon size={20} />
                         </div>
 
                         <div className="min-w-0 flex-1">
-                          {/* DYNAMIC TITLE */}
+
                           <div className="mb-1 flex flex-wrap items-center gap-2">
                             <h3 className="font-semibold text-foreground">
                               {getNotificationTitle(notification)}
@@ -307,14 +302,14 @@ const AdminNotifications = () => {
                             )}
                           </div>
 
-                          {/* DYNAMIC DESCRIPTION */}
+
                           <p className="mb-5 text-sm text-muted-foreground">
                             {getNotificationDescription(notification)}
                           </p>
 
-                          {/* DETAILS */}
+
                           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            {/* USER */}
+
                             <div className="flex items-center gap-3">
                               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                                 <User size={16} />
@@ -331,7 +326,7 @@ const AdminNotifications = () => {
                               </div>
                             </div>
 
-                            {/* PHONE */}
+
                             <div className="flex items-center gap-3">
                               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                                 <User size={16} />
@@ -348,7 +343,6 @@ const AdminNotifications = () => {
                               </div>
                             </div>
 
-                            {/* CASE ID */}
                             <div className="flex items-center gap-3">
                               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                                 <FileText size={16} />
@@ -365,7 +359,7 @@ const AdminNotifications = () => {
                               </div>
                             </div>
 
-                            {/* CRIME CATEGORY */}
+
                             <div>
                               <p className="text-xs text-muted-foreground">
                                 Crime Category
@@ -376,7 +370,7 @@ const AdminNotifications = () => {
                               </p>
                             </div>
 
-                            {/* APPEAL DETAILS */}
+
                             {isAppeal && (
                               <>
                                 <div>
@@ -414,28 +408,27 @@ const AdminNotifications = () => {
                               </>
                             )}
 
-                            {/* CASE STATUS */}
+
                             <div>
                               <p className="text-xs text-muted-foreground">
                                 Current Status
                               </p>
 
                               <span
-                                className={`mt-1 inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
-                                  notification.caseId?.currentStatus ===
-                                  "Resolved"
+                                className={`mt-1 inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${notification.caseId?.currentStatus ===
+                                    "Resolved"
                                     ? "bg-[#7FAF8A]/15 text-[#5F8D6A] dark:text-[#9BC7A4]"
                                     : notification.caseId?.currentStatus ===
-                                        "In Progress"
+                                      "In Progress"
                                       ? "bg-muted text-muted-foreground"
                                       : "bg-[#B94A48]/10 text-[#B94A48] dark:bg-[#D76562]/10 dark:text-[#D76562]"
-                                }`}
+                                  }`}
                               >
                                 {notification.caseId?.currentStatus || "New"}
                               </span>
                             </div>
 
-                            {/* DATE */}
+
                             <div>
                               <p className="text-xs text-muted-foreground">
                                 Date &amp; Time
@@ -444,8 +437,8 @@ const AdminNotifications = () => {
                               <p className="text-sm font-medium text-foreground">
                                 {notification.createdDateTime
                                   ? new Date(
-                                      notification.createdDateTime
-                                    ).toLocaleString("en-IN")
+                                    notification.createdDateTime
+                                  ).toLocaleString("en-IN")
                                   : "N/A"}
                               </p>
                             </div>
@@ -453,7 +446,7 @@ const AdminNotifications = () => {
                         </div>
                       </div>
 
-                      {/* NOTIFICATION ACTIONS */}
+
                       <div className="flex shrink-0 flex-wrap items-center gap-2 lg:justify-end">
                         {!notification.isRead ? (
                           <button
@@ -471,7 +464,7 @@ const AdminNotifications = () => {
                           </span>
                         )}
 
-                        {/* DELETE NOTIFICATION */}
+
                         <button
                           type="button"
                           onClick={() =>

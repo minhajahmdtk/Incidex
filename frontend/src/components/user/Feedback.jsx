@@ -58,7 +58,6 @@ const Feedback = () => {
     getCaseDetails();
   }, [id]);
 
-  // CLOSE DIALOG
   const handleClose = () => {
     navigate(`/user/cases/${id}`);
   };

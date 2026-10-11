@@ -52,7 +52,6 @@ const AdminUsers = () => {
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* PAGE HEADER */}
         <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <Link
@@ -75,7 +74,6 @@ const AdminUsers = () => {
             </Link>
 
             <div className="flex items-center gap-3">
-              {/* HEADER ICON */}
               <div
                 className="
                   flex
@@ -117,7 +115,6 @@ const AdminUsers = () => {
             </div>
           </div>
 
-          {/* TOTAL USERS */}
           <div
             className="
               rounded-xl
@@ -140,7 +137,7 @@ const AdminUsers = () => {
           </div>
         </div>
 
-        {/* USERS CARD */}
+
         <div
           className="
             overflow-hidden
@@ -152,7 +149,7 @@ const AdminUsers = () => {
             duration-300
           "
         >
-          {/* CARD HEADER */}
+
           <div className="border-b border-border px-6 py-5">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -165,7 +162,7 @@ const AdminUsers = () => {
                 </p>
               </div>
 
-              {/* SEARCH */}
+
               <div className="relative w-full sm:w-72">
                 <Search
                   size={18}
@@ -208,7 +205,7 @@ const AdminUsers = () => {
             </div>
           </div>
 
-          {/* LOADING */}
+
           {loading ? (
             <div className="flex min-h-[300px] items-center justify-center p-10">
               <div className="text-center">
@@ -233,7 +230,6 @@ const AdminUsers = () => {
               </div>
             </div>
           ) : filteredUsers.length === 0 ? (
-            /* EMPTY STATE */
             <div className="flex min-h-[300px] items-center justify-center p-10">
               <div className="text-center">
                 <div
@@ -265,7 +261,7 @@ const AdminUsers = () => {
               </div>
             </div>
           ) : (
-            /* USERS TABLE */
+
             <div className="overflow-x-auto">
               <table className="w-full min-w-[720px]">
                 <thead>
@@ -336,10 +332,10 @@ const AdminUsers = () => {
                         hover:bg-muted/40
                       "
                     >
-                      {/* USER */}
+
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          {/* USER AVATAR */}
+
                           <div
                             className="
                               flex
@@ -370,7 +366,7 @@ const AdminUsers = () => {
                         </div>
                       </td>
 
-                      {/* EMAIL */}
+
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Mail size={16} />
@@ -378,7 +374,7 @@ const AdminUsers = () => {
                         </div>
                       </td>
 
-                      {/* PHONE */}
+
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Phone size={16} />
@@ -386,7 +382,7 @@ const AdminUsers = () => {
                         </div>
                       </td>
 
-                      {/* REGISTERED DATE */}
+
                       <td className="px-6 py-4 text-sm text-muted-foreground">
                         {user.createdAt
                           ? new Date(user.createdAt).toLocaleDateString()

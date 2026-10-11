@@ -22,10 +22,6 @@ const AdminNavbar = () => {
 
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // ==================================================
-  // DARK / LIGHT THEME
-  // ==================================================
-
   useEffect(() => {
     const root = document.documentElement;
 
@@ -38,9 +34,7 @@ const AdminNavbar = () => {
     }
   }, [darkMode]);
 
-  // ==================================================
-  // GET UNREAD NOTIFICATION COUNT
-  // ==================================================
+
 
   useEffect(() => {
     const getUnreadCount = async () => {
@@ -68,10 +62,6 @@ const AdminNavbar = () => {
     getUnreadCount();
   }, [location.pathname]);
 
-  // ==================================================
-  // LOGOUT
-  // ==================================================
-
   const handleLogout = () => {
     localStorage.removeItem("loginToken");
     localStorage.removeItem("role");
@@ -82,20 +72,12 @@ const AdminNavbar = () => {
     navigate("/home");
   };
 
-  // ==================================================
-  // NOTIFICATION ACTIVE STATE
-  // ==================================================
-
   const isNotificationPage =
     location.pathname === "/admin/notifications";
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-navbar transition-colors duration-300">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-
-        {/* ==================================================
-            INCIDEX BRAND
-        ================================================== */}
 
         <Link
           to="/admin/dashboard"
@@ -130,16 +112,8 @@ const AdminNavbar = () => {
           </div>
         </Link>
 
-        {/* ==================================================
-            ADMIN ACTIONS
-        ================================================== */}
 
         <div className="flex items-center gap-1">
-
-          {/* ==================================================
-              NOTIFICATIONS
-          ================================================== */}
-
           <Link
             to="/admin/notifications"
             aria-label="Notifications"
@@ -154,10 +128,9 @@ const AdminNavbar = () => {
               rounded-lg
               transition-colors
               duration-200
-              ${
-                isNotificationPage
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              ${isNotificationPage
+                ? "bg-muted text-foreground"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
               }
             `}
           >
@@ -166,7 +139,6 @@ const AdminNavbar = () => {
               strokeWidth={1.9}
             />
 
-            {/* UNREAD COUNT */}
             {unreadCount > 0 && (
               <span
                 className="
@@ -196,10 +168,6 @@ const AdminNavbar = () => {
               </span>
             )}
           </Link>
-
-          {/* ==================================================
-              THEME TOGGLE
-          ================================================== */}
 
           <button
             type="button"
@@ -244,10 +212,6 @@ const AdminNavbar = () => {
               />
             )}
           </button>
-
-          {/* ==================================================
-              LOGOUT
-          ================================================== */}
 
           <button
             type="button"

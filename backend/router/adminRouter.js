@@ -412,10 +412,9 @@ router.get("/cases/pdf/:id", verifyAdmin, async (req, res) => {
     doc.text(`Status: ${report.currentStatus}`);
 
     doc.text(
-      `Report Date & Time: ${
-        report.reportDateTime
-          ? new Date(report.reportDateTime).toLocaleString()
-          : "N/A"
+      `Report Date & Time: ${report.reportDateTime
+        ? new Date(report.reportDateTime).toLocaleString()
+        : "N/A"
       }`
     );
 

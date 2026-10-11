@@ -34,7 +34,6 @@ import { toast } from "sonner";
 import axios from "axios";
 
 const AdminDashboard = () => {
-  // DASHBOARD STATE
 
   const [dashboardData, setDashboardData] = useState({
     totalUsers: 0,
@@ -107,7 +106,7 @@ const AdminDashboard = () => {
       .catch((error) => {
         toast.error(
           error.response?.data?.message ||
-            "Failed to load category data"
+          "Failed to load category data"
         );
       });
   };
@@ -128,7 +127,7 @@ const AdminDashboard = () => {
       .catch((error) => {
         toast.error(
           error.response?.data?.message ||
-            "Failed to load monthly data"
+          "Failed to load monthly data"
         );
       });
   };
@@ -170,7 +169,7 @@ const AdminDashboard = () => {
       .catch((error) => {
         toast.error(
           error.response?.data?.message ||
-            "Failed to load fake case and payment data"
+          "Failed to load fake case and payment data"
         );
       });
   };
@@ -192,7 +191,6 @@ const AdminDashboard = () => {
   }));
 
   // MONTHLY CHART DATA
-  // SHOW ALL 12 MONTHS
 
   const monthNames = [
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -376,8 +374,6 @@ const AdminDashboard = () => {
           </p>
         </div>
 
-        {/* ERROR */}
-
         {error && (
           <div className="mb-6 rounded-xl border border-[#B94A48]/30 bg-[#B94A48]/5 p-4 dark:bg-[#D76562]/5">
             <p className="text-sm text-[#B94A48] dark:text-[#D76562]">
@@ -385,8 +381,6 @@ const AdminDashboard = () => {
             </p>
           </div>
         )}
-
-        {/* ORGANIZED EIGHT STATISTIC CARDS */}
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
           {statCards.map((card) => {

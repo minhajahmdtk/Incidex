@@ -611,7 +611,6 @@ INCIDEX Team`;
 
 // =====================================================
 // CREATE RAZORPAY ORDER FOR AN UPHELD FINE
-// POST /cases/pay-fine/:id
 // =====================================================
 
 router.post("/pay-fine/:id", verifyToken, async (req, res) => {
@@ -717,7 +716,6 @@ router.post("/pay-fine/:id", verifyToken, async (req, res) => {
 
 // =====================================================
 // VERIFY RAZORPAY PAYMENT
-// POST /cases/verify-fine-payment/:id
 // =====================================================
 
 router.post(
@@ -834,7 +832,7 @@ router.post(
         });
       }
 
-      // Update only payment fields to avoid legacy validation errors.
+
       const finePaidAt = new Date();
 
       const updateResult = await CrimeReport.updateOne(
@@ -1059,10 +1057,9 @@ router.get("/pdf/:id", verifyToken, async (req, res) => {
     doc.text(`Incident Description: ${report.description || "N/A"}`);
     doc.text(`Incident Location: ${report.location || "N/A"}`);
     doc.text(
-      `Report Date & Time: ${
-        report.createdAt
-          ? new Date(report.createdAt).toLocaleString()
-          : "N/A"
+      `Report Date & Time: ${report.createdAt
+        ? new Date(report.createdAt).toLocaleString()
+        : "N/A"
       }`
     );
     doc.text(`Current Status: ${report.currentStatus}`);
@@ -1090,10 +1087,9 @@ router.get("/pdf/:id", verifyToken, async (req, res) => {
 
     doc.moveDown(2);
     doc.text(
-      `Resolved Date & Time: ${
-        report.updatedAt
-          ? new Date(report.updatedAt).toLocaleString()
-          : "N/A"
+      `Resolved Date & Time: ${report.updatedAt
+        ? new Date(report.updatedAt).toLocaleString()
+        : "N/A"
       }`
     );
 
