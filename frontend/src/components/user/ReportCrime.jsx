@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -7,11 +8,26 @@ import {
   useMap,
   useMapEvents,
 } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { MapPin, Send, ArrowLeft, Search, X } from "lucide-react";
 import { toast } from "sonner";
 
 import Navbar from "./Navbar";
 import axiosInstance from "../../axiosInterceptor";
+
+const defaultMarkerIcon = new L.Icon({
+  iconUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  iconRetinaUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  shadowUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
 
 const GEOAPIFY_API_KEY = import.meta.env.VITE_GEOAPIFY_API_KEY;
 
@@ -674,6 +690,7 @@ const ReportCrime = () => {
                             latitude,
                             longitude,
                           ]}
+                          icon={defaultMarkerIcon}
                           draggable={true}
                           eventHandlers={{
                             dragend: async (event) => {
