@@ -41,7 +41,7 @@ const handleSubmit = (e) => {
   }
 
     axios
-      .post("http://localhost:3000/user/register", form)
+      .post(`${import.meta.env.VITE_URL}/user/register`, form)
       .then((response) => {
         toast.success("Account created successfully!");
 
